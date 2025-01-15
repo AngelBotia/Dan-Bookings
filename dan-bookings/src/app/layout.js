@@ -19,6 +19,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <h1 style={{padding:'2rem'}}  >Danieliyo kit kat</h1>
         {children}
       </body>
     </html>

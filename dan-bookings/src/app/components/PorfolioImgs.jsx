@@ -1,7 +1,8 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
 import '../styles/PorfolioImgs.css'
-const PorfolioImgs = () => {
+import { useRouter } from 'next/router';
+const PorfolioImgs = ({porfolioData = []}) => {
     const containerRef = useRef(null);
     
     
@@ -16,15 +17,9 @@ const PorfolioImgs = () => {
           startX = e.pageX - container.offsetLeft;
           scrollLeft = container.scrollLeft;
         };
-  
-        const handleMouseLeave = () => {
+        const noIsDown = () => {
           isMouseDown = false;
         };
-  
-        const handleMouseUp = () => {
-          isMouseDown = false;
-        };
-  
         const handleMouseMove = (e) => {
           e.preventDefault();
           if (!isMouseDown) return;
@@ -41,35 +36,46 @@ const PorfolioImgs = () => {
         };
   
         container.addEventListener('mousedown', handleMouseDown);
-        container.addEventListener('mouseleave', handleMouseLeave);
-        container.addEventListener('mouseup', handleMouseUp);
+        container.addEventListener('mouseleave', noIsDown);
+        container.addEventListener('mouseup', noIsDown);
         container.addEventListener('mousemove', handleMouseMove);
         container.addEventListener('wheel', handleWheel);
         return () => {
           container.removeEventListener('mousedown', handleMouseDown);
-          container.removeEventListener('mouseleave', handleMouseLeave);
-          container.removeEventListener('mouseup', handleMouseUp);
+          container.removeEventListener('mouseleave', noIsDown);
+          container.removeEventListener('mouseup', noIsDown);
           container.removeEventListener('mousemove', handleMouseMove);
           container.removeEventListener('wheel', handleWheel);
         };
     }, []);
-    
-  return (
-    <div  ref={containerRef} className="container-horizontal-scrolling">
-    <div className="grid">
-        <div className="img-porfolio item1"></div>
-        <div className="img-porfolio item2"></div>
-        <div className="img-porfolio item3"></div>
-        <div className="img-porfolio item4"></div>
-        <div className="img-porfolio item5"></div>
-        <div className="img-porfolio item6"></div>
-        <div className="img-porfolio item7"></div>
-        <div className="img-porfolio item8"></div>
-        <div className="img-porfolio item9"></div>
-        <div className="img-porfolio item10"></div>
 
+    const onClickImg = (idImg,event) =>{
+      window.location.href = window.location.href.concat(idImg)
+    }
+    
+    const createItems = ()=>{
+      return porfolioData?.map((item,index)=>{
+        return (
+          <div 
+          key={item.id}
+          style={{backgroundImage:`url(${item.url})`,
+                  viewTransitionName:`${item.id}`}}
+          className={`img-porfolio item${index + 1}`}
+          onClick={(event)=>onClickImg(item.id,event)}
+
+          />
+        )
+      }) || [];
+    }
+
+
+  return (
+  !!porfolioData?.length &&
+    <div  ref={containerRef} className="container-horizontal-scrolling">
+      <div className="grid">
+        {createItems()}
       </div>
-</div>
+    </div>
   )
 }
 

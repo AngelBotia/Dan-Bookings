@@ -18,9 +18,7 @@ export default  async function Home() {
  
   return (
     <>
-    <PorfolioImgs
-    porfolioData={mockPorfolio}
-    />
+    <PorfolioImgs porfolioData={mockPorfolio}/>
     </>
   );
 }

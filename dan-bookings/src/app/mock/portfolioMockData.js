@@ -1,30 +1,30 @@
 export const mockPorfolio = [
     {
-      id: "1",
+      id: "doberman",
       url:  "mock-portfolio/doberman.png"
     },
     {
-      id: "2",
+      id: "swan",
       url: "mock-portfolio/swan-angel.png"
     },
     {
-      id: "3",
+      id: "calavera",
       url: "mock-portfolio/calavera-yung.png"
     },
     {
-      id: "4",
+      id: "calavera2",
       url: "mock-portfolio/calavera-yung.png"
     },
     {
-      id: "5",
+      id: "manga",
       url: "mock-portfolio/manga-rubio.png"
     },
     {
-      id: "6",
+      id: "ojo",
       url: "mock-portfolio/ojo-yung.png"
     },
     {
-      id: "7",
+      id: "mujer",
       url: "mock-portfolio/mujer.png"
     },
     {

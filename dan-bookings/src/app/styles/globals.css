@@ -25,6 +25,12 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.container-horizontal-scrolling{
+  overflow-x: auto;
+  height: 100%;
+  width: 100%;
+  scroll-behavior: smooth;
+}
 
 * {
   box-sizing: border-box;

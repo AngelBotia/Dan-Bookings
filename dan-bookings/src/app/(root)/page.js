@@ -4,10 +4,11 @@ import { mockPorfolio } from "../mock/portfolioMockData";
 
 export default  async function Home() {
   // const data = await...
+  const porfolioData = mockPorfolio;
 
   return (
     <>
-    <PorfolioImgs porfolioData={mockPorfolio}/>
+    <PorfolioImgs porfolioData={porfolioData}/>
     </>
   );
 }

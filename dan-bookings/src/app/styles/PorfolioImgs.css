@@ -1,3 +1,7 @@
+:root {
+  --fade-duration: 2s;
+}
+
 .porfolio-container {
   height: 80vh;
 }
@@ -24,3 +28,19 @@
   filter: grayscale(0);
 }
 
+.fade-in-animation {
+  opacity: 0;
+  animation: fadeIn 2s ease forwards;
+  animation-delay: var(--order-delay);
+}
+
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

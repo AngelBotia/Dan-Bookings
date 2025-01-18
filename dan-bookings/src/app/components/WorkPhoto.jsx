@@ -11,9 +11,11 @@ export const WorkPhoto = ({ work, order,typeOfCollage}) => {
         <div
             style={{
                 backgroundImage: `url(${work.url})`,
-                viewTransitionName: `${work.id}`
+                viewTransitionName: `${work.id}`,
+                '--order-delay':  `${order/10}s`
+
             }}
-            className={`img-porfolio ${typeOfCollage}${order}`}
+            className={`img-porfolio fade-in-animation ${typeOfCollage}${order}`}
             onClick={(event) => onClickImg(work.id, event)}
         />
     )

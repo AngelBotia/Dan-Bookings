@@ -7,18 +7,18 @@ import { mockPorfolio } from '@/app/mock/portfolioMockData';
 export default function Work() {
   const { workID } = useParams();
   const searchParams  = useSearchParams();
-  const pos = searchParams.get('pos');
+  const pos = searchParams.get('pos'); //TODO:change this when using REDUX
   
-  const data = mockPorfolio?.works?.find(item => item.id == workID);
+  const work = mockPorfolio?.works?.find(item => item.id == workID); //change this for response api
 
   return (
-    data &&
+    work &&
     <div className={`work-main-container ${pos == 'right' ? 'work-direccion-right' : 'work-direccion-left'}`}  >
 
       <div className={`work-img-container ${pos == 'left' && 'img-right'}`}
         style={{
-          viewTransitionName: data.id,
-          backgroundImage: `url(${data.url})`
+          viewTransitionName: work.id,
+          backgroundImage: `url(${work.url})`
         }} />
 
 

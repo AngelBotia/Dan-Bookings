@@ -36,5 +36,6 @@
         background-repeat: no-repeat;
         background-size: contain;
         background-color: var(--background);
+        background-position: center;
     }
 }

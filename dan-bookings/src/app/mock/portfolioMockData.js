@@ -36,13 +36,13 @@ export const mockPorfolio = {
     order: '7'
   },
   {
-    id: "8",
-    url: "https://images.unsplash.com/photo-1534743901536-d184ed4194bc?ixlib=rb-0.3.5&s=21fd4555141d93425b8ee3f80f764e69&auto=format&fit=crop&w=634&q=80",
+    id: "swan2",
+    url: "mock-portfolio/swan-angel.png",
     order: '8'
   },
   {
-    id: "9",
-    url: "https://images.unsplash.com/photo-1515694581961-1fbdb6840a5f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=4267be6fb944c94b672e0b3ddb458286&auto=format&fit=crop&w=634&q=80",
+    id: "dogo",
+    url: "mock-portfolio/doberman.png",
     order: '9'
   }]
 

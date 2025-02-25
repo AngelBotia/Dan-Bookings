@@ -32,6 +32,15 @@ body {
   scroll-behavior: smooth;
 }
 
+.navbar{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 6rem;
+  width: 100vw;
+  padding: 0rem 1rem;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -83,6 +92,7 @@ a {
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(120, 120, 120, 0.7);
 }
+
 
 
 

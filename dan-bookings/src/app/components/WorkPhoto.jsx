@@ -13,7 +13,6 @@ export const WorkPhoto = ({ work, order,typeOfCollage}) => {
                 backgroundImage: `url(${work.url})`,
                 viewTransitionName: `${work.id}`,
                 '--order-delay':  `${order/10}s`
-
             }}
             className={`img-porfolio fade-in-animation ${typeOfCollage}${order}`}
             onClick={(event) => onClickImg(work.id, event)}

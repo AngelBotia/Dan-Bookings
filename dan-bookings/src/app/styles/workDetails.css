@@ -32,7 +32,7 @@
     }
     .work-img-container {
         width: auto;
-        height: inherit;
+        height: 200vh;
         background-repeat: no-repeat;
         background-size: contain;
         background-color: var(--background);

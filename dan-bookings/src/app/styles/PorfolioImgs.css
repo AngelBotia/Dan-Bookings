@@ -44,3 +44,9 @@
     opacity: 1;
   }
 }
+
+@media (max-width: 768px) {
+  .porfolio-container {
+    height: 72vh;
+  }
+}

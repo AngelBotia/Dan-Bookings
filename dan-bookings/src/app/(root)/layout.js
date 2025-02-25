@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
-
+import NavBar from "../components/NavBar";
+import ProviderSession from "../context/SessionProvider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -19,8 +20,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-      <h1 style={{padding:'2rem'}}  >Danieliyo kit kat</h1>
-        {children}
+        <ProviderSession>
+          <NavBar/>
+          {children}
+        </ProviderSession>
       </body>
     </html>
   );

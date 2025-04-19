@@ -4,26 +4,29 @@ import'../styles/porfolioCollages/collageDefault.css'
 import '../styles/globals.css'
 import { ContHorizonalScroll } from './ContHorizonalScroll';
 import { WorkPhoto } from './WorkPhoto';
-const PorfolioImgs = ({ porfolioData = {} }) => {
-  const createItems = () => {
-    return porfolioData?.works?.map((work, index) => {
-      return (
-        <WorkPhoto 
-        key={work.id} 
-        work={work} 
-        order={work?.order || index+1}
-        typeOfCollage={porfolioData?.typeOfCollage || 'collage-defaul'}  />
-      )
-    }) || [];
-  }
 
+const PorfolioImgs = ( {porfolio} ) => {
+  
 
+  const createWorks = () => {
+    if(!porfolio.works.length) return;
+     return porfolio?.works?.map((work, index) => {
+       return (
+         <WorkPhoto 
+         key={work.id} 
+         work={work} 
+         order={work?.order || index+1}
+         typeOfCollage={porfolio?.typeOfCollage || 'collage-default'}  />
+        )
+      }) || [];
+    }
+    
   return (
-    porfolioData &&
+    porfolio.works &&
     <div className='porfolio-container'>
     <ContHorizonalScroll>
       <div className="grid">
-        {createItems()}
+        {createWorks()}
       </div>
     </ContHorizonalScroll>
     </div>

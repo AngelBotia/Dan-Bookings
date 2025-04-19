@@ -1,6 +1,5 @@
-export const mockPorfolio = {
-  typeOfCollage: 'collage-defaul',// DEFAULT: collage-defaul ,*collage1- , collage2-... DIFERENTEN DISTRIBUTIONS    */
-  works: [{
+export const typeOfCollage = 'collage-default';// DEFAULT: collage-defaul ,*collage1- , collage2-... DIFERENTEN DISTRIBUTIONS    */
+export const mockPorfolio = [{
     id: "doberman",
     url: "mock-portfolio/doberman.png",
     order: '1'
@@ -44,6 +43,4 @@ export const mockPorfolio = {
     id: "dogo",
     url: "mock-portfolio/doberman.png",
     order: '9'
-  }]
-
-}
+  }];

@@ -1,14 +1,23 @@
+"use client"
+import React from 'react';
 import '../styles/globals.css'
 import PorfolioImgs from "../components/PorfolioImgs";
-import { mockPorfolio } from "../mock/portfolioMockData";
+import { useLoadWorks } from '../hooks/usePortfolio';
+import { PorfolioContextProvider } from '../context/PorfolioProvider';
 
-export default  async function Home() {
-  // const data = await...
-  const porfolioData = mockPorfolio;
+export default function Home() {
+  const porfolioData = useLoadWorks();
+  
+  porfolioData.typeOfCollage="collage-default"
 
   return (
     <>
-    <PorfolioImgs porfolioData={porfolioData}/>
-    </>
+      {porfolioData &&
+      <PorfolioContextProvider>
+      <PorfolioImgs porfolio={porfolioData}/>
+
+      </PorfolioContextProvider>
+      }
+      </>
   );
 }

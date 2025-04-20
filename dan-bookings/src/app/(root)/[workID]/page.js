@@ -7,24 +7,23 @@ import { useParams } from 'next/navigation';
 import { useWorksIsLoaded } from '../../hooks/useApplicarion';
 import { usePortfolio } from '../../context/PorfolioProvider';
 import { useApplication } from '../../context/AplicationProvider';
+import { useDetailsInCache, useLoadDetailsWork } from '../../hooks/usePortfolio';
 
 export default function Work() {
   const { workID } = useParams();
-  const { porfolioContext } = usePortfolio();
-  const { applicationContext } = useApplication();
-  const { works } = porfolioContext;
-  const { posMouse } = applicationContext;
-
-  let {ID_WORK,TITLE,URL,ORDER_INDEX,IMAGE_URL,IS_VISIBLE } = works?.find(workItem => workItem.URL == workID) || [];//TODO: or await getWorkByID()
-  useWorksIsLoaded();
+  const { porfolioContext: { works }} = usePortfolio();
+  const { applicationContext: { posMouse }} = useApplication();
+ 
+  const detail = useDetailsInCache(workID) || useLoadDetailsWork(workID);
+  //useWorksIsLoaded(); TODO: DISABLE FADE-IN
   return (
-    ID_WORK &&
+     detail &&
     <div className={`work-main-container work-direccion-${posMouse}`}  >
 
       <div className={`work-img-container  ${posMouse == 'left' ? 'left' : 'img-right' }`} 
         style={{
-          viewTransitionName: URL,
-          backgroundImage: `url(${IMAGE_URL})`
+          viewTransitionName: detail.WO_URL,
+          backgroundImage: `url(${detail.MAIN_IMG_URL})`
         }} />
 
 

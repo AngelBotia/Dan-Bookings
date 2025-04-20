@@ -9,10 +9,10 @@ import EN from '../translations/EN.json'
 
 export function useWorksIsLoaded() {
  const { setApplicationContext } = useApplication();
- const { porfolioContext } = usePortfolio();
+ const { porfolioContext:{works} } = usePortfolio();
  
   useEffect(() => {
-    if(porfolioContext?.works.length)setApplicationContext(prev => ({ ...prev, isLoaded: true }));
+    if(works.length)setApplicationContext(prev => ({ ...prev, isLoaded: true }));
   }, []);
 }
 

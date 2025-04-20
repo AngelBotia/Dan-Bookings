@@ -5,17 +5,26 @@ class workController {
     constructor(workModel){
         this.workModel = workModel;
     }
-    getAllWorks = async (nameID,params) =>{
+    getAllWorks = async () =>{
         try {
-             return await this.workModel.getAllWorks(nameID,params);
+             return await this.workModel.getAllWorks();
         } catch (error) {
           console.error("[WORK-CONTROLLER] -",error);
           throw error;
         }
     }
-    getWorkDetailsById = async (id) =>{
+    getWorkDetails = async (workURL) =>{
         try {
-            return await this.workModel.getWorkDetailsById(id);
+            return await this.workModel.getWorkDetails(workURL);
+        } catch (error) {
+            console.error("[WORK-CONTROLLER] -",error)
+            throw error;
+        }
+        
+    }
+    getWorkMediaDetails = async (workURL) =>{
+        try {
+            return await this.workModel.getWorkMediaDetails(workURL);
         } catch (error) {
             console.error("[WORK-CONTROLLER] -",error)
             throw error;

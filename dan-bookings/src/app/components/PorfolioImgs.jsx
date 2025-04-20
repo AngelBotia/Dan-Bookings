@@ -10,7 +10,7 @@ const PorfolioImgs = ( {works,typeOfCollage="collage-default"} ) => {
   const createWorks = () => {
     if(!works.length) return;
      return works?.map((work, index) => {
-       return (
+      return (
          <WorkPhoto 
          key={work.ID_WORK} 
          work={work} 

@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { typeOfCollage } from "../mock/portfolioMockData";
 import { usePortfolio } from "../context/PorfolioProvider";
 
 
-export function useLoadWorks() {
+export function useAllLoadWorks() {
   const { setPorfolioContext } = usePortfolio();
-  const [loadedWorks, setLoadedWorks] = useState([]);
+  const [loadedWorks, setLoadedWorks] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -24,6 +23,40 @@ export function useLoadWorks() {
   return loadedWorks;
 }
 export const useWorksInCache=()=>{
-  const { porfolioContext } = usePortfolio();
-  return porfolioContext?.works?.length ? porfolioContext.works : null;
+  const { porfolioContext:{works} } = usePortfolio();
+  return works?.filter(work => work.ID_WORK).length ? works : null;
+}
+
+export function useLoadDetailsWork(urlWork) {
+  const { setPorfolioContext ,porfolioContext} = usePortfolio();
+  const [loadedDetails, setloadedDetails] = useState(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const detailsData = await fetch(`/api/work/${urlWork}`, { method: "GET" });
+        const details = await detailsData.json();
+        setPorfolioContext(prev => {
+          const { works } = prev;
+          !works?.find(work =>work.URL == urlWork) && works.push({URL:urlWork,ID_WORK: false});
+
+          const updatedWorks = works?.map(work =>
+            work.URL == urlWork ? { ...work, detail: details } : work
+          );
+        
+          return {...prev,works: updatedWorks};
+        });
+        setloadedDetails(details); 
+      } catch (error) {
+        console.error("[PORFOLIO WORKS DETAILS CANT LOAD]", error);
+      }
+    };
+
+    loadData();
+  }, []);
+  return loadedDetails;
+}
+export const useDetailsInCache=(urlWork)=>{
+  const { porfolioContext:{works} } = usePortfolio();
+  return works?.find(work => work.URL == urlWork)?.detail || null
 }

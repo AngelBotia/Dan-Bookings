@@ -1,4 +1,5 @@
 import mysql from 'mysql2/promise'
+
 export const conn = mysql.createPool({
   host: process.env.MYSQLDB_HOST,
   user: process.env.MYSQLDB_USER,

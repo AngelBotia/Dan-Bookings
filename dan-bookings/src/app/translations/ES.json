@@ -1,0 +1,8 @@
+{
+    "actions":{
+        "booking":"Reserva"
+    },
+    "errors":{
+        "worksNoData": "No hay tattoos cargados"
+    }
+}

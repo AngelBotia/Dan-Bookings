@@ -1,5 +1,4 @@
-import { Product } from "@/app/interfaces/productInterface";
-import {workModelMYSQL} from "@/app/models/mysql/workModel"
+import { workModelMYSQL } from "../models/mysql/workModel"
 class workController {
     workModel;
     
@@ -53,4 +52,4 @@ class workController {
 // const model = new ProductModelFS(); <-- Local file  
 const model = new workModelMYSQL();
 
-export const productController = new workController(model)
+export const useControllerData = new workController(model)

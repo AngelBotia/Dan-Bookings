@@ -3,13 +3,14 @@ import React, { createContext, useState } from "react"
 
 export const ApplicationContext = createContext();
 
-export function useAplication(){
+export function useApplication(){
   return React.useContext(ApplicationContext)
 }
 
 const APPLICATION_DEFAULT={
     posMouse: 'right',
-    isLoaded: false
+    isLoaded: false,
+    languageAPP: "ES"
 }
 export const ApplicationContextProvider = ({ children }) => { 
 

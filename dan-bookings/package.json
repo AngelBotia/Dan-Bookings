@@ -11,6 +11,7 @@
   "dependencies": {
     "dan-bookings": "file:",
     "dotenv": "^16.4.7",
+    "mysql2": "^3.14.0",
     "next": "15.1.4",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",

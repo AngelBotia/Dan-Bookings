@@ -5,24 +5,23 @@ import '../styles/globals.css'
 import { ContHorizonalScroll } from './ContHorizonalScroll';
 import { WorkPhoto } from './WorkPhoto';
 
-const PorfolioImgs = ( {porfolio} ) => {
-  
-
+const PorfolioImgs = ( {works,typeOfCollage="collage-default"} ) => {
+    
   const createWorks = () => {
-    if(!porfolio.works.length) return;
-     return porfolio?.works?.map((work, index) => {
+    if(!works.length) return;
+     return works?.map((work, index) => {
        return (
          <WorkPhoto 
-         key={work.id} 
+         key={work.ID_WORK} 
          work={work} 
-         order={work?.order || index+1}
-         typeOfCollage={porfolio?.typeOfCollage || 'collage-default'}  />
+         order={work?.ORDER_INDEX || index + 1}
+         typeOfCollage={typeOfCollage || 'collage-default'}  />
         )
       }) || [];
     }
     
   return (
-    porfolio.works &&
+    works &&
     <div className='porfolio-container'>
     <ContHorizonalScroll>
       <div className="grid">

@@ -1,0 +1,8 @@
+{
+    "actions":{
+        "booking":"Booking"
+    },
+    "errors":{
+        "worksNoData": "No tattoos loaded"
+    }
+}

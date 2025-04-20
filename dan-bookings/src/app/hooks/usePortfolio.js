@@ -1,18 +1,19 @@
-import React, { useState, useEffect, useContext } from "react";
-import { mockPorfolio,typeOfCollage } from "../mock/portfolioMockData";
+import { useState, useEffect } from "react";
+import { typeOfCollage } from "../mock/portfolioMockData";
 import { usePortfolio } from "../context/PorfolioProvider";
 
 
 export function useLoadWorks() {
-  const { porfolioContext,setPorfolioContext } = usePortfolio();
-  const [loadedWorks, setLoadedWorks] = useState({});
+  const { setPorfolioContext } = usePortfolio();
+  const [loadedWorks, setLoadedWorks] = useState([]);
+
   useEffect(() => {
-    const loadData = () => {
+    const loadData = async () => {
       try {
-        // TODO: replace with fetch
-        const works = mockPorfolio;
-        setPorfolioContext(prev => ({ ...prev, works, typeOfCollage }));
-        setLoadedWorks({works, typeOfCollage });
+        const worksData = await fetch("/api/work", { method: "GET" });
+        const works = await worksData.json();
+        setPorfolioContext(prev => ({ ...prev, works }));
+        setLoadedWorks({ works });
       } catch (error) {
         console.error("[PORFOLIO WORKS CANT LOAD]", error);
       }
@@ -20,5 +21,9 @@ export function useLoadWorks() {
 
     loadData();
   }, []);
-  return loadedWorks; 
+  return loadedWorks;
+}
+export const useWorksInCache=()=>{
+  const { porfolioContext } = usePortfolio();
+  return porfolioContext?.works?.length ? porfolioContext.works : null;
 }

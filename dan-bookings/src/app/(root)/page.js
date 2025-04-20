@@ -2,22 +2,13 @@
 import React from 'react';
 import '../styles/globals.css'
 import PorfolioImgs from "../components/PorfolioImgs";
-import { useLoadWorks } from '../hooks/usePortfolio';
-import { PorfolioContextProvider } from '../context/PorfolioProvider';
+import { useLoadWorks, useWorksInCache } from '../hooks/usePortfolio';
 
 export default function Home() {
-  const porfolioData = useLoadWorks();
-  
-  porfolioData.typeOfCollage="collage-default"
-
+  const works = useWorksInCache() || useLoadWorks();
   return (
     <>
-      {porfolioData &&
-      <PorfolioContextProvider>
-      <PorfolioImgs porfolio={porfolioData}/>
-
-      </PorfolioContextProvider>
-      }
-      </>
+      {!!works?.length && <PorfolioImgs works={works} />}
+    </>
   );
 }

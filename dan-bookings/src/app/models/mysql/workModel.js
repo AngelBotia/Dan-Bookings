@@ -1,28 +1,44 @@
-import { conn } from "@/app/libs/mysql";
-
+import { conn } from "../../libs/mysql";
+import { WO_DB_PROPS, WORKS } from "../../constants/works"
 export class workModelMYSQL{
-    
-    getAllWorks = async (nameID,params) =>{
-       //GET ALL PORFOLIO WORKS
+
+    getAllWorks = async () => {
+        try {
+            const [WO_DB, WO_NAMES, WO_TABLES] = WO_DB_PROPS;
+            const TABLES = WO_DB.map((work, i) => { return `${WO_DB[i]} AS ${WO_NAMES[i]}` });
+
+            const SELECT = [`SELECT ${TABLES.join()}`];
+
+            const FROM = [`FROM ${WO_TABLES.join()}`];
+
+            const WHERE = [];
+
+            const ORDER = [];
+
+            const allQuery = [...SELECT, ...FROM, ...WHERE, ...ORDER].join(" ");
+
+            const [rows] = await conn.query(allQuery);
+            if (rows?.affectedRows == 0) throw new Error("works dont found");
+            return rows
+        } catch (error) {
+            throw new Error("works dont found")
+        }
     };
-    getWorkDetailsById= async(id) =>{
-        //GET WORK PHOTOS AND DETAILS
+    getWorkDetailsById = async(id) =>{
+        try {
+  
+        } catch (error) {
+            throw new Error("works dont found")
+        }
     };
     deleteWork = async (id) =>{
-        //DELETE WORK BY ID
-        const [rows] = await conn.query('DELETE from PRO_PRODUCT where id = ?',[id]);
-        if(rows?.affectedRows==0) throw new Error("work dont found");
-        return `this product with this ID:${id} has delete.`;
+        //TODO:DELETE WORK BY ID
     }
     createWork = async (product,nameID) => {
-        const { id,name,category,price } = product;
-        if(!id?.trim() ||!name?.trim() || !category.trim() || !Number(price)) throw new Error('name is required.');
-        const [result] = await conn.query<ResultSetHeader>("INSERT into PRO_PRODUCT SET ?",product)
-        if(result.affectedRows === 0) return null;
-        return product;
+       //TODO CREATE WORK
     }
     updateWork = async(work) => {
-
+        //TODO EDIT WORK
     }
 
 }

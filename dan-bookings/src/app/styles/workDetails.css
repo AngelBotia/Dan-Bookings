@@ -14,10 +14,10 @@
 }
 
 .work-direccion-left{
-    flex-direction: row-reverse; 
+    flex-direction: row;
 }
 .work-direccion-right{
-    flex-direction: row;
+    flex-direction: row-reverse; 
 }
 .img-right{
     background-position: right;

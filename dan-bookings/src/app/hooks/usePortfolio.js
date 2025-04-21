@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { usePortfolio } from "../context/PorfolioProvider";
 
 
-export function useAllLoadWorks() {
+export function useLoadAllWorks() {
   const { setPorfolioContext } = usePortfolio();
   const [loadedWorks, setLoadedWorks] = useState(null);
 

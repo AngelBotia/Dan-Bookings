@@ -1,5 +1,5 @@
 import { conn } from "../../libs/mysql";
-import { DETAILS_PROPS,WO_DB_PROPS, WO_DETAILS } from "../../constants/worksDB"
+import { DETAILS_PROPS,WDM_DETAILS,WDM_PROPS,WO_DB_PROPS, WO_DETAILS } from "../../constants/worksDB"
 
 
 export class workModelMYSQL{
@@ -30,7 +30,7 @@ export class workModelMYSQL{
     };
     getWorkDetails = async(workURL) =>{
         try {
-            const {DET_DB, DET_NAMES, DETAIL_DB_TABLE,DET_TABLE_ALIAS} = DETAILS_PROPS 
+            const { DET_DB, DET_NAMES, DETAIL_DB_TABLE,DET_TABLE_ALIAS } = DETAILS_PROPS;
             const params = []; 
 
             const details_SELECT = DET_DB.map((work, i) => { return `${DET_TABLE_ALIAS}.${DET_DB[i]} AS ${DET_NAMES[i]}` }).join();
@@ -57,7 +57,22 @@ export class workModelMYSQL{
         }
     };
     getWorkMediaDetails = async(workURL) =>{
+        try {
+            const { WDM_DB, WDM_NAMES, WDM_MEDIA_TABLE, WDM_TABLE_ALIAS } = WDM_PROPS;
+            const media_SELECT = WDM_DB.map((work, i) => { return `${WDM_TABLE_ALIAS}.${WDM_DB[i]} AS ${WDM_NAMES[i]}` }).join();
 
+            const query = `SELECT ${media_SELECT}
+                            FROM ${WDM_MEDIA_TABLE} ${WDM_TABLE_ALIAS}
+                            WHERE ${WDM_TABLE_ALIAS}.${WDM_DETAILS.WO_URL} like ?`
+            const params = [workURL]
+
+            const [rows] = await conn.query(query, params);
+            if (rows?.affectedRows == 0) return [];
+            return rows;
+        } catch (error) {
+            console.error(error.message)
+            return []
+        }
     }
     deleteWork = async (id) =>{
         //TODO:DELETE WORK BY ID

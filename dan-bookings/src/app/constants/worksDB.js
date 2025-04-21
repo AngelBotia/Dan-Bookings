@@ -33,4 +33,14 @@ export const DETAILS_PROPS = {DET_DB:Object.values(WO_DETAILS), DET_NAMES:Object
 //---------------------------------------------------------------------------------------------------------------
 //WORK DETAILS MEDIA /////////////////////////////////////////////////////////////////////////////////////////
 
+export const WDM_DETAILS = {
+    ID: "DETAILS_MEDIA_ID",
+    WO_URL: "WO_URL",
+    URL_MEDIA: "URL_MEDIA",
+    TYPE_MEDIA: "TYPE_MEDIA",
+}
 export const WDM_MEDIA_TABLE="WORK_DETAILS_MEDIA"
+export const WDM_TABLE_ALIAS ="WDM"
+
+                        //PROPS OBJECT ⇣               PROPS TABLE ⇣                   TABLE NAME ⇣   TABLE NAME ALIAS⇣          
+export const WDM_PROPS = {WDM_DB:Object.values(WDM_DETAILS), WDM_NAMES:Object.keys(WDM_DETAILS), WDM_MEDIA_TABLE,WDM_TABLE_ALIAS}  

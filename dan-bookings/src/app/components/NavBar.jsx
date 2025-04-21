@@ -3,7 +3,7 @@ import React from 'react'
 import Link from "next/link";
 import { signIn, useSession,signOut } from 'next-auth/react'
 import Logo from './Logo';
-import { useGetTranslation } from '../hooks/useApplicarion';
+import { useGetTranslation } from '../hooks/useApplication';
 
 const NavBar = () => {
   const { data: session } = useSession();

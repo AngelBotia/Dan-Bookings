@@ -60,7 +60,7 @@ export function useLoadDetailsWork(params) {
   return loadedDetails;
 }
 export const useDetailsInCache=(params)=>{
-  let { urlWork } = params;
+  let { workID } = params;
   const { porfolioContext:{works} } = usePortfolio();
-  return works?.find(work => work.URL == urlWork)?.detail || null
+  return works?.find(work => work.URL == workID)?.detail || null
 }

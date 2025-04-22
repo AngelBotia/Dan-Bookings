@@ -1,5 +1,10 @@
 :root {
   --fade-duration: 2s;
+  
+}
+
+@view-transition{
+  navigation: auto;
 }
 
 .porfolio-container {

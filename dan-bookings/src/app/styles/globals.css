@@ -2,6 +2,9 @@
   --background: #000000;
   --foreground: #ededed;
 }
+@view-transition{
+  navigation: auto;
+}
 
 /* @media (prefers-color-scheme: dark) {
   :root {
@@ -100,7 +103,8 @@ a {
   html {
     color-scheme: dark;
   }
+  @view-transition{
+    navigation: auto;
+  }
 }
-@view-transition{
-  navigation: auto;
-}
+

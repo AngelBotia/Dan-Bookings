@@ -2,14 +2,15 @@ import { useState, useEffect } from "react";
 import { usePortfolio } from "../context/PorfolioProvider";
 
 
-export function useLoadAllWorks() {
+export function useLoadAllWorks(params) {
   const { setPorfolioContext } = usePortfolio();
   const [loadedWorks, setLoadedWorks] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const worksData = await fetch("/api/work", { method: "GET" });
+        const searchParams = params ? new URLSearchParams(params) : "";
+        const worksData = await fetch(`/api/work?${searchParams}`, {method: "GET"});
         const works = await worksData.json();
         setPorfolioContext(prev => ({ ...prev, works }));
         setLoadedWorks({ works });
@@ -24,24 +25,26 @@ export function useLoadAllWorks() {
 }
 export const useWorksInCache=()=>{
   const { porfolioContext:{works} } = usePortfolio();
-  return works?.filter(work => work.ID_WORK).length ? works : null;
+  return !works.error && works?.filter(work => work.ID_WORK).length ? works : null;
 }
 
-export function useLoadDetailsWork(urlWork) {
+export function useLoadDetailsWork(params) {
   const { setPorfolioContext ,porfolioContext} = usePortfolio();
   const [loadedDetails, setloadedDetails] = useState(null);
-
+  
   useEffect(() => {
     const loadData = async () => {
       try {
-        const detailsData = await fetch(`/api/work/${urlWork}`, { method: "GET" });
+        let { workID } = params;
+        const searchParams = params ? new URLSearchParams(params) : "";
+        const detailsData = await fetch(`/api/work/${workID}?${searchParams}`, { method: "GET" });
         const details = await detailsData.json();
         setPorfolioContext(prev => {
           const { works } = prev;
-          !works?.find(work =>work.URL == urlWork) && works.push({URL:urlWork,ID_WORK: false});
+          !works?.find(work =>work.URL == workID) && works.push({URL:workID,ID_WORK: false});
 
           const updatedWorks = works?.map(work =>
-            work.URL == urlWork ? { ...work, detail: details } : work
+            work.URL == workID ? { ...work, detail: details } : work
           );
         
           return {...prev,works: updatedWorks};
@@ -56,7 +59,8 @@ export function useLoadDetailsWork(urlWork) {
   }, []);
   return loadedDetails;
 }
-export const useDetailsInCache=(urlWork)=>{
+export const useDetailsInCache=(params)=>{
+  let { urlWork } = params;
   const { porfolioContext:{works} } = usePortfolio();
   return works?.find(work => work.URL == urlWork)?.detail || null
 }

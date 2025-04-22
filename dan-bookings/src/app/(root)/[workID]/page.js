@@ -11,10 +11,11 @@ import { useDetailsInCache, useLoadDetailsWork } from '../../hooks/usePortfolio'
 
 export default function Work() {
   const { workID } = useParams();
+  const workParams={workID}
   const { porfolioContext: { works }} = usePortfolio();
   const { applicationContext: { posMouse }} = useApplication();
  
-  const detail = useDetailsInCache(workID) || useLoadDetailsWork(workID);
+  const detail = useDetailsInCache(workParams) || useLoadDetailsWork(workParams);
   //useWorksIsLoaded(); TODO: DISABLE FADE-IN
   return (
     <>

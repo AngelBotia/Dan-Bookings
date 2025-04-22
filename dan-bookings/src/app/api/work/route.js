@@ -1,9 +1,12 @@
 import { useControllerData } from "../../controllers/WorkController";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request) {
     try {
-        const allWorks = await useControllerData.getAllWorks();
+        const { searchParams } = request.nextUrl;
+        const limit = searchParams.get('limit');
+        let params ={ limit } 
+        const allWorks = await useControllerData.getAllWorks(params);
         return NextResponse.json(allWorks,{ status:200 });
     } catch (error) {
         const errorMessage = "something went wrong"

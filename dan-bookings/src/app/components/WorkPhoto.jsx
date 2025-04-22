@@ -20,14 +20,14 @@ export const WorkPhoto = ({ work, order, typeOfCollage }) => {
     return (
         <Link   
         style={{
-            backgroundImage: `url(${IMAGE_URL})`,
+            backgroundImage: `url(${IMAGE_URL || "/edit-icon.png"})`,
             viewTransitionName: `${URL}`, //TODO: CHECK VIEW TRANSITION
             '--order-delay':  `${orderItem}s`}}
         className={`img-porfolio
             ${fadeItAnimation} 
-            ${typeOfCollage}${ORDER_INDEX}`}
+            ${typeOfCollage}${ORDER_INDEX || order}`}
         onClick={(event) => onClickImg(event)}
-        href={`/${URL}`}>
+        href={`/${URL || ""}`}>
         </Link>
     
     )

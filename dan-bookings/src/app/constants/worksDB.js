@@ -11,8 +11,10 @@ export const WORKS = {
         //WORKS DB TABLES NAME ⇣
 export const WO_DB_TABLE = "WORKS"
 export const WO_DB_TABLE_ALIAS = "WO"
-                            //PROPS OBJECT ⇣     PROPS TABLE ⇣                TABLE NAME ⇣   TABLE NAME ALIAS ⇣       
-export const WO_DB_PROPS = {WO_DB:Object.values(WORKS),WO_NAMES:Object.keys(WORKS),WO_DB_TABLE,WO_DB_TABLE_ALIAS}  
+export const LIMIT_WORKS = 15;
+
+                            //PROPS OBJECT ⇣     PROPS TABLE ⇣                TABLE NAME ⇣   TABLE NAME ALIAS ⇣  LIMIT ROWS ⇣     
+export const WO_DB_PROPS = {WO_DB:Object.values(WORKS),WO_NAMES:Object.keys(WORKS),WO_DB_TABLE,WO_DB_TABLE_ALIAS,LIMIT_WORKS}  
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------------------------
 //DETAILS ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,8 +28,9 @@ export const WO_DETAILS = {
 }  
 export const DETAIL_DB_TABLE="WORK_DETAILS"
 export const DET_TABLE_ALIAS ="DET"
-                                    //PROPS OBJECT ⇣         PROPS TABLE ⇣                      TABLE NAME ⇣   TABLE NAME ALIAS⇣          
-export const DETAILS_PROPS = {DET_DB:Object.values(WO_DETAILS), DET_NAMES:Object.keys(WO_DETAILS), DETAIL_DB_TABLE,DET_TABLE_ALIAS}  
+export const LIMIT_DET = 1;
+                                    //PROPS OBJECT ⇣         PROPS TABLE ⇣                   TABLE NAME ⇣  TABLE NAME ALIAS ⇣   LIMIT ROWS ⇣     
+export const DETAILS_PROPS = {DET_DB:Object.values(WO_DETAILS), DET_NAMES:Object.keys(WO_DETAILS), DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET}  
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------------------------

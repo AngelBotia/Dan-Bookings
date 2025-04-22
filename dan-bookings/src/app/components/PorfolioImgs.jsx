@@ -4,9 +4,9 @@ import'../styles/porfolioCollages/collageDefault.css'
 import '../styles/globals.css'
 import { ContHorizonalScroll } from './ContHorizonalScroll';
 import { WorkPhoto } from './WorkPhoto';
+import { useMemo } from 'react';
 
 const PorfolioImgs = ( {works,typeOfCollage="collage-default"} ) => {
-    
   const createWorks = () => {
     if(!works.length) return;
      return works?.map((work, index) => {
@@ -18,14 +18,24 @@ const PorfolioImgs = ( {works,typeOfCollage="collage-default"} ) => {
          typeOfCollage={typeOfCollage || 'collage-default'}  />
         )
       }) || [];
-    }
-    
+  }
+  const createButtonEdit = useMemo(() => {
+    return (
+      <WorkPhoto 
+        key={"editPhoto"} 
+        work={"edit"} 
+        order={works.length + 1}
+        typeOfCollage={typeOfCollage || 'collage-default'}
+      />
+    );
+  }, [])
   return (
     works &&
     <div className='porfolio-container'>
     <ContHorizonalScroll>
       <div className="grid">
         {createWorks()}
+        {createButtonEdit}
       </div>
     </ContHorizonalScroll>
     </div>

@@ -4,9 +4,8 @@ import { DETAILS_PROPS,WDM_DETAILS,WDM_PROPS,WO_DB_PROPS, WO_DETAILS } from "../
 
 
 export class workModelMYSQL{
-    getAllWorks = async (params) => {
+    getAllWorks = async ({ limit, page }) => {
         try {
-            let { limit, page } = params;
             let SELECT = [], FROM = [], WHERE = [], ORDER = [], PARAMS_VALUES = [];
             const {WO_DB, WO_NAMES, WO_DB_TABLE, WO_DB_TABLE_ALIAS,LIMIT_WORKS} = WO_DB_PROPS;
 
@@ -37,9 +36,8 @@ export class workModelMYSQL{
             throw new Error("works dont found")
         }
     };
-    getWorkDetail = async(params) =>{
+    getWorkDetail = async({ workID }) =>{
         try {
-            let { workID } = params;
             const { DET_DB, DET_NAMES, DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET} = DETAILS_PROPS; 
             let SELECT = [], FROM = [], WHERE = [], ORDER = [], PARAMS_VALUES = [];
 
@@ -67,9 +65,8 @@ export class workModelMYSQL{
             throw new Error("work details dont found")
         }
     };
-    getWorkMedias = async(params) =>{
+    getWorkMedias = async({ workID }) =>{
         try {
-            let { workID } = params;
             const { WDM_DB, WDM_NAMES, WDM_MEDIA_TABLE, WDM_TABLE_ALIAS } = WDM_PROPS;
             const media_SELECT = WDM_DB.map((item, i) => { return `${WDM_TABLE_ALIAS}.${WDM_DB[i]} AS ${WDM_NAMES[i]}` }).join();
 

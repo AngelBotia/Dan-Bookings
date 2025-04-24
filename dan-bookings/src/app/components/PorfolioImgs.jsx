@@ -1,43 +1,51 @@
 import '../styles/PorfolioImgs.css'
 import '../styles/porfolioCollages/collage1.css'
-import'../styles/porfolioCollages/collageDefault.css'
+import '../styles/porfolioCollages/collageDefault.css'
 import '../styles/globals.css'
 import { ContHorizonalScroll } from './ContHorizonalScroll';
-import { WorkPhoto } from './WorkPhoto';
-import { useMemo } from 'react';
+import Link from 'next/link';
+import { useApplication } from '../context/AplicationProvider';
+import { usePortfolio } from '../context/PorfolioProvider';
 
-const PorfolioImgs = ( {works,typeOfCollage="collage-default"} ) => {
-  const createWorks = () => {
+const PorfolioImgs = ( {works} ) => {
+  const { applicationContext:{ isLoaded },setApplicationContext } = useApplication();
+  const { porfolioContext:{ typeOfCollage } } = usePortfolio();
+  
+  const onClickImg = (event) => {
+    const mousePos = event.clientX < window.innerWidth / 2 ?  'right' : 'left';
+    setApplicationContext(prev => ({ ...prev, ...{mousePos,isLoaded: true} }));
+  }
+  const createWorksImgs = () => {
     if(!works.length) return;
      return works?.map((work, index) => {
+      let { ID_WORK, URL, ORDER_INDEX, IMAGE_URL, IS_VISIBLE} = work;
+      const fadeItAnimation = !isLoaded ? 'fade-in-animation': '';
+      let orderItem = (Number(ORDER_INDEX) || Number(order))/10;
       return (
-         <WorkPhoto 
-         key={work.ID_WORK} 
-         work={work} 
-         order={work?.ORDER_INDEX || index + 1}
-         typeOfCollage={typeOfCollage || 'collage-default'}  />
+        <Link 
+          key={ID_WORK}
+          style={{
+            backgroundImage: `url(${IMAGE_URL || "/edit-icon.png"})`,
+            viewTransitionName: `${URL}`, 
+            '--order-delay': `${orderItem || index}s`
+          }}
+          className={`img-porfolio
+            ${fadeItAnimation} 
+            ${typeOfCollage || "collage-default"}${ORDER_INDEX || order}`}
+          onClick={(event) => onClickImg(event)}
+          href={`/${URL || ""}`}>
+        </Link>
         )
       }) || [];
   }
-  const createButtonEdit = useMemo(() => {
-    return (
-      <WorkPhoto 
-        key={"editPhoto"} 
-        work={"edit"} 
-        order={works.length + 1}
-        typeOfCollage={typeOfCollage || 'collage-default'}
-      />
-    );
-  }, [])
   return (
     works &&
     <div className='porfolio-container'>
-    <ContHorizonalScroll>
-      <div className="grid">
-        {createWorks()}
-        {createButtonEdit}
-      </div>
-    </ContHorizonalScroll>
+      <ContHorizonalScroll>
+        <div className="grid-porfolio">
+          {createWorksImgs()}
+        </div>
+      </ContHorizonalScroll>
     </div>
 
   )

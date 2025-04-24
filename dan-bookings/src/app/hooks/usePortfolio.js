@@ -25,7 +25,7 @@ export function useLoadAllWorks(params) {
 }
 export const useWorksInCache=()=>{
   const { porfolioContext:{works} } = usePortfolio();
-  return !works.error && works?.filter(work => work.ID_WORK).length ? works : null;
+  return !works.error && works?.filter(work => work?.ID_WORK).length ? works : null;
 }
 
 export function useLoadDetailsWork(params) {

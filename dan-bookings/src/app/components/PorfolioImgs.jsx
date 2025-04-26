@@ -20,18 +20,18 @@ const PorfolioImgs = ( {works} ) => {
      return works?.map((work, index) => {
       let { ID_WORK, URL, ORDER_INDEX, IMAGE_URL, IS_VISIBLE} = work;
       const fadeItAnimation = !isLoaded ? 'fade-in-animation': '';
-      let orderItem = (Number(ORDER_INDEX) || Number(order))/10;
+      if(!ID_WORK) return null;
       return (
         <Link 
           key={ID_WORK}
           style={{
-            backgroundImage: `url(${IMAGE_URL || "/edit-icon.png"})`,
+            backgroundImage: `url(${IMAGE_URL})`,
             viewTransitionName: `${URL}`, 
-            '--order-delay': `${orderItem || index}s`
+            '--order-delay': `${Number(ORDER_INDEX)/10 || Number(index)/10}s`
           }}
           className={`img-porfolio
             ${fadeItAnimation} 
-            ${typeOfCollage || "collage-default"}${ORDER_INDEX || order}`}
+            ${typeOfCollage || "collage-default"}${Number(ORDER_INDEX) || index + 1}`}
           onClick={(event) => onClickImg(event)}
           href={`/${URL || ""}`}>
         </Link>

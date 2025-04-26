@@ -31,17 +31,17 @@ class workController {
         }
         
     }
-    deleteWork = async (id)=>{
+    deleteWork = async (work)=>{
         try {
-            return await this.workModel.deleteWork(id);
+            return await this.workModel.deleteWork(work);
         } catch (error) {
             console.error("[WORK-CONTROLLER] -",error)
             throw error;
         }
     }
-    createWork = async (work,nameID) =>{
+    createWork = async (work) =>{
         try {
-            return await this.workModel.createWork(product,nameID);
+            return await this.workModel.createWork(work);
         } catch (error) {
             console.error("[WORK-CONTROLLER] -",error)
             throw error;

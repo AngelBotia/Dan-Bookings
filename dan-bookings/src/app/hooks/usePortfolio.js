@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
 import { usePortfolio } from "../context/PorfolioProvider";
 
-
+/**
+ * @param {Object} params - Parameters for get all works.
+ * @param {number} params.limit - Number of works to return per page.
+ * @param {number} params.page - Page number to retrieve.
+ * @return {Object[]} Array of works.
+ */
 export function useLoadAllWorks(params) {
-  const { setPorfolioContext } = usePortfolio();
+  const { setPorfolioContext, porfolioContext } = usePortfolio();
   const [loadedWorks, setLoadedWorks] = useState(null);
 
   useEffect(() => {
@@ -11,10 +16,13 @@ export function useLoadAllWorks(params) {
       try {
         const searchParams = params ? new URLSearchParams(params) : "";
         const worksData = await fetch(`/api/work?${searchParams}`, {method: "GET"});
-        const works = await worksData.json();
+        const worksJson = await worksData.json();
+        const lastDetails = porfolioContext?.works?.find(work=> !work.ID_WORK && work.URL) || [];
+        const works = worksJson?.map(work=> lastDetails.URL == work.URL ? {...work, detail: lastDetails.detail} : work);
         setPorfolioContext(prev => ({ ...prev, works }));
         setLoadedWorks({ works });
       } catch (error) {
+        //TODO: SHOW ERROR MODAL
         console.error("[PORFOLIO WORKS CANT LOAD]", error);
       }
     };
@@ -27,7 +35,32 @@ export const useWorksInCache=()=>{
   const { porfolioContext:{works} } = usePortfolio();
   return !works.error && works?.filter(work => work?.ID_WORK).length ? works : null;
 }
+/**
+ * @param {Object} work - Object to create work
+ * @param {string} work.WO_NAME - Title of work.
+ * @param {string} work.WO_URL - url of work UNIQUE.
+ * @param {string} work.WO_ORDER - order to view in porfolio.
+ * @param {string} work.WO_IMAGE_URL - url main IMG of work.
+ * @return {Object} new work.
+ * 
+ */
+export const createWork = async (work) =>{
+  try {
+    if(!work) return null
+    let body = JSON.stringify(work);
+    const dataWork = await fetch(`/api/work`, { method: "POST",body});
+    const newWork = await dataWork.json();
+    return newWork;
+  } catch (error) {
+    console.error(error.message);
+    return null;
+  }
+}
 
+/**
+ * @param {Object} params - Parameters for get details
+ * @param {string} params.workID - Number of works to return per page.
+ */
 export function useLoadDetailsWork(params) {
   const { setPorfolioContext ,porfolioContext} = usePortfolio();
   const [loadedDetails, setloadedDetails] = useState(null);

@@ -6,7 +6,7 @@ export const createDynamicQuery = (SELECT,FROM,WHERE,ORDER) =>{
         allQuery.push('WHERE',WHERE.join(" AND "));
    
     ORDER?.length && 
-        allQuery.push('ORDER',ORDER.join());
+        allQuery.push('ORDER BY',ORDER.join());
                  
     return allQuery.join(" ")
 }

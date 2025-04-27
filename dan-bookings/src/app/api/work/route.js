@@ -1,7 +1,8 @@
-import { useControllerData } from "../../controllers/WorkController";
+import { useWorkData } from "../../controllers/WorkController";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route"; 
+import { useFileData } from "../../controllers/FilesController";
 
 export async function GET(request) {
     try {
@@ -9,7 +10,7 @@ export async function GET(request) {
         const limit = Number(searchParams.get('limit'));
         const page = Number(searchParams.get('page'));
         let params ={ limit , page };
-        const allWorks = await useControllerData.getAllWorks(params);
+        const allWorks = await useWorkData.getAllWorks(params);
         return NextResponse.json(allWorks,{ status:200 });
     } catch (error) {
         console.error(error.message);
@@ -23,10 +24,12 @@ export async function POST(request, { params }) {
         const session = await getServerSession(authOptions);
         //TODO: CHECK HERE IS ADMIN
         if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        //TODO SAVE STORAGE IMGS
-        
+        //TODO: SAVE STORAGE IMGS
+        useFileData.saveImg()
+
+
         const body = await request.json();
-        const newWork = await useControllerData.createWork(body)
+        const newWork = await useWorkData.createWork(body)
         return NextResponse.json(newWork,{status:200})
     } catch (error) {
         console.error(error.message);

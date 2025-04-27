@@ -1,4 +1,4 @@
-import { workModelMYSQL } from "../models/mysql/workModel"
+import { s3Model } from "../models/files/amazonS3";
 class filesController {
     filesController;
     
@@ -16,6 +16,6 @@ class filesController {
   
 }
 
-const model = new workModelMYSQL();
+const model = new s3Model(); 
 
-export const useControllerData = new filesController(model)
+export const useFileData = new filesController(model)

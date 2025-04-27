@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { useControllerData } from "../../../controllers/WorkController";
+import { useWorkData } from "../../../controllers/WorkController";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route"; // Ajusta la ruta según tu estructura
 
@@ -10,8 +10,8 @@ export async function GET(request, { params }) {
         // const categoria = searchParams.get('categoria');
         let allParams = { workID };
         
-        let workDetail = await useControllerData.getWorkDetail(allParams) || {};
-        if(workDetail) workDetail.media = await useControllerData.getWorkMedias(allParams);
+        let workDetail = await useWorkData.getWorkDetail(allParams) || {};
+        if(workDetail) workDetail.media = await useWorkData.getWorkMedias(allParams);
         return NextResponse.json(workDetail, { status: 200 });
     } catch (error) {
         console.error(error.message);

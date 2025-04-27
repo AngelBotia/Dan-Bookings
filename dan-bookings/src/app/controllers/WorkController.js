@@ -61,4 +61,4 @@ class workController {
 // const model = new ProductModelFS(); <-- Local file  
 const model = new workModelMYSQL();
 
-export const useControllerData = new workController(model)
+export const useWorkData = new workController(model)

@@ -4,22 +4,21 @@ import Link from 'next/link';
 import '../../styles/globals.css'
 import'../../styles/workDetails.css'
 import { useParams } from 'next/navigation';
-import { useWorksIsLoaded } from '../../hooks/useApplication';
 import { usePortfolio } from '../../context/PorfolioProvider';
 import { useApplication } from '../../context/AplicationProvider';
-import { useDetailsInCache, useLoadDetailsWork } from '../../hooks/usePortfolio';
+import { useWork } from '../../hooks/useWork';
 
 export default function Work() {
-  const { porfolioContext: { works }} = usePortfolio();
-  const { applicationContext: { posMouse }} = useApplication();
+  const { detailsInCache, loadWorkDetail }=useWork();
   const { workID } = useParams();
+  
+  const { applicationContext: { posMouse }} = useApplication();//TODO
+  
   const workParams = { workID }
- 
-  const detail = useDetailsInCache(workParams) || useLoadDetailsWork(workParams);
+  const detail = detailsInCache(workParams) || loadWorkDetail(workParams);
   
   const createMediaExampleTest = () => {
-    if (!detail?.media?.length) return
-    return detail.media?.map(media => {
+    return detail?.media?.map(media => {
       const { URL_MEDIA: backgroundImage, ID } = media;
       return (
         <div
@@ -27,13 +26,14 @@ export default function Work() {
           style={{width: "2rem",height: "3rem",margin: "1rem",backgroundColor: "red",backgroundImage}}
         />
       )
-    })
+    }) || null
   }
 
   return (
     <>
     {detail &&
     <div className={`work-main-container work-direccion-${posMouse}`}  >
+      <h1>{detail.TITLE}</h1>
 
       <div className={`work-img-container  ${posMouse == 'left' ? 'left' : 'img-right' }`} 
         style={{

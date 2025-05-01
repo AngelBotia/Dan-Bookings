@@ -50,7 +50,7 @@ export const ContHorizonalScroll = ({children}) => {
         };
     }, []);
   return (
-    <div  ref={containerRef} className="container-horizontal-scrolling">
+    <div ref={containerRef} className="container-horizontal-scrolling">
         {children}
     </div>
   )

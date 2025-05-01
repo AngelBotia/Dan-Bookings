@@ -5,51 +5,59 @@ class workController {
     constructor(workModel){
         this.workModel = workModel;
     }
-    getAllWorks = async (params) =>{
+    getAllWorks = (params) =>{
         try {
-             return await this.workModel.getAllWorks(params);
+             return this.workModel.getAllWorks(params);
         } catch (error) {
           console.error("[WORK-CONTROLLER] -",error);
           throw error;
         }
     }
-    getWorkDetail = async (params) =>{
+    getWorkDetail = (params) =>{
         try {
-            return await this.workModel.getWorkDetail(params);
+            return this.workModel.getWorkDetail(params);
         } catch (error) {
             console.error("[WORK-CONTROLLER] -",error)
             throw error;
         }
         
     }
-    getWorkMedias = async (params) =>{
+    getWorkMedias = (params) =>{
         try {
-            return await this.workModel.getWorkMedias(params);
+            return this.workModel.getWorkMedias(params);
         } catch (error) {
             console.error("[WORK-CONTROLLER] -",error)
             throw error;
         }
         
     }
-    deleteWork = async (work)=>{
+    createWork = (work) =>{
         try {
-            return await this.workModel.deleteWork(work);
+            return this.workModel.createWork(work);
         } catch (error) {
             console.error("[WORK-CONTROLLER] -",error)
             throw error;
         }
     }
-    createWork = async (work) =>{
+    createDetailWork = (work) => {
         try {
-            return await this.workModel.createWork(work);
+            return this.workModel.createDetailWork(work);
         } catch (error) {
             console.error("[WORK-CONTROLLER] -",error)
             throw error;
         }
     }
-    updateWork = async(work) => {
+    deleteWork = (work) =>{
         try {
-            return await this.workModel.createWork(product,nameID);
+            return this.workModel.deleteWork(work);
+        } catch (error) {
+            console.error("[WORK-CONTROLLER] -",error)
+            throw error;
+        }
+    }
+    updateWork = (work) => {
+        try {
+            return this.workModel.createWork(product,nameID);
         } catch (error) {
             console.error("[WORK-CONTROLLER] -",error)
             throw error;

@@ -1,8 +1,17 @@
 {
+    "settings":{},
+    "application":{
+        "workForm":{
+            "title":"Title"
+        }
+    },    
     "actions":{
         "booking":"Booking"
     },
     "errors":{
-        "worksNoData": "No tattoos loaded"
+        "worksNoData": "No tattoos loaded",
+        "workForm":{
+            "title": "Special characters and numbers are not allowed."
+        }
     }
 }

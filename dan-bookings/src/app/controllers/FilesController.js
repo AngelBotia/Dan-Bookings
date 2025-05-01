@@ -5,9 +5,9 @@ class filesController {
     constructor(modelFileController){
         this.filesController = modelFileController;
     }
-    saveImg = async (params) =>{
+    saveImg = (params) =>{
         try {
-             return await this.filesController.saveImg(params);
+             return this.filesController.saveImg(params);
         } catch (error) {
           console.error("[FILE-CONTROLLER] -",error.message);
           throw error.message;

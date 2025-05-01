@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { useWorkData } from "../../../controllers/WorkController";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route"; // Ajusta la ruta según tu estructura
+import { authOptions } from "../../../libs/nextAuth"; // Ajusta la ruta según tu estructura
 
 export async function GET(request, { params }) {
     try {

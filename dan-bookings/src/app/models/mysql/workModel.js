@@ -1,13 +1,13 @@
 import { conn } from "../../libs/mysql/mysql";
 import { createDynamicQuery } from "../../libs/mysql/queryHelpers";
-import { DETAILS_PROPS,WDM_DETAILS,WDM_PROPS,WO_DB_PROPS, WO_DETAILS, WORKS } from "../../constants/worksDB"
-
+import { DETAILS_PROPS,WDM_PROPS,WO_DB_PROPS } from "../../constants/worksDB"
 
 export class workModelMYSQL{
     getAllWorks = async ({ limit, page }) => {
+    
         let SELECT = [], FROM = [], WHERE = [], ORDER = [], PARAMS_VALUES = [];
         try {
-            const {work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,LIMIT_WORKS} = WO_DB_PROPS;
+            const {work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,LIMIT_WORKS,WORKS} = WO_DB_PROPS;
 
             //SELECT
              SELECT = [work_SELECT];
@@ -40,7 +40,7 @@ export class workModelMYSQL{
         let SELECT = [], FROM = [], WHERE = [], ORDER = [], PARAMS_VALUES = [];
         try {
             if (!workID) throw new Error("work ID is required");
-            const { details_SELECT, DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET} = DETAILS_PROPS; 
+            const { details_SELECT, DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET,WO_DETAILS} = DETAILS_PROPS; 
 
             //SELECT
             SELECT = [details_SELECT]
@@ -68,7 +68,7 @@ export class workModelMYSQL{
     getWorkMedias = async({ workID }) =>{
         try {
             if(!workID) return [];
-            const { media_SELECT, WDM_MEDIA_TABLE, WDM_TABLE_ALIAS } = WDM_PROPS;
+            const { media_SELECT, WDM_MEDIA_TABLE, WDM_TABLE_ALIAS,WDM_DETAILS} = WDM_PROPS;
             const query = `SELECT ${media_SELECT}
                             FROM ${WDM_MEDIA_TABLE} ${WDM_TABLE_ALIAS}
                             WHERE ${WDM_TABLE_ALIAS}.${WDM_DETAILS.WO_URL} like ?`
@@ -84,8 +84,8 @@ export class workModelMYSQL{
     }
     createWork = async (work) => {
         try {
-            const {work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS} = WO_DB_PROPS;
-            const { WO_URL } = work;
+            const {work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,WORKS} = WO_DB_PROPS;
+            const { WO_URL } = work  || {};
 
             const [result] = await conn.query(`INSERT into ${WO_DB_TABLE} SET ?`,work);
             if(result.affectedRows === 0) return null;
@@ -95,6 +95,34 @@ export class workModelMYSQL{
 
             const newWork = rows?.find(work => work);;
             return newWork;
+        } catch (error) {
+            console.error(error.message);
+            return null;
+        }
+    }
+    createDetailWork = async (work) =>{
+        try {
+            const { URL, WO_NAME, IMAGE_URL } = work || {};
+            const {details_SELECT, DETAIL_DB_TABLE,DET_TABLE_ALIAS,WO_DETAILS}  = DETAILS_PROPS;
+            const { WO_URL ,TITLE, MAIN_IMG_URL } = WO_DETAILS
+
+            
+            const workToSave ={
+               [WO_URL]: URL,
+               [TITLE]: WO_NAME,
+               [MAIN_IMG_URL]: IMAGE_URL
+            }
+        
+            
+            const [result] = await conn.query(`INSERT into ${DETAIL_DB_TABLE} SET ?`,workToSave);
+            if(result.affectedRows === 0) return null;
+            
+            const [rows] =  await conn.query(`SELECT ${details_SELECT} FROM ${DETAIL_DB_TABLE} ${DET_TABLE_ALIAS}  WHERE ${DET_TABLE_ALIAS}.${WO_URL} = ?`,[URL]);
+            if (rows?.affectedRows == 0) return null;
+
+            const newDetail = rows?.find(work => work);;
+            return newDetail;
+             
         } catch (error) {
             console.error(error.message);
             return null;

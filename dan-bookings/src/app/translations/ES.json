@@ -1,8 +1,17 @@
 {
+    "settings":{},
+    "application":{
+        "workForm":{
+            "title":"Titulo"
+        }
+    },
     "actions":{
         "booking":"Reserva"
     },
     "errors":{
-        "worksNoData": "No hay tattoos cargados"
+        "worksNoData": "No hay tattoos cargados",
+        "workForm":{
+            "title": "No se permiten caracteres especiales ni numeros."
+        }
     }
 }

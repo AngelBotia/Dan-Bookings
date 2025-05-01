@@ -1,27 +1,29 @@
 import { amazonS3, getPublicUrlImg, s3BucketName } from "../../libs/amazon/amazonS3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { PutObjectCommand,GetObjectCommand,PutBucketPolicyCommand } from "@aws-sdk/client-s3";
 
 
 export class s3Model{
-    saveImg = async () => {
-        try {
-       
-            const params = {
-                Bucket: s3BucketName, 
-                Key: "test.txt",   
-                Body: "test", 
-                ContentType: "text/plain" ,    
-              };
-            const command = new PutObjectCommand(params)
-            const res = await amazonS3.send(command);
-
-            const url = getPublicUrlImg("apache.txt")
-           
-            return url;
-        } catch (error) {
-            console.error(error.message);
-            throw new Error("amazon service fail")
-        }
+    saveImg = ({ name, file, ContentType }) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const params = {
+                    Bucket: s3BucketName,
+                    Key: name,
+                    Body: file,
+                    ContentType,
+                };
+                const command = new PutObjectCommand(params);
+                const res = await amazonS3.send(command);
+    
+                if (res.$metadata.httpStatusCode !== 200) return resolve(null);
+    
+                const url = getPublicUrlImg(name);
+                resolve(url);
+            } catch (error) {
+                console.error(error.message);
+                reject(new Error("amazon service fail"));
+            }
+        });
     };
+    
 }

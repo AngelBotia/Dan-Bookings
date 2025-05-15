@@ -4,6 +4,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../libs/nextAuth"; 
 import { useFileData } from "../../controllers/FilesController";
 import { WO_DB_PROPS } from "../../constants/worksDB";
+import { getToken } from "next-auth/jwt";
+import { US_DB_PROPS } from "../../constants/usersDB";
 
 export async function GET(request) {
     try {
@@ -22,6 +24,7 @@ export async function GET(request) {
 
 export async function POST(request, { params }) {
     try {
+        const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
         const { WORKS:{ URL,ORDER_INDEX } } = WO_DB_PROPS;
  
         const body = await request.formData();
@@ -33,8 +36,8 @@ export async function POST(request, { params }) {
         if(!files?.length || !WO_NAME)  return NextResponse.json({ error: "Bad request" }, { status: 400 });
         
         const session = await getServerSession(authOptions);
-        //TODO: CHECK HERE IS ADMIN
-        if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        const isAdmin = token.role === US_DB_PROPS.USER_ROLS.admin;
+        if (!session || !isAdmin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         const urlsImg = await Promise.all(files?.map(async file =>{
             let { type, img } = file || {};

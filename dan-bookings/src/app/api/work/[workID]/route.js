@@ -11,7 +11,9 @@ export async function GET(request, { params }) {
         let allParams = { workID };
         
         let workDetail = await useWorkData.getWorkDetail(allParams) || {};
-        if(workDetail) workDetail.media = await useWorkData.getWorkMedias(allParams);
+        if(!workDetail) return NextResponse.json({error:"dont found"},{status:404})
+
+        workDetail.media = await useWorkData.getWorkMedias(allParams);
         return NextResponse.json(workDetail, { status: 200 });
     } catch (error) {
         console.error(error.message);
@@ -20,3 +22,11 @@ export async function GET(request, { params }) {
     }
 }
 
+// export async function POST(request, { params }) {
+//     try {
+
+//     } catch (error) {
+
+//     }
+
+// }

@@ -15,7 +15,7 @@ export class s3Model{
                 const command = new PutObjectCommand(params);
                 const res = await amazonS3.send(command);
     
-                if (res.$metadata.httpStatusCode !== 200) return resolve(null);
+                if (res.$metadata.httpStatusCode !== 200) return reject(null);
     
                 const url = getPublicUrlImg(name);
                 resolve(url);

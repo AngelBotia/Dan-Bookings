@@ -1,5 +1,4 @@
-import { conn } from "../../libs/mysql/mysql";
-import { createDynamicQuery } from "../../libs/mysql/queryHelpers";
+import { conn ,createDynamicQuery} from "../../libs/mysql/mysql";
 import { DETAILS_PROPS,WDM_PROPS,WO_DB_PROPS } from "../../constants/worksDB"
 
 export class workModelMYSQL{
@@ -59,7 +58,7 @@ export class workModelMYSQL{
              
             const [rows] = await conn.query(allQuery,PARAMS_VALUES);
             if (rows?.affectedRows == 0) throw new Error("work details dont found");
-            return rows?.find(detail => detail);
+            return rows?.find(detail => detail) || null;
         } catch (error) {
             console.error(error.message)
             throw new Error("work details dont found")
@@ -87,9 +86,9 @@ export class workModelMYSQL{
             const {work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,WORKS} = WO_DB_PROPS;
             const { WO_URL } = work  || {};
 
-            const [result] = await conn.query(`INSERT into ${WO_DB_TABLE} SET ?`,work);
+            const [result] = await conn.query(`INSERT into ${WO_DB_TABLE} SET ?`,[work]);
             if(result.affectedRows === 0) return null;
-            
+
             const [rows] =  await conn.query(`SELECT ${work_SELECT} FROM ${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS}  WHERE ${WO_DB_TABLE_ALIAS}.${WORKS.URL} = ?`,[WO_URL]);
             if (rows?.affectedRows == 0) return null;
 
@@ -114,8 +113,8 @@ export class workModelMYSQL{
             }
         
             
-            const [result] = await conn.query(`INSERT into ${DETAIL_DB_TABLE} SET ?`,workToSave);
-            if(result.affectedRows === 0) return null;
+            const [result] = await conn.query(`INSERT into ${DETAIL_DB_TABLE} SET ?`,[workToSave]);
+            if(result.affectedRows == 0) return null;
             
             const [rows] =  await conn.query(`SELECT ${details_SELECT} FROM ${DETAIL_DB_TABLE} ${DET_TABLE_ALIAS}  WHERE ${DET_TABLE_ALIAS}.${WO_URL} = ?`,[URL]);
             if (rows?.affectedRows == 0) return null;

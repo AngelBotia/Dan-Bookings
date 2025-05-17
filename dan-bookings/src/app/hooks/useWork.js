@@ -56,12 +56,10 @@ export const useWork = () => {
     if (!workName,!files?.length) return null;
 
     try {
-      const { WORKS:{ URL,ORDER_INDEX } } = WO_DB_PROPS;
       const { works } = porfolioContext;
 
       const formData = new FormData();
-      formData.append(URL,JSON.stringify(workName));
-      formData.append(ORDER_INDEX,JSON.stringify( (works?.length + 1) || null))
+      formData.append('name',JSON.stringify(workName));
 
       const filesToSend = files?.map(file => {
          let {img,type}=file || {};

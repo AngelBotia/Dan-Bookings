@@ -84,12 +84,19 @@ export class workModelMYSQL{
     createWork = async (work) => {
         try {
             const {work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,WORKS} = WO_DB_PROPS;
-            const { WO_URL } = work  || {};
+            const { URL ,IMAGE_URL} = work  || {};
+           
+            const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${WO_DB_TABLE}`);
+            const workToSave = {
+                [WORKS.URL]: URL,
+                [WORKS.IMAGE_URL]: IMAGE_URL,
+                [WORKS.ORDER_INDEX]:Number(allWorks[0].TOTAL) + 1 || null
+            }
 
-            const [result] = await conn.query(`INSERT into ${WO_DB_TABLE} SET ?`,[work]);
+            const [result] = await conn.query(`INSERT into ${WO_DB_TABLE} SET ?`,[workToSave]);
             if(result.affectedRows === 0) return null;
 
-            const [rows] =  await conn.query(`SELECT ${work_SELECT} FROM ${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS}  WHERE ${WO_DB_TABLE_ALIAS}.${WORKS.URL} = ?`,[WO_URL]);
+            const [rows] =  await conn.query(`SELECT ${work_SELECT} FROM ${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS}  WHERE ${WO_DB_TABLE_ALIAS}.${WORKS.URL} = ?`,[URL]);
             if (rows?.affectedRows == 0) return null;
 
             const newWork = rows?.find(work => work);;

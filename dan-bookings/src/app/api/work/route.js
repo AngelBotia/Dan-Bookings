@@ -25,13 +25,11 @@ export async function GET(request) {
 export async function POST(request, { params }) {
     try {
         const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
-        const { WORKS:{ URL,ORDER_INDEX } } = WO_DB_PROPS;
  
         const body = await request.formData();
         const files = JSON.parse(body.get("files"));
-        const WO_NAME = JSON.parse(body.get(URL));
-        const WO_ORDER = JSON.parse(body.get(ORDER_INDEX));
-        const WO_URL = WO_NAME?.trim().replaceAll(" ","-") || null;
+        const WO_NAME = JSON.parse(body.get('name'));
+        const URL = WO_NAME?.trim().replaceAll(" ","-") || null;
         
         if(!files?.length || !WO_NAME)  return NextResponse.json({ error: "Bad request" }, { status: 400 });
         
@@ -42,18 +40,16 @@ export async function POST(request, { params }) {
         const urlsImg = await Promise.all(files?.map(async file =>{
             let { type, img } = file || {};
             const imgToSave = {
-                name: `MAIN-${WO_URL}`,
+                name: `MAIN-${URL}`,
                 file: Buffer.from(img, 'base64'),
                 ContentType: type
             }
             return await useFileData.saveImg(imgToSave);
         })) || []
-
         const workToSave = {
             WO_NAME,
-            WO_URL: WO_URL,
-            WO_IMAGE_URL: urlsImg[0] || null,
-            WO_ORDER
+            URL,
+            IMAGE_URL: urlsImg[0] || null,
         }
         let newWork = await useWorkData.createWork(workToSave);
         newWork.detail = await useWorkData.createDetailWork(newWork) || {};

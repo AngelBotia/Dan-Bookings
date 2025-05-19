@@ -9,13 +9,12 @@ import { useApplication } from '../../context/AplicationProvider';
 import { useWork } from '../../hooks/useWork';
 
 export default function Work() {
-  const { detailsInCache, loadWorkDetail }=useWork();
+  const { getWorkDetail }=useWork();
   const { workID } = useParams();
-  
-  const { applicationContext: { posMouse }} = useApplication();//TODO
+  const { porfolioContext:{ mousePos } } = usePortfolio();
   
   const workParams = { workID }
-  const detail = detailsInCache(workParams) || loadWorkDetail(workParams);
+  const detail = getWorkDetail(workParams);
   
   const createMediaExampleTest = () => {
     return detail?.media?.map(media => {
@@ -32,10 +31,10 @@ export default function Work() {
   return (
     <>
     {detail &&
-    <div className={`work-main-container work-direccion-${posMouse}`}  >
+    <main className={`work-main-container work-direccion-${mousePos}`}  >
       <h1>{detail.TITLE}</h1>
 
-      <div className={`work-img-container  ${posMouse == 'left' ? 'left' : 'img-right' }`} 
+      <div className={`work-img-container  ${mousePos == 'left' ? 'left' : 'img-right' }`} 
         style={{
           viewTransitionName:  detail.WO_URL,
           backgroundImage: `url(${detail.MAIN_IMG_URL})`
@@ -43,7 +42,7 @@ export default function Work() {
 
       <div className='' style={{display:'flex',position: 'relative',height: '90vh',width: '50vw',}}
       ><Link href='/' > <img style={{width:'3rem'}} src='X-Icon.png'></img></Link></div>
-    </div>}
+    </main>}
     
     {createMediaExampleTest()}
     

@@ -83,12 +83,13 @@ export class workModelMYSQL{
     }
     createWork = async (work) => {
         try {
-            const {work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,WORKS} = WO_DB_PROPS;
-            const { URL ,IMAGE_URL} = work  || {};
+            const { work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,WORKS } = WO_DB_PROPS;
+            const { URL ,IMAGE_URL, WO_NAME } = work  || {};
            
             const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${WO_DB_TABLE}`);
             const workToSave = {
                 [WORKS.URL]: URL,
+                [WORKS.WO_NAME]:WO_NAME,
                 [WORKS.IMAGE_URL]: IMAGE_URL,
                 [WORKS.ORDER_INDEX]:Number(allWorks[0].TOTAL) + 1 || null
             }
@@ -134,11 +135,36 @@ export class workModelMYSQL{
             return null;
         }
     }
-    deleteWork = async (id) =>{
-        //TODO:DELETE WORK BY ID
+    deleteWork = async ({ID_WORK}) =>{
+        if(!ID_WORK) return null;
+        const { work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,WORKS } = WO_DB_PROPS;
+        const [result] = await conn.query(`DELETE FROM ${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS} WHERE ${WO_DB_TABLE_ALIAS}.${WORKS.ID_WORK} = ?`,[ID_WORK]);
+        return !result.affectedRows == 0
     }
     updateWork = async(work) => {
-        //TODO EDIT WORK
+        //TODO VALID SCHEMA
+        const { work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,WORKS } = WO_DB_PROPS;
+        const { ID_WORK, ORDER_INDEX, IS_VISIBLE, URL, IMAGE_URL, WO_NAME } = work  || {};
+        
+        const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${WO_DB_TABLE}`);
+        const workToUpdate = {
+            [WORKS.ID_WORK]:ID_WORK,
+            [WORKS.URL]: URL,
+            [WORKS.WO_NAME]:WO_NAME,
+            [WORKS.ORDER_INDEX]: Number(ORDER_INDEX) ||Number(allWorks[0].TOTAL) + 1 ,
+            [WORKS.IS_VISIBLE]: Number(IS_VISIBLE) || 0
+        }
+        //NEW IMG
+        if(IMAGE_URL) workToUpdate[WORKS.IMAGE_URL] = IMAGE_URL;
+
+        const [result] = await conn.query(`UPDATE ${WO_DB_TABLE} SET ? WHERE ${WORKS.ID_WORK} = ?`,[workToUpdate,ID_WORK]);
+        if(result.affectedRows === 0) return null;
+
+        const [rows] =  await conn.query(`SELECT ${work_SELECT} FROM ${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS}  WHERE ${WO_DB_TABLE_ALIAS}.${WORKS.URL} = ?`,[URL]);
+        if (rows?.affectedRows == 0) return null;
+
+        const updatedWork = rows?.find(work => work);
+        return updatedWork;
     }
 
 }

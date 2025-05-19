@@ -1,7 +1,8 @@
 import GoogleProvider from "next-auth/providers/google";
-import { useUserData } from "../controllers/UserController";
 import { useUser } from "../hooks/useUser";
 import { US_DB_PROPS } from "../constants/usersDB";
+import { getToken } from "next-auth/jwt";
+import { getServerSession } from "next-auth";
 
 export const authOptions = {
   providers: [
@@ -33,3 +34,9 @@ export const authOptions = {
     },
   }
 };
+export const hasPermission = async (request) =>{
+    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+    const session = await getServerSession(authOptions);
+    const isAdmin = token.role === US_DB_PROPS.USER_ROLS.admin;
+    return !!(session && isAdmin)
+}

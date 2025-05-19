@@ -57,7 +57,7 @@ class workController {
     }
     updateWork = (work) => {
         try {
-            return this.workModel.createWork(product,nameID);
+            return this.workModel.updateWork(work);
         } catch (error) {
             console.error("[WORK-CONTROLLER] -",error)
             throw error;

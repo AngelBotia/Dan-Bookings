@@ -5,9 +5,11 @@ import PorfolioImgs from "../components/PorfolioImgs";
 import {  useWork } from '../hooks/useWork';
 
 export default function Home() {
-  const { worksInCache , loadAllWorks } = useWork()
+  const { getWorks } = useWork()
+
   const params = {limit: 3,page:3}
-  const works = worksInCache() || loadAllWorks(/*params*/);
+
+  const works = getWorks(/**params */)
   return (
     <>
       {!!works?.length && <PorfolioImgs works={works} />}

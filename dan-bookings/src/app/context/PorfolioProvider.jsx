@@ -10,7 +10,9 @@ export function usePortfolio(){
 
 const PORFOLIO_DEFAULT_STATE={
     works:[],
-    typeOfCollage:"collage-default"
+    typeOfCollage:"collage-default",
+    isLoaded: false,
+    posMouse: 'right',
 }
 export const PorfolioContextProvider = ({ children }) => { 
     const [porfolioContext, setPorfolioContext] = useState(PORFOLIO_DEFAULT_STATE);

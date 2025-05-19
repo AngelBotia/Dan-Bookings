@@ -33,4 +33,5 @@ ROL varchar(20) DEFAULT "USER"
 );
 
 
+SET SQL_SAFE_UPDATES = 0;
 

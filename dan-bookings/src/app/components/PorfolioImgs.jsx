@@ -4,46 +4,40 @@ import '../styles/porfolioCollages/collageDefault.css'
 import '../styles/globals.css'
 import { ContHorizonalScroll } from './ContHorizonalScroll';
 import Link from 'next/link';
-import { useApplication } from '../context/AplicationProvider';
 import { usePortfolio } from '../context/PorfolioProvider';
 import { PorfolioForm } from './PorfolioForm';
+import { getUserSession } from '../hooks/useUser';
+import { useState } from 'react';
+import {PorfolioImgLink} from './PorfolioImgLink';
 
-const PorfolioImgs = ( {works} ) => {
-  const { applicationContext:{ isLoaded },setApplicationContext } = useApplication();
-  const { porfolioContext:{ typeOfCollage } } = usePortfolio();
+const PorfolioImgs = ( {works} ) => {  
+  const [workSelected, setWorkSelected] = useState({ID_WORK:null});
+  const { porfolioContext:{ typeOfCollage,isLoaded,mousePos },setPorfolioContext } = usePortfolio();
+  const { user, isAdmin } = getUserSession();
+  
   
   const onClickImg = (event) => {
     const mousePos = event.clientX < window.innerWidth / 2 ?  'right' : 'left';
-    setApplicationContext(prev => ({ ...prev, ...{mousePos,isLoaded: true} }));
+    setPorfolioContext(prev => ({ ...prev, ...{mousePos,isLoaded: true} }));
   }
   const createWorksImgs = () => {
     return works?.map((work, index) => {
       let { ID_WORK, URL, ORDER_INDEX, IMAGE_URL, IS_VISIBLE } = work || {};
       if (!ID_WORK /** || !IS_VISIBLE*/) return null;
       return (
-        <Link
-          key={ID_WORK}
-          style={{
-            backgroundImage: `url(${IMAGE_URL})`,
-            viewTransitionName: `${URL}`,
-            '--order-delay': `${Number(ORDER_INDEX) / 10 || Number(index) / 10}s`
-          }}
-          className={`img-porfolio
-               ${!isLoaded ? 'fade-in-animation' : ''} 
-               ${typeOfCollage || "collage-default"}${Number(ORDER_INDEX) || index + 1}`}
-          onClick={(event) => onClickImg(event)}
-          href={`/${URL || ""}`}>
-        </Link>
+        <PorfolioImgLink key={ID_WORK} work={work}/>
       )
     }) || [];
   }
+
+  //**TODO: MAKE A COMPONENT CANT KWNOW HOW IS DRAG AND CHANGE WORK SELECTED */
   return (
     works &&
     <div className='porfolio-container'>
       <ContHorizonalScroll>
         <div className="grid-porfolio">
           {createWorksImgs()}
-          <PorfolioForm/>
+          {isAdmin && <PorfolioForm work={workSelected}/>}
         </div>
       </ContHorizonalScroll>
     </div>

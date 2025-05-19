@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-export const InputImgs = ({form,name,label,required}) => {
+export const InputImgs = ({form,name,label,imgsForm,required}) => {
     const [formData, setformData] = form;
-    const [imgs, setImgs] = useState([])
+    const [imgs, setImgs] = useState(imgsForm);
 
     const  onChangeInput = async ({currentTarget}) =>{
         const { name:inputName, files } = currentTarget
@@ -60,7 +60,7 @@ export const InputText = ({form,name,label,required,type="text",title}) => {
             type={type}
             name={name} 
             value={formData[name] ?? ""} 
-            pattern={type != "email" ? "^[a-zA-Z ]+$" : undefined} 
+            pattern={type != "email" ? "^[a-zA-ZñÑ ]+$" : undefined} 
             onInput={(e)=>onChangeInput(e)}
             title={title || "No se permiten cararcteres especiales"}
             required={!!required}/>

@@ -16,7 +16,7 @@ export const useWork = () => {
  * @param {number} params.page - Page number to retrieve.
  * @return {Object[]} Array of works.
  */
-  const loadAllWorks = (params) => {
+  const loadWorks = (params) => {
   const [loadedWorks, setLoadedWorks] = useState(null);
 
   useEffect(() => {
@@ -26,13 +26,15 @@ export const useWork = () => {
         const worksData = await fetch(`/api/work?${searchParams}`, {method: "GET"});
         const worksJson = await worksData.json();
 
+        //EXTRACT THIS PART -------------------------
         const lastDetails = porfolioContext?.works?.find(work=> !work.ID_WORK && work.URL) || [];
         const works = worksJson?.map(work=> lastDetails.URL == work.URL ? {...work, detail: lastDetails.detail} : work);
-        
         setPorfolioContext(prev => ({ ...prev, works }));
+        //EXTRACT THIS PART---------------------------
+
         setLoadedWorks({ works });
       } catch (error) {
-        //TODO: SHOW ERROR MODAL
+        return null;
       }
     };
 
@@ -40,11 +42,14 @@ export const useWork = () => {
   }, []);
   return loadedWorks;
   };
-  const worksInCache = (params)=>{
+  const getWorksInCache = (params)=>{
     const { porfolioContext:{works} } = usePortfolio();
     return !works.error && works?.filter(work => work?.ID_WORK).length ? works : null;
   };
 
+  const getWorks = (params) =>{
+    return  getWorksInCache(params) || loadWorks(params);
+  }
 /**
  * @param {string} workName - URL OF WORK.
  * @param {Object[]} files -Array of files
@@ -52,34 +57,51 @@ export const useWork = () => {
  * @param {String} files.type - format of img PNG,JPG...
  * @return {Object} New work.
 */
-  const createWork = async (workName,files) => {
-    if (!workName,!files?.length) return null;
+  const createWork = async (work) => {
+    const { WO_NAME, IMAGE_URL } = work;
+    if (!WO_NAME || !IMAGE_URL?.length) return null;
 
     try {
-      const { works } = porfolioContext;
-
-      const formData = new FormData();
-      formData.append('name',JSON.stringify(workName));
-
-      const filesToSend = files?.map(file => {
-         let {img,type}=file || {};
-         return { img, type }
+      const imgsToSend = IMAGE_URL?.map(file => {
+        const { img, type } = file;
+        return { img, type }
       })
-      formData.append("files",JSON.stringify(files));
+      const body = new FormData();
+      body.append('work',JSON.stringify({WO_NAME,IMAGE_URL:imgsToSend}));
 
-      const dataWork = await fetch(`/api/work`, { method: "POST", body:formData });
+      const dataWork = await fetch(`/api/work`, { method: "POST", body });
       const newWork = await dataWork.json();
-      if(!newWork) return null;
-
-      const imgInCache =  files[0].imgSrc;
-      newWork.IMAGE_URL = imgInCache || newWork.IMAGE_URL; 
-      if(newWork?.detail) newWork.detail.MAIN_IMG_URL = imgInCache ||newWork.IMAGE_URL
-
-      const updateWorks = [...porfolioContext.works, newWork];
-      setPorfolioContext(prev => ({ ...prev, works: updateWorks }));
-
-      setApplicationContext(prev => ({ ...prev, isLoaded: false }));
       return newWork;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const updateWork = async (newWork = {}) => {
+    try {
+      if ( !newWork?.ID_WORK ) return null;
+      
+      const body = new FormData();      
+      body.append("newWork",JSON.stringify(newWork));
+      
+      const workToUpdate = await fetch(`/api/work`, { method: "PUT", body });
+      const updatedWork = await workToUpdate.json();
+
+      return updatedWork;
+    } catch (error) {
+      console.error(error)
+      return null;
+    }
+  };
+
+  const deleteWork = async (ID) =>{
+    if(!ID) return null;
+    try {
+      const body = new FormData();      
+      body.append("ID",JSON.stringify(ID));
+      const workToDelete = await fetch(`/api/work`, { method: "DELETE",body });
+      const deletedWork = await workToDelete.json();
+      return deletedWork || null;
     } catch (error) {
       return null;
     }
@@ -112,7 +134,6 @@ export const useWork = () => {
         setloadedDetails(details); 
       } catch (error) {
         return null;
-        // console.error("[PORFOLIO WORKS DETAILS CANT LOAD]", error);
       }
     };
 
@@ -121,17 +142,21 @@ export const useWork = () => {
   return loadedDetails;
   };
   const detailsInCache = (params)=>{
-    let { workID } = params;
+    let { workID } = params || {};
     const { porfolioContext:{works} } = usePortfolio();
     return works?.find(work => work.URL == workID)?.detail || null
   };
+  const getWorkDetail = (params) => {
+    return detailsInCache(params) || loadWorkDetail(params)
+  } 
   
   return {
+           getWorks,
            createWork,
-           loadAllWorks,
-           worksInCache,
-           loadWorkDetail,
-           detailsInCache
+           updateWork,
+           deleteWork,
+           
+           getWorkDetail
          };
 };
 

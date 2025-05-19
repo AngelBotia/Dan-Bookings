@@ -8,8 +8,6 @@ export function useApplication(){
 }
 
 const APPLICATION_DEFAULT={
-    posMouse: 'right',
-    isLoaded: false,
     languageAPP: "ES"
 }
 export const ApplicationContextProvider = ({ children }) => { 

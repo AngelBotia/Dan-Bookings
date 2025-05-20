@@ -1,0 +1,195 @@
+import React,{ useState } from 'react';
+import Image from 'next/image'
+import Link from 'next/link'
+import '../styles/PorfolioImgs.css'
+import '../styles/porfolioCollages/collage1.css'
+import '../styles/porfolioCollages/collageDefault.css'
+import '../styles/globals.css'
+import { ContHorizonalScroll } from './ContHorizonalScroll';
+import { getUserSession } from '../hooks/useUser';
+import { useWork } from '../hooks/useWork';
+import { useLanguageAPP } from '../hooks/useLanguageAPP';
+import { InputImgs,InputText } from './Inputs';
+import { useWorkContext } from '../context/WorkProvider';
+
+const Porfolio = () => {  
+  const { works, getWorks, createWork, updateWork , deleteWork } = useWork();
+  const { user, isAdmin } = getUserSession();
+  
+  const [workSelected, setWorkSelected] = useState({ID_WORK:"901f3ea4-35a7-11f0-960d-2c3b702dbc3c"});
+  
+  const onClickImg = (event) => {
+    const mousePos = event.clientX < window.innerWidth / 2 ?  'right' : 'left';
+    setPorfolioContext(prev => ({ ...prev, ...{mousePos,isLoaded: true} }));
+  }
+  const createWorksImgs = () => {
+    if(!works.length) return
+    return works?.map((work, index) => {
+      let { ID_WORK, IS_VISIBLE } = work || {};
+      if (!ID_WORK /** || !IS_VISIBLE*/) return null;
+      return (
+        <PorfolioImgLink key={ID_WORK} work={work}/>
+      )
+    }) || [];
+  }
+
+  return (
+    works &&
+    <div className='porfolio-container'>
+      <ContHorizonalScroll>
+        <div className="grid-porfolio">
+          {createWorksImgs()}
+          {isAdmin && 
+          <PorfolioForm 
+            workSelected={workSelected}
+            createWork={createWork}
+            updateWork={updateWork} 
+            deleteWork={deleteWork} />}
+        </div>
+      </ContHorizonalScroll>
+    </div>
+  )
+}
+
+export default Porfolio
+
+
+export const PorfolioForm = ({workSelected={},createWork, updateWork , deleteWork }) => {
+    const { works, setWorkContext } = useWorkContext();
+    const { getTranslation }= useLanguageAPP();
+    const {
+        errors: {
+            workForm: errorMessages
+        },
+        application: {
+            workForm: labels
+        } 
+     } = getTranslation();
+      
+    const formState = useState(workSelected);
+    const [formData ,setFormData] = formState;
+
+
+    const addWorkInPorfolio = async (workToSend) =>{
+        const { IMAGE_URL } = workToSend;
+        const newWork = await createWork(workToSend);
+        if(!newWork) throw new Error('TODO: put error with translate');
+
+        const imgInCache =  IMAGE_URL[0].imgSrc;
+        newWork.IMAGE_URL = imgInCache || newWork.IMAGE_URL; 
+        if(newWork?.detail) newWork.detail.MAIN_IMG_URL = imgInCache || newWork.IMAGE_URL
+
+        const updateWorks = [...works, newWork];
+        return updateWorks;
+    }
+    const updateWorkInPorfolio = async (workToSend) =>{
+        const newWork = await updateWork(workToSend)
+        if(!newWork) throw new Error("TODO: put error with translate");
+        const updatePorfolio = works?.map(work =>{ 
+          const result = work.ID_WORK == newWork.ID_WORK ? newWork : work;
+          return result;
+        });
+        return updatePorfolio;
+    }
+    const deleteWorkInPorfolio = async ({ID_WORK}) =>{
+        if(!ID_WORK) return
+        const response = await deleteWork(ID_WORK)
+        if(!response)  throw new Error('TODO: put error with translate');
+
+        const updatePorfolio = works?.filter(work=>work.ID_WORK != ID_WORK)
+                                     .sort((a, b) => a.ORDER_INDEX - b.ORDER_INDEX)
+                                     .map((work, index) => ({ ...work, ORDER_INDEX: index + 1 }));
+        return updatePorfolio;
+    }
+    const onSubmit = async (e) =>{
+      try {
+            e.preventDefault();    
+            const { ID_WORK } = workSelected || {};
+            let   { WO_NAME, IMAGE_URL,ORDER_INDEX,IS_VISIBLE } = formData || {};
+
+            const workToSend = {
+                ...workSelected,
+                   WO_NAME,
+                   IS_VISIBLE,
+                   ORDER_INDEX,
+                   IMAGE_URL: IMAGE_URL != workSelected?.IMAGE_URL ? IMAGE_URL : null
+              }
+            
+            let response = ID_WORK ? await updateWorkInPorfolio(workToSend).then(updatedWorks => setWorkContext(updatedWorks))
+                                   : await addWorkInPorfolio(workToSend).then(updatedWorks => setWorkContext(updatedWorks));
+            
+            setFormData({})
+            e.target.reset(); 
+            //TODO: CLOSE FORM
+      } catch (error) {
+        //TODO: SHOW MODAL(error.message)
+      }
+    }
+
+  return (
+    <form onSubmit={(e)=>onSubmit(e)}>
+        <InputText 
+            form={formState} 
+            name={"WO_NAME"} 
+            label={labels["title"]} 
+            title={errorMessages["title"] } 
+            required={true}/>
+    
+        <InputImgs
+           form={formState}
+           imgsForm={[formData.IMAGE_URL]}
+           name={"IMAGE_URL"}
+           required={true}
+        />
+        {/* {work?.ID_WORK &&
+
+        <>
+        <InputText 
+          form={formState} 
+          name={"ORDER_INDEX"} 
+          label={labels["title"]} 
+          title={errorMessages["title"] } 
+          required={false}/>
+
+          <InputText 
+          form={formState} 
+          name={"IS_VISIBLE"} 
+          label={labels["title"]} 
+          title={errorMessages["title"] } 
+          required={false}/>
+        </>
+        } */}
+        <button 
+        type='button'
+        disabled={!workSelected.ID_WORK}
+        style={{backgroundColor:'dark-red'}}
+        onClick={async (e)=> await deleteWorkInPorfolio(workSelected).then(updatedWorks => setWorkContext(updatedWorks))}
+        > BORRAR</button>
+        <button type='submit'>Submit</button>
+    </form>
+    )
+}
+
+//**TODO: MAKE A COMPONENT CANT KWNOW HOW IS DRAG AND CHANGE WORK SELECTED */
+export const PorfolioImgLink = ({work={}}) => {
+    const { ID_WORK, URL, ORDER_INDEX, IMAGE_URL, IS_VISIBLE } = work;
+    let isLoaded,typeOfCollage = false;
+    return (
+        <Link href={`/${URL}`}
+                className={`img-porfolio ${!isLoaded ? 'fade-in-animation' : ''} 
+                ${typeOfCollage || "collage-default"}${Number(ORDER_INDEX) || index + 1}`}
+        >
+            <Image
+                alt={URL}
+                fill
+                src={IMAGE_URL}
+                style={{
+                    viewTransitionName: `${URL}`,
+                    '--order-delay': `${Number(ORDER_INDEX) / 10 || Number(index) / 10}s`
+                }}
+
+              
+            />
+        </Link>
+    )
+}

@@ -111,7 +111,7 @@ export async function DELETE(request,{ params }) {
         const body = await request.formData();
         const ID_WORK = JSON.parse(body.get('ID'));
         const deleteWork = await useWorkData.deleteWork({ID_WORK})
-        return NextResponse.json({sucess:!!deleteWork,ID_WORK},{status:200})
+        return NextResponse.json({success:!!deleteWork,ID_WORK},{status:200})
     } catch (error) {
         console.error(error.message);
         const errorMessage = "something went wrong"

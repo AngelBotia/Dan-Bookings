@@ -135,11 +135,18 @@ export class workModelMYSQL{
             return null;
         }
     }
-    deleteWork = async ({ID_WORK}) =>{
-        if(!ID_WORK) return null;
-        const { work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,WORKS } = WO_DB_PROPS;
-        const [result] = await conn.query(`DELETE FROM ${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS} WHERE ${WO_DB_TABLE_ALIAS}.${WORKS.ID_WORK} = ?`,[ID_WORK]);
-        return !result.affectedRows == 0
+    deleteWork = async ({ ID_WORK }) => {
+        if (!ID_WORK) return null;
+        const { work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS, WORKS } = WO_DB_PROPS;
+        const [deleteResult] = await conn.query(`DELETE FROM ${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS} WHERE ${WO_DB_TABLE_ALIAS}.${WORKS.ID_WORK} = ?`, [ID_WORK]);
+        
+        const reOrderQuery = `WITH ordered_work AS ( SELECT WO_ID, ROW_NUMBER() OVER (ORDER BY WO_ORDER) AS indexToSave FROM ${WO_DB_TABLE} )
+                                    UPDATE ${WO_DB_TABLE}
+                                    JOIN ordered_work ON ${WO_DB_TABLE}.${WORKS.ID_WORK} = ordered_work.${WORKS.ID_WORK}
+                                    SET works.${WORKS.ORDER_INDEX} = ordered_work.indexToSave`;
+        const [reOrderResult] = await conn.query(reOrderQuery);
+
+        return !deleteResult.affectedRows == 0
     }
     updateWork = async(work) => {
         //TODO VALID SCHEMA

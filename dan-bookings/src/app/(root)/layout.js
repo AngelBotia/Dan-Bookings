@@ -3,6 +3,7 @@ import NavBar from "../components/NavBar";
 import ProviderSession from "../context/SessionProvider";
 import { PorfolioContextProvider } from "../context/PorfolioProvider";
 import { ApplicationContextProvider } from "../context/AplicationProvider";
+import { WorkContextProvider } from "../context/WorkProvider"
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,8 +26,10 @@ export default function RootLayout({ children }) {
         <ProviderSession>
           <ApplicationContextProvider>
             <PorfolioContextProvider>
-              <NavBar/>
-              {children}
+              <WorkContextProvider>
+                <NavBar/>
+                {children}
+              </WorkContextProvider>
             </PorfolioContextProvider>
           </ApplicationContextProvider>
         </ProviderSession>

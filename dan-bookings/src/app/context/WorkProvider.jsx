@@ -12,9 +12,9 @@ const WORK_DEFAULT = {
   page: 0
 }
 export const WorkContextProvider = ({ children }) => { 
-    const [works, setWorkContext] = useState();
+    const [workContext, setWorkContext] = useState(WORK_DEFAULT);
     return (
-        <WorkContext.Provider value={{ works, setWorkContext}}>
+        <WorkContext.Provider value={{ workContext, setWorkContext}}>
           {children}
         </WorkContext.Provider>
       );

@@ -13,17 +13,13 @@ import { InputImgs,InputText } from './Inputs';
 import { useWorkContext } from '../context/WorkProvider';
 
 const Porfolio = () => {  
+  const {  setWorkContext } = useWorkContext();
   const { works, getWorks, createWork, updateWork , deleteWork } = useWork();
   const { user, isAdmin } = getUserSession();
   
-  const [workSelected, setWorkSelected] = useState({ID_WORK:"901f3ea4-35a7-11f0-960d-2c3b702dbc3c"});
+  const [workSelected, setWorkSelected] = useState({ID_WORK:""});
   
-  const onClickImg = (event) => {
-    const mousePos = event.clientX < window.innerWidth / 2 ?  'right' : 'left';
-    setPorfolioContext(prev => ({ ...prev, ...{mousePos,isLoaded: true} }));
-  }
   const createWorksImgs = () => {
-    if(!works.length) return
     return works?.map((work, index) => {
       let { ID_WORK, IS_VISIBLE } = work || {};
       if (!ID_WORK /** || !IS_VISIBLE*/) return null;
@@ -41,10 +37,13 @@ const Porfolio = () => {
           {createWorksImgs()}
           {isAdmin && 
           <PorfolioForm 
+            works={works}
             workSelected={workSelected}
             createWork={createWork}
             updateWork={updateWork} 
-            deleteWork={deleteWork} />}
+            deleteWork={deleteWork} 
+            setWorkContext={setWorkContext}
+            />}
         </div>
       </ContHorizonalScroll>
     </div>
@@ -54,22 +53,12 @@ const Porfolio = () => {
 export default Porfolio
 
 
-export const PorfolioForm = ({workSelected={},createWork, updateWork , deleteWork }) => {
-    const { works, setWorkContext } = useWorkContext();
+export const PorfolioForm = ({works = [], workSelected={},setWorkContext,createWork, updateWork , deleteWork }) => {
     const { getTranslation }= useLanguageAPP();
-    const {
-        errors: {
-            workForm: errorMessages
-        },
-        application: {
-            workForm: labels
-        } 
-     } = getTranslation();
-      
+    const { porfolio:{ errorMessages,labels }} = getTranslation();
+  
     const formState = useState(workSelected);
     const [formData ,setFormData] = formState;
-
-
     const addWorkInPorfolio = async (workToSend) =>{
         const { IMAGE_URL } = workToSend;
         const newWork = await createWork(workToSend);
@@ -114,14 +103,16 @@ export const PorfolioForm = ({workSelected={},createWork, updateWork , deleteWor
                    ORDER_INDEX,
                    IMAGE_URL: IMAGE_URL != workSelected?.IMAGE_URL ? IMAGE_URL : null
               }
+           
             
-            let response = ID_WORK ? await updateWorkInPorfolio(workToSend).then(updatedWorks => setWorkContext(updatedWorks))
-                                   : await addWorkInPorfolio(workToSend).then(updatedWorks => setWorkContext(updatedWorks));
+            let response = ID_WORK ? await updateWorkInPorfolio(workToSend).then(updatedWorks => setWorkContext(prev =>({ ...prev ,works:updatedWorks})))
+                                   : await addWorkInPorfolio(workToSend).then(updatedWorks => setWorkContext(prev =>({ ...prev ,works:updatedWorks})));
             
             setFormData({})
             e.target.reset(); 
             //TODO: CLOSE FORM
       } catch (error) {
+        console.error("SHOW MODAL????")
         //TODO: SHOW MODAL(error.message)
       }
     }
@@ -131,8 +122,8 @@ export const PorfolioForm = ({workSelected={},createWork, updateWork , deleteWor
         <InputText 
             form={formState} 
             name={"WO_NAME"} 
-            label={labels["title"]} 
-            title={errorMessages["title"] } 
+            label={labels["WO_NAME"]} 
+            title={errorMessages["WO_NAME"] } 
             required={true}/>
     
         <InputImgs
@@ -163,7 +154,7 @@ export const PorfolioForm = ({workSelected={},createWork, updateWork , deleteWor
         type='button'
         disabled={!workSelected.ID_WORK}
         style={{backgroundColor:'dark-red'}}
-        onClick={async (e)=> await deleteWorkInPorfolio(workSelected).then(updatedWorks => setWorkContext(updatedWorks))}
+        onClick={async (e)=> await deleteWorkInPorfolio(workSelected).then(updatedWorks => setWorkContext(prev =>({ ...prev ,works:updatedWorks})))}
         > BORRAR</button>
         <button type='submit'>Submit</button>
     </form>

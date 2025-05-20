@@ -6,7 +6,8 @@ import { useWorkContext } from "../context/WorkProvider";
 
 
 export const useWork = (params = {}) => {
-    const { works, setWorkContext } = useWorkContext();
+    const { workContext, setWorkContext } = useWorkContext();
+    const { works } = workContext;
   
     /**
      * @param {Object} params - Parameters for get all works.
@@ -16,7 +17,6 @@ export const useWork = (params = {}) => {
     */
   const getWorks = async (params) => {
     try {
-      if (works?.length) return;
       const searchParams = params ? new URLSearchParams(params) : "";
       const worksData = await fetch(`/api/work?${searchParams}`, { method: "GET" });
       const worksJson = await worksData.json() || [];
@@ -25,10 +25,11 @@ export const useWork = (params = {}) => {
       return null;
     }
   };
-    useEffect(() => {
-      const loadData = async () => {
+  useEffect(() => {
+    const loadData = async () => {
+      if (works?.length) return;
         const newWorks = await getWorks(params);
-        setWorkContext(newWorks);   
+        setWorkContext(prev =>({ ...prev ,works:newWorks}));   
       }
         loadData();
     }, []);

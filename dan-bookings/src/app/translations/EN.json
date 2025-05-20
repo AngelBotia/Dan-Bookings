@@ -1,17 +1,18 @@
 {
-    "settings":{},
-    "application":{
-        "workForm":{
-            "title":"Title"
-        }
-    },    
-    "actions":{
-        "booking":"Booking"
+    "settings": {},
+    "application": {},
+    "actions": {
+      "booking": "Booking"
     },
-    "errors":{
-        "worksNoData": "No tattoos loaded",
-        "workForm":{
-            "title": "Special characters and numbers are not allowed."
-        }
+    "errors": {},
+    "porfolio": {
+      "labels": {
+        "WO_NAME": "Title"
+      },
+      "errorMessages": {
+        "WO_NAME": "Special characters and numbers are not allowed."
+      },
+      "noData": "No tattoos loaded"
     }
-}
+  }
+  

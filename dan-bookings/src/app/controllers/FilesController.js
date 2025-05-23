@@ -1,5 +1,5 @@
 import { s3Model } from "../models/files/amazonS3";
-class filesController {
+class FilesController {
     filesController;
     
     constructor(modelFileController){
@@ -13,9 +13,17 @@ class filesController {
           throw error.message;
         }
     }
+    deleteImg = (keyID) =>{
+        try {
+             return this.filesController.deleteImg(keyID);
+        } catch (error) {
+          console.error("[FILE-CONTROLLER] -",error.message);
+          throw error.message;
+        }
+    }
   
 }
 
 const model = new s3Model(); 
 
-export const useFileData = new filesController(model)
+export const fileController = new FilesController(model)

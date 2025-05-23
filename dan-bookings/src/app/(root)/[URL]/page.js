@@ -6,16 +6,12 @@ import'../../styles/workDetails.css'
 import { useParams } from 'next/navigation';
 import { usePortfolio } from '../../context/PorfolioProvider';
 import { useApplication } from '../../context/AplicationProvider';
-import { useWork } from '../../hooks/useWork';
+import { useWork, useWorkDetails } from '../../hooks/useWork';
 
 export default function Work() {
-  const { getWorkDetail }=useWork();
-  const { workID } = useParams();
-  const { porfolioContext:{ mousePos } } = usePortfolio();
-  
-  const workParams = { workID }
-  const detail = getWorkDetail(workParams);
-  
+  const { URL } = useParams();
+  const { detail, updateWorkDetail } = useWorkDetails({URL});
+  const mousePos = 'rigth'
   const createMediaExampleTest = () => {
     return detail?.media?.map(media => {
       const { URL_MEDIA: backgroundImage, ID } = media;

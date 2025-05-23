@@ -1,5 +1,5 @@
 import { amazonS3, getPublicUrlImg, s3BucketName } from "../../libs/amazon/amazonS3";
-import { PutObjectCommand,GetObjectCommand,PutBucketPolicyCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand,DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 
 export class s3Model{
@@ -25,5 +25,25 @@ export class s3Model{
             }
         });
     };
+    deleteImg = (Key) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const params = {
+                    Bucket: s3BucketName,
+                    Key
+                };
+                const command = new DeleteObjectCommand(params);
+                const res = await amazonS3.send(command);
+    
+                if (res.$metadata.httpStatusCode !== 200) return reject(null);
+
+                resolve(true);
+            } catch (error) {
+                console.error(error.message);
+                reject(new Error("amazon service fail"));
+            }
+        });
+    };
+
     
 }

@@ -5,9 +5,9 @@ import { useWorkContext } from "../context/WorkProvider";
 
 
 
-export const useWork = (params = {}) => {
+export const useWork = () => {
     const { workContext, setWorkContext } = useWorkContext();
-    const { works } = workContext;
+    const { works , params} = workContext;
   
     /**
      * @param {Object} params - Parameters for get all works.
@@ -15,134 +15,166 @@ export const useWork = (params = {}) => {
      * @param {number} params.page - Page number to retrieve.
      * @return {Object[]} Array of works.
     */
-  const getWorks = async (params) => {
-    try {
-      const searchParams = params ? new URLSearchParams(params) : "";
-      const worksData = await fetch(`/api/work?${searchParams}`, { method: "GET" });
-      const worksJson = await worksData.json() || [];
-      return worksJson;
-    } catch (error) {
-      return null;
-    }
-  };
-  useEffect(() => {
-    const loadData = async () => {
-      if (works?.length) return;
-        const newWorks = await getWorks(params);
-        setWorkContext(prev =>({ ...prev ,works:newWorks}));   
-      }
-        loadData();
-    }, []);
-  /**
-     * @param {string} workName - URL OF WORK.
-     * @param {Object[]} files -Array of files
-     * @param {String} files.img - Buffer img in base64
-     * @param {String} files.type - format of img PNG,JPG...
-     * @return {Object} New work.
-  */
-  const createWork = async (work) => {
-    const { WO_NAME, IMAGE_URL } = work;
-    if (!WO_NAME || !IMAGE_URL?.length) return null;
-    
-    try {
-      const imgsToSend = IMAGE_URL?.map(file => {
-        const { img, type } = file;
-        return { img, type }
-      })
-      const body = new FormData();
-      body.append('work',JSON.stringify({WO_NAME,IMAGE_URL:imgsToSend}));
-      
-      const dataWork = await fetch(`/api/work`, { method: "POST", body });
-      const newWork = await dataWork.json();
-      return newWork;
-    } catch (error) {
-      return null;
-    }
-  };
-  
-  const updateWork = async (newWork = {}) => {
-    try {
-      if ( !newWork?.ID_WORK ) return null;
-      
-      const body = new FormData();      
-      body.append("newWork",JSON.stringify(newWork));
-      
-      const workToUpdate = await fetch(`/api/work`, { method: "PUT", body });
-      const updatedWork = await workToUpdate.json();
-      
-      return updatedWork;
-    } catch (error) {
-      console.error(error)
-      return null;
-    }
-  };
-  
-  const deleteWork = async (ID) =>{
-    if(!ID) return null;
-    try {
-      const body = new FormData();      
-      body.append("ID",JSON.stringify(ID));
-      const workToDelete = await fetch(`/api/work`, { method: "DELETE",body });
-      const deletedWork = await workToDelete.json();
-      return deletedWork || null;
-    } catch (error) {
-      return null;
-    }
-  };
-  /**
-   * @param {Object} params - Parameters for get details
-   * @param {string} params.workID - WorkURL.
-  */
- const loadWorkDetail = (params) => {
-   const { setPorfolioContext ,porfolioContext} = usePortfolio();
-   const [loadedDetails, setloadedDetails] = useState(null);
-   
-   useEffect(() => {
-     const loadData = async () => {
-       try {
-         let { workID } = params;
-         const searchParams = params ? new URLSearchParams(params) : "";
-         const detailsData = await fetch(`/api/work/${workID}?${searchParams}`, { method: "GET" });
-         const details = await detailsData.json();
-         setPorfolioContext(prev => {
-           const { works } = prev;
-           !works?.find(work =>work.URL == workID) && works.push({URL:workID,ID_WORK: false});
-           
-           const updatedWorks = works?.map(work =>
-            work.URL == workID ? { ...work, detail: details } : work
-          );
-          
-          return {...prev,works: updatedWorks};
-        });
-        setloadedDetails(details); 
+    const getWorks = async (params={}) => {
+      try {
+        const searchParams = params ? new URLSearchParams(params) : "";
+        const worksData = await fetch(`/api/work?${searchParams}`, { method: "GET" });
+        const worksJson = await worksData.json() || [];
+        return worksJson;
       } catch (error) {
         return null;
       }
     };
-    
-    loadData();
-  }, []);
-  return loadedDetails;
-};
-const detailsInCache = (params)=>{
-  let { workID } = params || {};
-  const { porfolioContext:{works} } = usePortfolio();
-  return works?.find(work => work.URL == workID)?.detail || null
-};
-const getWorkDetail = (params) => {
-  return detailsInCache(params) || loadWorkDetail(params)
-} 
+    /**
+       * @typeOf {Object} work - Work Object
+       * @property {string} work.WO_NAME - Name of the work (required).
+       * @property {string} work.IMAGE_URL - Image URL of the work (required).
+       * @property {string} work.URL - URL OF WORK.
+       * @property {number} work.IS_VISIBLE    - Visibility 1 -> true : 0 -> false.
+       *
+       * @property {Object[]} work.IMAGE_URL -Array of files
+       * @property {String} IMAGE_URL.img - Buffer img in base64
+       * @property {String} IMAGE_URL.type - format of img PNG,JPG...
+       * @return {Object} New work.
+    */
+    const createWork = async (work) => {
+      const { WO_NAME, IMAGE_URL } = work;
+      if (!WO_NAME || !IMAGE_URL?.length) return null;
 
-return {
-  works,
-  getWorks,
-  createWork,
-  updateWork,
-  deleteWork,
+      try {
+        const imgsToSend = IMAGE_URL?.map(file => {
+          const { img, type } = file;
+          return { img, type }
+        })
+        const body = new FormData();
+        body.append('work',JSON.stringify({WO_NAME,IMAGE_URL:imgsToSend}));
+
+        const dataWork = await fetch(`/api/work`, { method: "POST", body });
+        const newWork = await dataWork.json();
+        return newWork;
+      } catch (error) {
+        return null;
+      }
+    };
+
+    const updateWork = async (newWork = {}) => {
+      try {
+        if ( !newWork?.ID_WORK ) return null;
+
+        const body = new FormData();      
+        body.append("newWork",JSON.stringify(newWork));
+
+        const workToUpdate = await fetch(`/api/work`, { method: "PUT", body });
+        const updatedWork = await workToUpdate.json();
+
+        return updatedWork;
+      } catch (error) {
+        console.error(error)
+        return null;
+      }
+    };
+
+    const deleteWork = async ({ID_WORK,URL}) =>{
+      try {
+        if(!ID_WORK || !URL) return null;
+        const body = new FormData();      
+        body.append("ID",JSON.stringify(ID_WORK));
+        body.append("URL",JSON.stringify(URL));
+        const workToDelete = await fetch(`/api/work`, { method: "DELETE",body });
+        const deletedWork = await workToDelete.json();
+        return deletedWork || null;
+      } catch (error) {
+        return null;
+      }
+    };
+    useEffect(() => {
+
+      const loadData = async () => {
+        const hasWorksInCache = works?.find(work => work.ID_WORK) || null;
+        const detailInCache = works?.find(work => work.detail && !work.ID_WORK)?.detail || null;
+        if (hasWorksInCache) return;
+          let newWorks = await getWorks(params);
+          if(detailInCache) newWorks = newWorks.map(newWork => {return newWork.URL==detailInCache.WO_URL ? {...newWork,detail: detailInCache} : newWork })
+          setWorkContext(prev =>({ ...prev ,works:newWorks}));   
+        }
+          loadData();
+    }, []);
   
-  getWorkDetail
-  }
+return {
+        works,
+        getWorks,
+        createWork,
+        updateWork,
+        deleteWork
+      }
 };
+
+export const useWorkDetails = (params = {}) => {
+  const { workContext, setWorkContext } = useWorkContext();
+  const { works } = workContext;
+  const { URL } = params || {};
+  const detail = works?.find(work => work.URL == URL)?.detail || {};
+  /**  
+     * @param {Object} params - Parameters for get details
+     * @param {string} params.workID - WorkURL.
+  */
+  const getWorkDetail = async (params) => {
+        try {
+            const { URL } = params || {};
+            if(!URL) return null; 
+            const searchParams = params ? new URLSearchParams(params) : "";
+            const detailData = await fetch(`/api/work/${URL}?${searchParams}`, { method: "GET" });
+            const detail = await detailData.json();
+            return detail;
+        } catch (error) {
+          return null;
+        }
+  };
+  const updateWorkDetail = async (newWorkDetail = {}) =>{
+        try {
+          const { WO_URL,DETAIL_ID } = newWorkDetail || {};
+          if ( !WO_URL || !DETAIL_ID ) return null;
+          const body = new FormData();      
+          body.append("newDetail",JSON.stringify(newWorkDetail));
+  
+          const detailToUpdate = await fetch(`/api/work/${WO_URL}`, { method: "PUT", body });
+          const updatedDetail = await detailToUpdate.json();
+          
+          return updatedDetail;
+        } catch (error) {
+          return null;
+        }
+  };
+
+  useEffect(() => {
+      const loadWorkDetail = async () => {
+
+        const hasDetailInCache = works?.find(work => work.URL == URL)?.detail || null;
+        if (!URL || hasDetailInCache) return;
+
+        const newDetail = await getWorkDetail(params);
+        setWorkContext(prev => {
+                 const { works } = prev;
+                 const hasWorkInCache = works?.find(work =>work.URL == URL)
+                 if(!hasWorkInCache) works.push({URL:URL,ID_WORK: false});
+
+                 const updatedWorks = works?.map(work =>
+                  work.URL == URL ? { ...work, detail: newDetail } : work
+                );
+              
+                return {...prev,works: updatedWorks};
+          }) 
+        }
+        loadWorkDetail();
+  }, []);
+
+  return {
+    detail,
+    getWorkDetail,
+    updateWorkDetail
+  }
+}
+
 
 
 

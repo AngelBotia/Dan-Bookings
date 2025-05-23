@@ -13,11 +13,13 @@ import { InputImgs,InputText } from './Inputs';
 import { useWorkContext } from '../context/WorkProvider';
 
 const Porfolio = () => {  
+  const { getTranslation }= useLanguageAPP();
   const {  setWorkContext } = useWorkContext();
   const { works, getWorks, createWork, updateWork , deleteWork } = useWork();
+  const { porfolio } = getTranslation();
   const { user, isAdmin } = getUserSession();
   
-  const [workSelected, setWorkSelected] = useState({ID_WORK:""});
+  const [workSelected, setWorkSelected] = useState({});
   
   const createWorksImgs = () => {
     return works?.map((work, index) => {
@@ -30,13 +32,14 @@ const Porfolio = () => {
   }
 
   return (
-    works &&
+    works.length ?
     <div className='porfolio-container'>
       <ContHorizonalScroll>
         <div className="grid-porfolio">
           {createWorksImgs()}
           {isAdmin && 
-          <PorfolioForm 
+          <PorfolioForm
+            porfolioText={porfolio}
             works={works}
             workSelected={workSelected}
             createWork={createWork}
@@ -47,19 +50,20 @@ const Porfolio = () => {
         </div>
       </ContHorizonalScroll>
     </div>
+    :null
   )
 }
 
 export default Porfolio
 
 
-export const PorfolioForm = ({works = [], workSelected={},setWorkContext,createWork, updateWork , deleteWork }) => {
-    const { getTranslation }= useLanguageAPP();
-    const { porfolio:{ errorMessages,labels }} = getTranslation();
+export const PorfolioForm = ({porfolioText, works = [], workSelected={},setWorkContext,createWork, updateWork , deleteWork }) => {
+    const { errorMessages,labels } = porfolioText || {};
   
     const formState = useState(workSelected);
     const [formData ,setFormData] = formState;
-    const addWorkInPorfolio = async (workToSend) =>{
+
+    const addWorkInPorfolio = async (workToSend = {}) =>{
         const { IMAGE_URL } = workToSend;
         const newWork = await createWork(workToSend);
         if(!newWork) throw new Error('TODO: put error with translate');
@@ -71,18 +75,20 @@ export const PorfolioForm = ({works = [], workSelected={},setWorkContext,createW
         const updateWorks = [...works, newWork];
         return updateWorks;
     }
-    const updateWorkInPorfolio = async (workToSend) =>{
+    const updateWorkInPorfolio = async (workToSend = {}) =>{
         const newWork = await updateWork(workToSend)
         if(!newWork) throw new Error("TODO: put error with translate");
+
         const updatePorfolio = works?.map(work =>{ 
           const result = work.ID_WORK == newWork.ID_WORK ? newWork : work;
           return result;
         });
         return updatePorfolio;
     }
-    const deleteWorkInPorfolio = async ({ID_WORK}) =>{
-        if(!ID_WORK) return
-        const response = await deleteWork(ID_WORK)
+    const deleteWorkInPorfolio = async (workToSend = {}) =>{
+        const {ID_WORK, URL } = workToSend;
+        if(!ID_WORK || !URL) return
+        const response = await deleteWork(workToSend)
         if(!response)  throw new Error('TODO: put error with translate');
 
         const updatePorfolio = works?.filter(work=>work.ID_WORK != ID_WORK)
@@ -165,21 +171,23 @@ export const PorfolioForm = ({works = [], workSelected={},setWorkContext,createW
 export const PorfolioImgLink = ({work={}}) => {
     const { ID_WORK, URL, ORDER_INDEX, IMAGE_URL, IS_VISIBLE } = work;
     let isLoaded,typeOfCollage = false;
+   
+    const fadeIn = !isLoaded ? 'fade-in-animation' : ''
+    const order = Number(ORDER_INDEX) || index + 1
+    const collage = typeOfCollage ? `${typeOfCollage}${order}` :`collage-default${order}`
+   
+    const className=`img-porfolio ${fadeIn} ${collage}`
     return (
-        <Link href={`/${URL}`}
-                className={`img-porfolio ${!isLoaded ? 'fade-in-animation' : ''} 
-                ${typeOfCollage || "collage-default"}${Number(ORDER_INDEX) || index + 1}`}
-        >
+        <Link href={`/${URL}`} className={className}>
             <Image
                 alt={URL}
                 fill
                 src={IMAGE_URL}
+                className={className}
                 style={{
                     viewTransitionName: `${URL}`,
                     '--order-delay': `${Number(ORDER_INDEX) / 10 || Number(index) / 10}s`
                 }}
-
-              
             />
         </Link>
     )

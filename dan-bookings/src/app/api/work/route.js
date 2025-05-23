@@ -1,19 +1,14 @@
-import { useWorkData } from "../../controllers/WorkController";
+import { workController } from "../../controllers/WorkController";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions, hasPermission } from "../../libs/nextAuth"; 
-import { useFileData } from "../../controllers/FilesController";
-import { WO_DB_PROPS } from "../../constants/worksDB";
-import { getToken } from "next-auth/jwt";
-import { US_DB_PROPS } from "../../constants/usersDB";
-
+import { hasPermission } from "../../libs/nextAuth"; 
+import { saveImgsInCloud } from '../../libs/server/filesHelper'
 export async function GET(request) {
     try {
         const { searchParams } = request.nextUrl;
         const limit = Number(searchParams.get('limit'));
         const page = Number(searchParams.get('page'));
         let params ={ limit , page };
-        const allWorks = await useWorkData.getAllWorks(params);
+        const allWorks = await workController.getAllWorks(params);
         return NextResponse.json(allWorks,{ status:200 });
     } catch (error) {
         console.error(error.message);
@@ -34,25 +29,16 @@ export async function POST(request, { params }) {
         
         if(!files?.length || !WO_NAME)  return NextResponse.json({ error: "Bad request" }, { status: 400 });
 
-        const urlsImg = await Promise.all(files?.map(file =>{
-            let { type, img } = file || {};
-            const imgToSave = {
-                name: `MAIN-${URL}`,
-                file: Buffer.from(img, 'base64'),
-                ContentType: type
-            }
-            return useFileData.saveImg(imgToSave);
-        })) || [];
+        const urlsImg = await saveImgsInCloud(files,'MAIN',URL);
 
         const workToSave = {
             WO_NAME,
             URL,
             IMAGE_URL: urlsImg[0] || null,
         }
-        let newWork = await useWorkData.createWork(workToSave);
-        newWork.detail = await useWorkData.createDetailWork(newWork) || {};
+        let newWork = await workController.createWork(workToSave);
+        newWork.detail = await workController.createDetailWork(newWork) || {};
     
-
         return NextResponse.json(newWork,{status:200})
     } catch (error) {
         console.error(error.message);
@@ -67,6 +53,7 @@ export async function PUT(request,{ params }) {
         
         const body = await request.formData();
         const newWork = JSON.parse(body.get('newWork')) || {};
+        const { detail } = newWork || {};
         const files = newWork.IMAGE_URL || [];
 
         if(!newWork.ID_WORK)  return NextResponse.json({ error: "Bad request" }, { status: 400 });
@@ -74,30 +61,30 @@ export async function PUT(request,{ params }) {
         const { WO_NAME } = newWork;
         
         const URL = WO_NAME?.trim().replaceAll(" ","-") || null
-        const urlsImg = await Promise.all(files?.map(file =>{
-                let { type, img } = file || {};
-                const imgToSave = {
-                    name: `MAIN-${URL}`,
-                    file: Buffer.from(img, 'base64'),
-                    ContentType: type
-                }
-                return useFileData.saveImg(imgToSave);
-        })) || [];
 
-
+        const urlsImg = await saveImgsInCloud(files,'MAIN',URL);
         const IMAGE_URL = urlsImg[0] || null;
+
         const workToSave = {
             ...newWork,
             URL,
             IMAGE_URL
         }
-        //TODO: update works_detail_media
-        //TODO: update works_detail
-        const updateWork = await useWorkData.updateWork(workToSave);
-        // updateWork.detail=
-        // updateWork.media=
+      
+        const updateWork = await workController.updateWork(workToSave);
+        if(!updateWork) return NextResponse.json({error:"Dont found this work"},{status:404})
 
-        //TODO: update works
+        if(detail){
+            const MAIN_IMG_URL = IMAGE_URL || null;
+            const WO_URL = URL || null;
+            const detailToSave = {
+                ...detail,
+                MAIN_IMG_URL,
+                WO_URL
+            }
+            updateWork.detail = await workController.updateWorkDetail(detailToSave);
+            updateWork.media = await workController.updateWorkMedias(detailToSave) || [];
+        }
         return NextResponse.json(updateWork,{status:200})
     } catch (error) {
         console.error(error.message);
@@ -107,14 +94,33 @@ export async function PUT(request,{ params }) {
 }
 export async function DELETE(request,{ params }) {
     try {
+        debugger
         if (!hasPermission(request)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         const body = await request.formData();
         const ID_WORK = JSON.parse(body.get('ID'));
-        const deleteWork = await useWorkData.deleteWork({ID_WORK})
-        return NextResponse.json({success:!!deleteWork,ID_WORK},{status:200})
+        const URL = JSON.parse(body.get('URL'));
+        
+        
+        //DELETE IMGS
+        // const allUrlsMedias = await workController.getWorkMedias({URL});
+        // // allUrlsMedias.map(async media => {
+        // //     const { URL_MEDIA } = media || {};
+        // //     const isDeleteToCloud = await fileController.deleteImg(URL_MEDIA); 
+        // //     return isDeleteToCloud;
+        // // })
+                                                  
+
+        const deleteMedias = await workController.deleteWorkMedias({URL})
+        const deleteDetails = await workController.deleteWorkDetail(URL);
+        const deleteWork = await workController.deleteWork({ID_WORK});
+
+        const isOK = !!deleteWork && !!deleteDetails && !!!!deleteMedias
+        return NextResponse.json({success:isOK, ID_WORK},{status:204})
     } catch (error) {
+        debugger
         console.error(error.message);
         const errorMessage = "something went wrong"
         return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
+

@@ -36,4 +36,4 @@ class UserController {
 
 const model = new UserModelMYSQL();
 
-export const useUserData = new UserController(model)
+export const userController = new UserController(model)

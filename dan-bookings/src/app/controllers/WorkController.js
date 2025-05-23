@@ -1,5 +1,5 @@
 import { workModelMYSQL } from "../models/mysql/workModel"
-class workController {
+class WorkController {
     workModel;
     
     constructor(workModel){
@@ -13,35 +13,9 @@ class workController {
           throw error;
         }
     }
-    getWorkDetail = (params) =>{
-        try {
-            return this.workModel.getWorkDetail(params);
-        } catch (error) {
-            console.error("[WORK-CONTROLLER] -",error)
-            throw error;
-        }
-        
-    }
-    getWorkMedias = (params) =>{
-        try {
-            return this.workModel.getWorkMedias(params);
-        } catch (error) {
-            console.error("[WORK-CONTROLLER] -",error)
-            throw error;
-        }
-        
-    }
     createWork = (work) =>{
         try {
             return this.workModel.createWork(work);
-        } catch (error) {
-            console.error("[WORK-CONTROLLER] -",error)
-            throw error;
-        }
-    }
-    createDetailWork = (work) => {
-        try {
-            return this.workModel.createDetailWork(work);
         } catch (error) {
             console.error("[WORK-CONTROLLER] -",error)
             throw error;
@@ -63,10 +37,74 @@ class workController {
             throw error;
         }
     }
+
+
+    
+    getWorkDetail = (params) =>{
+        try {
+            return this.workModel.getWorkDetail(params);
+        } catch (error) {
+            console.error("[WORK-CONTROLLER] -",error)
+            throw error;
+        }
+        
+    }
+    createDetailWork = (work) => {
+        try {
+            return this.workModel.createDetailWork(work);
+        } catch (error) {
+            console.error("[WORK-CONTROLLER] -",error)
+            throw error;
+        }
+    }
+    updateWorkDetail = (work) =>{
+        try {
+            return this.workModel.updateWorkDetail(work);
+        } catch (error) {
+            console.error("[WORK-CONTROLLER] -",error)
+            throw error;
+        }
+    }
+    deleteWorkDetail = (ID) => {
+        try {
+            return this.workModel.deleteWorkDetail(ID);
+        } catch (error) {
+            console.error("[WORK-CONTROLLER] -",error)
+            throw error;
+        }
+    }
+
+
+    getWorkMedias = (params) =>{
+        try {
+            return this.workModel.getWorkMedias(params);
+        } catch (error) {
+            console.error("[WORK-CONTROLLER] -",error)
+            throw error;
+        }
+        
+    }
+    updateWorkMedias = (detail) =>{
+        try {
+            return this.workModel.updateWorkMedias(detail);
+        } catch (error) {
+            console.error("[WORK-CONTROLLER] -",error)
+            throw error;
+        }
+    }
+    deleteWorkMedias = (ID) => {
+        try {
+            return this.workModel.deleteWorkMedias(ID);
+        } catch (error) {
+            console.error("[WORK-CONTROLLER] -",error)
+            throw error;
+        }
+    }
+
 }
 
 //You can change this instance and change the database of all products
 // const model = new ProductModelFS(); <-- Local file  
 const model = new workModelMYSQL();
 
-export const useWorkData = new workController(model)
+export const workController = new WorkController(model)

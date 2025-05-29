@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { usePortfolio } from "../context/PorfolioProvider";
 import { useWorkContext } from "../context/WorkProvider";
 
 
@@ -102,6 +101,7 @@ export const useWork = () => {
   
 return {
         works,
+        setWorkContext,
         getWorks,
         createWork,
         updateWork,
@@ -132,8 +132,8 @@ export const useWorkDetails = (params = {}) => {
   };
   const updateWorkDetail = async (newWorkDetail = {}) =>{
         try {
-          const { WO_URL,DETAIL_ID } = newWorkDetail || {};
-          if ( !WO_URL || !DETAIL_ID ) return null;
+          const { WO_URL } = newWorkDetail || {};
+          if ( !WO_URL ) return null;
           const body = new FormData();      
           body.append("newDetail",JSON.stringify(newWorkDetail));
   

@@ -40,7 +40,7 @@ export class s3Model{
                 resolve(true);
             } catch (error) {
                 console.error(error.message);
-                reject(new Error("amazon service fail"));
+                reject(null);
             }
         });
     };

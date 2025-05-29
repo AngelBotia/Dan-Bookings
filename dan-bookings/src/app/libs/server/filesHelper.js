@@ -4,12 +4,16 @@ export const saveImgsInCloud = (files = [],title="GENERIC",ID="NoID") => {
     return Promise.all(files?.map((file, i) => {
         let { type, img } = file || {};
         const randomID = generateShortID();
-        const imgToSave = {
-            name: `${title}-${ID}-${i}-${randomID}`,
-            file: Buffer.from(img, 'base64'),
-            ContentType: type
+        try {
+            const imgToSave = {
+                name: `${title}-${ID}-${i}-${randomID}`,
+                file: Buffer.from(img, 'base64'),
+                ContentType: type
+            }
+            return fileController.saveImg(imgToSave);   
+        } catch (error) {
+            return []
         }
-        return fileController.saveImg(imgToSave);
     })) || [];
 }
 export function generateShortID() {

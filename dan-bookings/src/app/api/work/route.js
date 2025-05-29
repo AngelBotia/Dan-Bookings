@@ -70,21 +70,18 @@ export async function PUT(request,{ params }) {
             URL,
             IMAGE_URL
         }
-      
-        const updateWork = await workController.updateWork(workToSave);
-        if(!updateWork) return NextResponse.json({error:"Dont found this work"},{status:404})
 
-        if(detail){
             const MAIN_IMG_URL = IMAGE_URL || null;
             const WO_URL = URL || null;
             const detailToSave = {
-                ...detail,
                 MAIN_IMG_URL,
                 WO_URL
             }
+            const updateWork = await workController.updateWork(workToSave);
             updateWork.detail = await workController.updateWorkDetail(detailToSave);
-            updateWork.media = await workController.updateWorkMedias(detailToSave) || [];
-        }
+
+        if(!updateWork) return NextResponse.json({error:"Dont found this work"},{status:404})
+
         return NextResponse.json(updateWork,{status:200})
     } catch (error) {
         console.error(error.message);
@@ -94,7 +91,6 @@ export async function PUT(request,{ params }) {
 }
 export async function DELETE(request,{ params }) {
     try {
-        debugger
         if (!hasPermission(request)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         const body = await request.formData();
         const ID_WORK = JSON.parse(body.get('ID'));
@@ -102,22 +98,27 @@ export async function DELETE(request,{ params }) {
         
         
         //DELETE IMGS
-        // const allUrlsMedias = await workController.getWorkMedias({URL});
-        // // allUrlsMedias.map(async media => {
-        // //     const { URL_MEDIA } = media || {};
-        // //     const isDeleteToCloud = await fileController.deleteImg(URL_MEDIA); 
-        // //     return isDeleteToCloud;
-        // // })
+        const allUrlsMedias = await workController.getWorkMedias({URL});
+        allUrlsMedias.map(async media => {
+            const { URL_MEDIA } = media || {};
+            const isDeleteToCloud = await fileController.deleteImg(URL_MEDIA); 
+            return isDeleteToCloud;
+        })
                                                   
 
         const deleteMedias = await workController.deleteWorkMedias({URL})
         const deleteDetails = await workController.deleteWorkDetail(URL);
         const deleteWork = await workController.deleteWork({ID_WORK});
 
-        const isOK = !!deleteWork && !!deleteDetails && !!!!deleteMedias
-        return NextResponse.json({success:isOK, ID_WORK},{status:204})
+        const statusResponse = {
+            ID_WORK,
+            workStatus: !!deleteWork ,
+            detailStatus: !!deleteDetails,
+            mediaStatus:!!deleteMedias,
+            cloudMedia: false //TODO: CHANGE THIS
+        }
+        return NextResponse.json(statusResponse,{status:200})
     } catch (error) {
-        debugger
         console.error(error.message);
         const errorMessage = "something went wrong"
         return NextResponse.json({ error: errorMessage }, { status: 500 });

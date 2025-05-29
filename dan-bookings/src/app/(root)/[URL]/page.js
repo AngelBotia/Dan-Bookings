@@ -2,11 +2,9 @@
 import React from 'react';
 import Link from 'next/link';
 import '../../styles/globals.css'
-import'../../styles/workDetails.css'
+import'../../styles/Porfolio/Porfolio.css'
 import { useParams } from 'next/navigation';
-import { usePortfolio } from '../../context/PorfolioProvider';
-import { useApplication } from '../../context/AplicationProvider';
-import { useWork, useWorkDetails } from '../../hooks/useWork';
+import { useWorkDetails } from '../../hooks/useWork';
 
 export default function Work() {
   const { URL } = useParams();

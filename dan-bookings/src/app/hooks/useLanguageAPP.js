@@ -6,27 +6,24 @@ import { useEffect, useState } from 'react';
 
 export function useLanguageAPP(){
   const { setApplicationContext,applicationContext:{ languageAPP }} = useApplication();
-  const [lastLanguage, setLanguageSelect] = useState(null);
-  
+
   useEffect(() => {
     const lastLanguage = localStorage.getItem(LANG_LS);
     if (lastLanguage) {
-      setLanguageSelect(lastLanguage); 
+      setApplicationContext(prev => ({ ...prev, languageAPP:lastLanguage.toLocaleUpperCase()}))
     }
   }, []);
-
+  
   const setAppLanguage =(languageAPP = "ES")=>{
     setApplicationContext(prev => ({ ...prev, languageAPP:languageAPP.toLocaleUpperCase()}))
     localStorage.setItem(LANG_LS,languageAPP.toLocaleUpperCase())
   }
-
-  const getTranslation =()=>{
-    const allAppTexts = { ES, EN };
-    const languageSelect = lastLanguage || languageAPP;
-    return allAppTexts[languageSelect] || EN;
-  }
-
-
-  return { setAppLanguage ,getTranslation}
+  
+  return { setAppLanguage }
 }
 
+export const getTranslation =()=>{
+  const { applicationContext:{ languageAPP }} = useApplication();
+  const allAppTexts = { ES, EN };
+  return allAppTexts[languageAPP] || EN;
+}

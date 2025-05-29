@@ -1,9 +1,12 @@
-import { useState } from "react";
+import Image from 'next/image'
+import { useEffect, useState } from "react";
+import { ImgsContainer } from '../../UI/containers/ImgsContainer';
 
-export const InputImgs = ({form,name,label,imgsForm,required}) => {
+
+export const InputImgs = ({form,name,required}) => {
     const [formData, setformData] = form;
-    const [imgs, setImgs] = useState(imgsForm);
 
+    const [imgs, setImgs] = useState(formData[name]);
     const  onChangeInput = async ({currentTarget}) =>{
         const { name:inputName, files } = currentTarget
         if (!files.length) return;
@@ -31,10 +34,24 @@ export const InputImgs = ({form,name,label,imgsForm,required}) => {
             return { img, imgSrc, type };
         }));
     }
-  return (
+
+    const showImgs = () =>{
+      return imgs?.map((img,i) =>{ return (
+        <Image key={name+i}  alt={name} fill src={img}/>)}) || null
+    }
+    useEffect(() => {
+      if (formData[name]) {
+        const allUrl = formData[name].map(img => 
+          typeof img === 'string' ? img : img.imgSrc
+        );
+        setImgs(allUrl);
+      }
+    }, [formData[name]]);
+
+    return (
     !formData[name] ?
         <input //TODO: STYLE
-            // multiple
+            multiple
             type="file"
             name={name}
             onChange={(e)=>onChangeInput(e)}
@@ -42,28 +59,10 @@ export const InputImgs = ({form,name,label,imgsForm,required}) => {
             //TODO: accept=
             />
     :
-    imgs?.map((img,i) =>{ return (<img key={name+i} src={img}/>)}) || null
-    )
+    <ImgsContainer>
+        {showImgs()}
+    </ImgsContainer>
 
-}
-
-export const InputText = ({form,name,label,required,type="text",title}) => {
-    const [formData, setformData] = form;
-    const onChangeInput=(e)=>{
-        const { name, value } = e.currentTarget;
-        setformData(prev => ({...prev,[name]:value}))
-    }
-  return (
-    <label>
-        {label || "(?)"}
-        <input 
-            type={type}
-            name={name} 
-            value={formData[name] ?? ""} 
-            pattern={type != "email" ? "^[a-zA-ZñÑ ]+$" : undefined} 
-            onInput={(e)=>onChangeInput(e)}
-            title={title || "No se permiten cararcteres especiales"}
-            required={!!required}/>
-    </label>  
     )
 }
+

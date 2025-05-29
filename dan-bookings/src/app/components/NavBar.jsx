@@ -2,12 +2,11 @@
 import React from 'react'
 import Link from "next/link";
 import { signIn, useSession,signOut } from 'next-auth/react'
-import {  useLanguageAPP } from '../hooks/useLanguageAPP';
+import {  getTranslation, useLanguageAPP } from '../hooks/useLanguageAPP';
 import { getUserSession } from '../hooks/useUser';
 
 const NavBar = () => {
   const { user, isAdmin } = getUserSession();
-  const { getTranslation } =  useLanguageAPP();
   const { actions:{ booking }} = getTranslation();
 
   return (

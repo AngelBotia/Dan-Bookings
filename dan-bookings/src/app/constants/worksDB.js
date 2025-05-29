@@ -20,7 +20,6 @@ export const WO_DB_PROPS = {work_SELECT,WO_DB_TABLE,WO_DB_TABLE_ALIAS,LIMIT_WORK
 //DETAILS ///////////////////////////////////////////////////////////////////////////////////////////////////////
 const WO_DETAILS = {
 //PROPS ITEM ⇣ | ⇣ DB TABLE NAME 
-    DETAIL_ID: "DETAIL_ID",
     WO_URL: "WO_URL",
     DESCRIPTION: "DE_DESCRIPTION",
     TITLE: "DE_TITLE",

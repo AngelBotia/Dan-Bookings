@@ -1,7 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import NavBar from "../components/NavBar";
 import ProviderSession from "../context/SessionProvider";
-import { PorfolioContextProvider } from "../context/PorfolioProvider";
 import { ApplicationContextProvider } from "../context/AplicationProvider";
 import { WorkContextProvider } from "../context/WorkProvider"
 const geistSans = Geist({
@@ -25,12 +24,10 @@ export default function RootLayout({ children }) {
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ProviderSession>
           <ApplicationContextProvider>
-            <PorfolioContextProvider>
-              <WorkContextProvider>
-                <NavBar/>
-                {children}
-              </WorkContextProvider>
-            </PorfolioContextProvider>
+             <WorkContextProvider>
+               <NavBar/>
+               {children}
+             </WorkContextProvider>
           </ApplicationContextProvider>
         </ProviderSession>
       </body>

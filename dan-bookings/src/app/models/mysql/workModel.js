@@ -88,7 +88,7 @@ export class workModelMYSQL{
             [WORKS.IS_VISIBLE]: Number(IS_VISIBLE) || 0
         }
         //NEW IMG
-        if(IMAGE_URL) workToUpdate[WORKS.IMAGE_URL] = IMAGE_URL;
+        if(IMAGE_URL && typeof IMAGE_URL === 'string' ) workToUpdate[WORKS.IMAGE_URL] = IMAGE_URL;
 
         const [result] = await conn.query(`UPDATE ${WO_DB_TABLE} SET ? WHERE ${WORKS.ID_WORK} = ?`,[workToUpdate,ID_WORK]);
         if(result.affectedRows === 0) return null;
@@ -162,20 +162,19 @@ export class workModelMYSQL{
     updateWorkDetail = async(detail) =>{
         try {
             const { details_SELECT, DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET,WO_DETAILS} = DETAILS_PROPS;
-            const { DETAIL_ID, WO_URL, DESCRIPTION, TITLE, MAIN_IMG_URL } = detail || {};
+            const { WO_URL, DESCRIPTION, TITLE, MAIN_IMG_URL } = detail || {};
             const detailToUpdate = {
-                [WO_DETAILS.DETAIL_ID]: Number(DETAIL_ID),
                 [WO_DETAILS.WO_URL]: WO_URL,
                 [WO_DETAILS.DESCRIPTION]: DESCRIPTION,
                 [WO_DETAILS.TITLE]: TITLE,
             } 
             //NEW IMG
-            if( MAIN_IMG_URL ) detailToUpdate[WO_DETAILS.MAIN_IMG_URL] = MAIN_IMG_URL;
+            if( MAIN_IMG_URL && typeof MAIN_IMG_URL === 'string' ) detailToUpdate[WO_DETAILS.MAIN_IMG_URL] = MAIN_IMG_URL;
             
-            const [result] = await conn.query(`UPDATE ${DETAIL_DB_TABLE} ${DET_TABLE_ALIAS} SET ? WHERE ${DET_TABLE_ALIAS}.${WO_DETAILS.DETAIL_ID} = ?`,[detailToUpdate,DETAIL_ID]);
+            const [result] = await conn.query(`UPDATE ${DETAIL_DB_TABLE} ${DET_TABLE_ALIAS} SET ? WHERE ${DET_TABLE_ALIAS}.${WO_DETAILS.WO_URL} = ?`,[detailToUpdate,WO_URL]);
             if(result.affectedRows === 0) return null;
             
-            const [rows] =  await conn.query(`SELECT ${details_SELECT} FROM ${DETAIL_DB_TABLE} ${DET_TABLE_ALIAS}  WHERE ${DET_TABLE_ALIAS}.${WO_DETAILS.DETAIL_ID} = ?`,[DETAIL_ID]);
+            const [rows] =  await conn.query(`SELECT ${details_SELECT} FROM ${DETAIL_DB_TABLE} ${DET_TABLE_ALIAS}  WHERE ${DET_TABLE_ALIAS}.${WO_DETAILS.WO_URL} = ?`,[WO_URL]);
             if (rows?.affectedRows == 0) return null;
             
             const updatedDetail = rows?.find(work => work) || null;
@@ -207,7 +206,6 @@ export class workModelMYSQL{
             let PARAMS_VALUES = [URL]
 
             const [rows] = await conn.query(query, PARAMS_VALUES);
-            console.warn("RESULT MEDIA??--->",rows)
             if (rows?.affectedRows == 0) return [];
             return rows;
         } catch (error) {

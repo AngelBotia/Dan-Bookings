@@ -86,7 +86,7 @@ const Porfolio = () => {
     <main className='porfolio-container '>
       <ContHorizonalScroll>
         <section className="grid-porfolio">
-          <PorfolioImgs works={works} formState={formState}/>
+          <PorfolioImgs works={works} formState={formState} editMode={true}/>
           
           {isAdmin && 
             <PorfolioForm

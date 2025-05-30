@@ -2,6 +2,7 @@ import { workController } from "../../controllers/WorkController";
 import { NextResponse } from "next/server";
 import { hasPermission } from "../../libs/nextAuth"; 
 import { saveImgsInCloud } from '../../libs/server/filesHelper'
+import { fileController } from "../../controllers/FilesController";
 export async function GET(request) {
     try {
         const { searchParams } = request.nextUrl;
@@ -95,16 +96,23 @@ export async function DELETE(request,{ params }) {
         const body = await request.formData();
         const ID_WORK = JSON.parse(body.get('ID'));
         const URL = JSON.parse(body.get('URL'));
+        const IMAGE_URL = JSON.parse(body.get('IMAGE_URL')) || [];
         
         
-        //DELETE IMGS
+        //DELETE MEDIA IMGS
         const allUrlsMedias = await workController.getWorkMedias({URL});
-        allUrlsMedias.map(async media => {
+        const mediasDelete = allUrlsMedias.map(async media => {
             const { URL_MEDIA } = media || {};
-            const isDeleteToCloud = await fileController.deleteImg(URL_MEDIA); 
+            const key = fileController.getKey(URL_MEDIA);
+            const isDeleteToCloud = await fileController.deleteImg(key); 
             return isDeleteToCloud;
         })
-                                                  
+        //DELETE WORK AND MAIN URL DETAIL IMG
+        const mainImgsIsDelete = await Promise.all( IMAGE_URL?.map(async url => {
+            const key = fileController.getKey(url);
+            const isDelete = await fileController.deleteImg(key);
+            return isDelete;
+        }));
 
         const deleteMedias = await workController.deleteWorkMedias({URL})
         const deleteDetails = await workController.deleteWorkDetail(URL);
@@ -112,14 +120,14 @@ export async function DELETE(request,{ params }) {
 
         const statusResponse = {
             ID_WORK,
-            workStatus: !!deleteWork ,
-            detailStatus: !!deleteDetails,
-            mediaStatus:!!deleteMedias,
-            cloudMedia: false //TODO: CHANGE THIS
+            work: !!deleteWork ,
+            detail: !!deleteDetails,
+            cloudMain: !!mainImgsIsDelete.includes(true),
+            media:!!deleteMedias,
+            cloudMedia: !!mediasDelete.includes(true)
         }
         return NextResponse.json(statusResponse,{status:200})
     } catch (error) {
-        console.error(error.message);
         const errorMessage = "something went wrong"
         return NextResponse.json({ error: errorMessage }, { status: 500 });
     }

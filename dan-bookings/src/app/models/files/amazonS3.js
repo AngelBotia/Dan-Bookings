@@ -34,16 +34,18 @@ export class s3Model{
                 };
                 const command = new DeleteObjectCommand(params);
                 const res = await amazonS3.send(command);
-    
-                if (res.$metadata.httpStatusCode !== 200) return reject(null);
+                if (res.$metadata.httpStatusCode !== 204) return reject(null);
 
                 resolve(true);
             } catch (error) {
-                console.error(error.message);
                 reject(null);
             }
         });
     };
+
+    getKey = (url) =>{
+        return decodeURIComponent(url.split('.amazonaws.com/')[1]);
+    }
 
     
 }

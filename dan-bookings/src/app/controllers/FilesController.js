@@ -21,6 +21,14 @@ class FilesController {
           throw error.message;
         }
     }
+    getKey = (url) =>{
+      try {
+           return this.filesController.getKey(url);
+      } catch (error) {
+        console.error("[FILE-CONTROLLER] -",error.message);
+        throw error.message;
+      }
+  }
   
 }
 

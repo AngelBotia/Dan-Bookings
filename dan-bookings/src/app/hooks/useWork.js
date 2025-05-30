@@ -73,12 +73,13 @@ export const useWork = () => {
       }
     };
 
-    const deleteWork = async ({ID_WORK,URL}) =>{
+    const deleteWork = async ({ID_WORK,URL,IMAGE_URL}) =>{
       try {
         if(!ID_WORK || !URL) return null;
         const body = new FormData();      
         body.append("ID",JSON.stringify(ID_WORK));
         body.append("URL",JSON.stringify(URL));
+        body.append("IMAGE_URL",JSON.stringify(IMAGE_URL))
         const workToDelete = await fetch(`/api/work`, { method: "DELETE",body });
         const deletedWork = await workToDelete.json();
         return deletedWork || null;

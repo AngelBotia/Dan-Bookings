@@ -4,7 +4,6 @@ import '../../styles/porfolio/Porfolio.css'
 import '../../styles/porfolio/collages/collage1.css'
 import '../../styles/porfolio/collages/collageDefault.css'
 
-//**TODO: MAKE A COMPONENT CANT KWNOW HOW IS DRAG AND CHANGE WORK SELECTED */
 export const PorfolioImgs = ({works=[],formState,editMode = false}) => {
     const [formData ,setFormData]  = formState;
     
@@ -27,6 +26,7 @@ export const PorfolioImgs = ({works=[],formState,editMode = false}) => {
                               fill
                               src={IMAGE_URL}
                               className={className}
+                              objectFit="cover"
                               style={{
                                   viewTransitionName: `${URL}`,
                                   '--order-delay': `${Number(ORDER_INDEX) / 10 || Number(index) / 10}s`

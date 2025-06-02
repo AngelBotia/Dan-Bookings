@@ -1,9 +1,12 @@
+import '../../../styles/UI.css';
 import Image from 'next/image'
 import { useEffect, useState } from "react";
+import { IconSvg } from '../IconSvg'
 import { ImgsContainer } from '../../UI/containers/ImgsContainer';
 
 
-export const InputImgs = ({form,name,required}) => {
+
+export const InputImgs = ({form,name,required,multiple=false}) => {
     const [formData, setformData] = form;
 
     const [imgs, setImgs] = useState(formData[name]);
@@ -37,7 +40,7 @@ export const InputImgs = ({form,name,required}) => {
 
     const showImgs = () =>{
       return imgs?.map((img,i) =>{ return (
-        <Image key={name+i}  alt={name} fill src={img}/>)}) || null
+        <Image key={name+i}  alt={name} fill  className='img-InputImgs'  src={img}/>)}) || null
     }
     useEffect(() => {
       if (formData[name]) {
@@ -50,16 +53,21 @@ export const InputImgs = ({form,name,required}) => {
 
     return (
     !formData[name] ?
-        <input //TODO: STYLE
-            multiple
+    <label className='label-InputImgs' >
+      <IconSvg svg={"/icons/upload-Icon.svg"} className={"Icon-InputImgs-upload"}/>
+        <input 
+            multiple = {multiple}
             type="file"
             name={name}
             onChange={(e)=>onChangeInput(e)}
             required={!!required}
-            //TODO: accept=
+            className='input-InputImgs'
+            accept="image/jpeg, image/png, image/webp, image/gif, image/heic, image/heif, image/tiff, image/bmp, image/x-icon"
             />
+    </label>
     :
     <ImgsContainer>
+        <button style={{zIndex:3,position:'absolute'}} type='button' onClick={()=> setformData(prev => ({...prev,[name]:""}))}>ClearAll</button>
         {showImgs()}
     </ImgsContainer>
 

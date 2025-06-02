@@ -1,7 +1,8 @@
 'use client'
 import React from 'react'
 import Link from "next/link";
-import { signIn, useSession,signOut } from 'next-auth/react'
+import '../styles/NavBar.css'
+import { signIn,signOut } from 'next-auth/react'
 import {  getTranslation, useLanguageAPP } from '../hooks/useLanguageAPP';
 import { getUserSession } from '../hooks/useUser';
 

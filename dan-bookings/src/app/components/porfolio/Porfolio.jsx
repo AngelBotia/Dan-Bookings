@@ -1,6 +1,6 @@
-import React,{ useState } from 'react';
-import '../../styles/porfolio/Porfolio.css'
 import '../../styles/globals.css'
+import '../../styles/porfolio/Porfolio.css'
+import React,{ useState } from 'react';
 import { ContHorizonalScroll } from '../UI/containers/ContHorizonalScroll';
 import { getUserSession } from '../../hooks/useUser';
 import { useWork } from '../../hooks/useWork';
@@ -86,7 +86,7 @@ const Porfolio = () => {
     <main className='porfolio-container '>
       <ContHorizonalScroll>
         <section className="grid-porfolio">
-          <PorfolioImgs works={works} formState={formState} editMode={true}/>
+          <PorfolioImgs works={works} formState={formState} editMode={false}/>
           
           {isAdmin && 
             <PorfolioForm

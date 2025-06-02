@@ -5,16 +5,24 @@ export const InputText = ({form,name,label,required,type="text",title}) => {
         setformData(prev => ({...prev,[name]:value}))
     }
   return (
-    <label>
-        {label || "(?)"}
-        <input 
-            type={type}
-            name={name} 
-            value={formData[name] ?? ""} 
-            pattern={type != "email" ? "^[a-zA-ZñÑ ]+$" : undefined} 
-            onInput={(e)=>onChangeInput(e)}
-            title={title || "No se permiten cararcteres especiales"}
-            required={!!required}/>
-    </label>  
+    <div className="form-item">
+        <input
+          className="input-InputText"
+          id={name}
+          name={name}
+          type={type}
+          value={formData[name] ?? ""}
+          placeholder=" "
+          pattern={type !== "email" ? "^[a-zA-ZñÑ ]+$" : undefined}
+          onInput={(e) => onChangeInput(e)}
+          title={title || "No se permiten caracteres especiales"}
+          required={!!required}
+          autoComplete="off"
+        />
+        <label className="label-InputText" htmlFor={name}>
+          {label || "(?)"}
+        </label>
+    </div>
+  
     )
 }

@@ -1,24 +1,20 @@
+import '../../styles/Porfolio/Porfolio.css'
 import { useState } from 'react';
 import { InputImgs, } from '../UI/inputs/InputImgs';
 import { InputText } from '../UI/inputs/InputText'
-import { ToggleHidden } from '../UI/ToggleHidden';
 
 export const PorfolioForm = ({errorMessages,labels,formState,onSubmit,children}) => {
   const [formData, setformData] = formState;
 
   return (
-        <form className='form ' onSubmit={async (e)=> await onSubmit(e)}>
-            
-          <div style={{
-           position:'relative',
-           width:'30vw',
-           height: '30vh'}}>
+        <form className='form-porfolio' onSubmit={async (e)=> await onSubmit(e)}>
+                  
             <InputImgs
                form={formState}
                name={"IMAGE_URL"}
                required={true}
+               multiple={true}
             />
-          </div>
 
             <InputText 
                 form={formState} 
@@ -28,6 +24,12 @@ export const PorfolioForm = ({errorMessages,labels,formState,onSubmit,children})
                 required={true}/>
 
         
+            <InputText 
+              form={formState} 
+              name={"ORDER_INDEX"} 
+              label={"Descripcion"} 
+              title={errorMessages["title"] } 
+              required={false}/>
 
             {/* <InputText 
               form={formState} 

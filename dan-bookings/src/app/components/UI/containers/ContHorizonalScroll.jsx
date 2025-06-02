@@ -1,4 +1,5 @@
 'use client'
+import '../../../styles/UI.css';
 import React, { useEffect, useRef } from 'react'
 
 export const ContHorizonalScroll = ({children}) => {

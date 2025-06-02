@@ -72,14 +72,14 @@ export async function PUT(request,{ params }) {
             IMAGE_URL
         }
 
-            const MAIN_IMG_URL = IMAGE_URL || null;
-            const WO_URL = URL || null;
-            const detailToSave = {
-                MAIN_IMG_URL,
-                WO_URL
-            }
-            const updateWork = await workController.updateWork(workToSave);
-            updateWork.detail = await workController.updateWorkDetail(detailToSave);
+        const MAIN_IMG_URL = IMAGE_URL || null;
+        const WO_URL = URL || null;
+        const detailToSave = {
+            MAIN_IMG_URL,
+            WO_URL
+        }
+        const updateWork = await workController.updateWork(workToSave);
+        updateWork.detail = await workController.updateWorkDetail(detailToSave);
 
         if(!updateWork) return NextResponse.json({error:"Dont found this work"},{status:404})
 

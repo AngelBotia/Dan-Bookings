@@ -44,13 +44,14 @@
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(3, 1fr);
   width: 200vw;
-  height: 100%;
+  height: inherit;
   grid-gap: 2px;
   white-space: nowrap
 }
 
 /* ITEMS */
 .img-porfolio {
+  display: block;
   object-fit: cover !important;
   filter: grayscale(0.5);
   cursor: pointer;
@@ -68,15 +69,31 @@
 
 
 .form-porfolio {
-  background-color: rgba(var(--primary-background), .9);
-  border: 1px solid rgb(var(--color-complementary));
+  background-color: rgba(var(--color-primary-dark));
+  border: 2px solid rgb(var(--color-primary-light));
   border-radius: .5rem;
   flex-direction: column;
-  width: clamp(20rem, 50vw, 60rem);
-  height: max-content;
+  width: clamp(20rem, 25vw, 30rem);
+  height: fit-content;
   padding: 3rem 1.5rem;
   display: flex;
   position: absolute;
+  z-index: var(--z-index-middle);
+}
+.button-porfolio{
+  border-radius: 6px;
+  width: fit-content;
+  padding: 0.7rem;
+  color: rgb(var(--color-primary-front));
+  font-weight: 600;
+}
+.reset-porfolio{
+  background-color: rgb(var(--error-color));
+  border-color: rgba(var(--error-color), 0.6);
+}
+.submit-porfolio{
+  background-color: rgb(var(--color-primary-medium));
+  border-color: rgb(var(--color-primary-light));
 }
 
 

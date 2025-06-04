@@ -1,20 +1,32 @@
 :root {
   --gray:125,125,125;
+  --z-index-back: 100;
+  --z-index-middle: 200;
+  --z-index-front: 300;
+  --z-index-high-prioty: 900;
+  --z-index-god: 999 !important;
+
 }
 
 
 @media (prefers-color-scheme: dark) {
   :root {
  /*background color*/
- --primary-background: 0, 0, 0;
- --color-primary-medium: 136, 136, 136;
- --color-primary-light: 169, 169, 169;
- --color-complementary: 180, 180, 180;
- /*letters color*/
- --primary-front: 223, 223, 223;
+ --color-primary-background: 0, 0, 0;     /* Negro absoluto */
+ --color-primary-dark: 113,111,78;        /* Rojo puro */
+ --color-primary-medium:  209,186,147;    /* Amarillo puro */
+ --color-primary-light:   250,236,213;    /* Blanco */
+
+ --color-complementary: 0, 255, 255;      /* Cian fuerte */
+
+ --color-primary-front: 255, 255, 255;
+
+
+
+
   
- --error-color:255,0,0
- 
+ --error-color:155, 0, 0
+
   }
   @view-transition{
     navigation: auto;
@@ -24,16 +36,16 @@
 @media (prefers-color-scheme: light) {
   :root {
     /*background color*/
-    --primary-background: 255,255,255;
-    --color-primary-medium: 30, 153, 168; 
-    --color-primary-light: 71, 208, 197;  
-    --color-complementary: 194, 179, 156; 
+    --color-primary-background: 255,255,255;/* Azul marino oscuro */
+    --color-primary-dark:42,85,135; /*Azul acero*/
+    --color-primary-medium: 184,147,48; /*Mostaza dorado*/ 
+    --color-primary-light: 228,229,153; /*Verde lima pálido */
+    --color-complementary: 115,6,14 ; /* / Rojo oscuro  */
   
     /*letters color*/
-    --primary-front:  0,0,0;
-
+    --color-primary-front:  0,0,0;
     
-    --error-color:255,0,0
+    --error-color:155,0,0
   }
   @view-transition{
     navigation: auto;
@@ -52,9 +64,9 @@ body, html {
   height: 100vh;
   overflow-X: hidden;
   margin: 0;
-  background-color: rgb(var(--primary-background));
-  background: rgb(var(--primary-background));
-  color: rgb(var(--primary-front));
+  background-color: rgb(var(--color-primary-background));
+  background: rgb(var(--color-primary-background));
+  color: rgb(var(--color-primary-front));
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -102,4 +114,12 @@ a {
   background-color:  rgba(var(--color-primary-medium),0.7);
 }
 
+
+svg{
+  display: block;  
+  fill: currentColor;
+}
+.cross-icon{
+  background-image: '/X-Icon.png';
+}
 

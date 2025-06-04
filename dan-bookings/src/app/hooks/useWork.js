@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useWorkContext } from "../context/WorkProvider";
-
+import { workService } from '../services/workService'
 
 
 
@@ -14,12 +14,9 @@ export const useWork = () => {
      * @param {number} params.page - Page number to retrieve.
      * @return {Object[]} Array of works.
     */
-    const getWorks = async (params={}) => {
+    const loadWorks = (params={}) => {
       try {
-        const searchParams = params ? new URLSearchParams(params) : "";
-        const worksData = await fetch(`/api/work?${searchParams}`, { method: "GET" });
-        const worksJson = await worksData.json() || [];
-        return worksJson;
+         return workService.getWorks(params) || [];
       } catch (error) {
         return null;
       }
@@ -36,80 +33,73 @@ export const useWork = () => {
        * @property {String} IMAGE_URL.type - format of img PNG,JPG...
        * @return {Object} New work.
     */
-    const createWork = async (work) => {
-      const { WO_NAME, IMAGE_URL } = work;
-      if (!WO_NAME || !IMAGE_URL?.length) return null;
+    const addWork = async (workToSend = {}) =>{
+        const { IMAGE_URL } = workToSend;
+        const newWork = await workService.createWork(workToSend);
+        if(!newWork) throw new Error('TODO: put error with translate');
 
-      try {
-        const imgsToSend = IMAGE_URL?.map(file => {
-          const { img, type } = file;
-          return { img, type }
-        })
-        const body = new FormData();
-        body.append('work',JSON.stringify({WO_NAME,IMAGE_URL:imgsToSend}));
+        const imgInCache =  IMAGE_URL[0].imgSrc;
+        newWork.IMAGE_URL = imgInCache || newWork.IMAGE_URL; 
+        if(newWork?.detail) newWork.detail.MAIN_IMG_URL = imgInCache || newWork.IMAGE_URL
 
-        const dataWork = await fetch(`/api/work`, { method: "POST", body });
-        const newWork = await dataWork.json();
-        return newWork;
-      } catch (error) {
-        return null;
-      }
+        const updateWorks = [...works, newWork];
+        setWorkContext(prev =>({ ...prev ,works:updateWorks}));
+    };
+ 
+    const editWork = async (workToSend = {}) =>{
+      const { IMAGE_URL ,ID_WORK} = workToSend; 
+
+      const lastWork = works.find(work => work.ID_WORK == ID_WORK);
+      workToSend.IMAGE_URL = lastWork.IMAGE_URL != IMAGE_URL ? IMAGE_URL : [];
+
+      const newWork = await workService.updateWork(workToSend)
+      if(!newWork) throw new Error("TODO: put error with translate");
+
+      const updatePorfolio = works?.map(work =>{ 
+        const result = work.ID_WORK == newWork.ID_WORK ? newWork : work;
+        return result;
+      });
+
+      setWorkContext(prev =>({ ...prev ,works:updatePorfolio}));
     };
 
-    const updateWork = async (newWork = {}) => {
-      try {
-        if ( !newWork?.ID_WORK ) return null;
+    const removeWork = async (workToDelete) =>{
+      const {ID_WORK, URL } = workToDelete;
+      if(!ID_WORK || !URL) return
+      const response = await workService.deleteWork(workToDelete)
+      if(!response)  throw new Error('TODO: put error with translate');
 
-        const body = new FormData();      
-        body.append("newWork",JSON.stringify(newWork));
+      const updatePorfolio = works?.filter(work=>work.ID_WORK != ID_WORK)
+                                   .sort((a, b) => a.ORDER_INDEX - b.ORDER_INDEX)
+                                   .map((work, index) => ({ ...work, ORDER_INDEX: index + 1 }));
 
-        const workToUpdate = await fetch(`/api/work`, { method: "PUT", body });
-        const updatedWork = await workToUpdate.json();
-
-        return updatedWork;
-      } catch (error) {
-        console.error(error)
-        return null;
-      }
+      setWorkContext(prev =>({ ...prev ,works:updatePorfolio}));
     };
 
-    const deleteWork = async ({ID_WORK,URL,IMAGE_URL}) =>{
-      try {
-        if(!ID_WORK || !URL) return null;
-        const body = new FormData();      
-        body.append("ID",JSON.stringify(ID_WORK));
-        body.append("URL",JSON.stringify(URL));
-        body.append("IMAGE_URL",JSON.stringify(IMAGE_URL))
-        const workToDelete = await fetch(`/api/work`, { method: "DELETE",body });
-        const deletedWork = await workToDelete.json();
-        return deletedWork || null;
-      } catch (error) {
-        return null;
-      }
-    };
     useEffect(() => {
 
       const loadData = async () => {
         const hasWorksInCache = works?.find(work => work.ID_WORK) || null;
         const detailInCache = works?.find(work => work.detail && !work.ID_WORK)?.detail || null;
         if (hasWorksInCache) return;
-          let newWorks = await getWorks(params);
+          let newWorks = await loadWorks(params);
           if(detailInCache) newWorks = newWorks.map(newWork => {return newWork.URL==detailInCache.WO_URL ? {...newWork,detail: detailInCache} : newWork })
           setWorkContext(prev =>({ ...prev ,works:newWorks}));   
-        }
+      }
           loadData();
     }, []);
   
 return {
         works,
         setWorkContext,
-        getWorks,
-        createWork,
-        updateWork,
-        deleteWork
+        loadWorks,
+        addWork,
+        editWork,
+        removeWork
       }
 };
 
+//TODO EXPORT THIS TO SERVICE
 export const useWorkDetails = (params = {}) => {
   const { workContext, setWorkContext } = useWorkContext();
   const { works } = workContext;

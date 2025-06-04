@@ -1,9 +1,8 @@
 import '../../../styles/UI.css';
 import Image from 'next/image'
 import { useEffect, useState } from "react";
-import { IconSvg } from '../IconSvg'
 import { ImgsContainer } from '../../UI/containers/ImgsContainer';
-
+import { UploadImgsIcon } from '../icons/UploadImgsIcon'
 
 
 export const InputImgs = ({form,name,required,multiple=false}) => {
@@ -37,10 +36,33 @@ export const InputImgs = ({form,name,required,multiple=false}) => {
             return { img, imgSrc, type };
         }));
     }
+    const removeImg = (img) => {
+      const updateImg = formData[name].filter(formImg =>{
+        if(formImg.imgSrc){ return formImg.imgSrc != img }
+        else { return formImg != img }
+      });
+      setformData(prev => ({...prev,[name]:updateImg}))
+    }
+    
 
     const showImgs = () =>{
       return imgs?.map((img,i) =>{ return (
-        <Image key={name+i}  alt={name} fill  className='img-InputImgs'  src={img}/>)}) || null
+        <label key={name+i} className='img-InputImgs'>
+          <Image 
+            fill
+            alt={name}   
+            className='img-InputImgs'
+            src={img}
+            />
+          <button 
+            type='button' 
+            onClick={(e)=> removeImg(img)} 
+            className='remove-img-button cross-icon'
+            />
+        </label>
+        
+        )}) || null
+          
     }
     useEffect(() => {
       if (formData[name]) {
@@ -52,9 +74,8 @@ export const InputImgs = ({form,name,required,multiple=false}) => {
     }, [formData[name]]);
 
     return (
-    !formData[name] ?
+    !formData[name]?.length ?
     <label className='label-InputImgs' >
-      <IconSvg svg={"/icons/upload-Icon.svg"} className={"Icon-InputImgs-upload"}/>
         <input 
             multiple = {multiple}
             type="file"
@@ -64,10 +85,10 @@ export const InputImgs = ({form,name,required,multiple=false}) => {
             className='input-InputImgs'
             accept="image/jpeg, image/png, image/webp, image/gif, image/heic, image/heif, image/tiff, image/bmp, image/x-icon"
             />
+        <UploadImgsIcon/>
     </label>
     :
     <ImgsContainer>
-        <button style={{zIndex:3,position:'absolute'}} type='button' onClick={()=> setformData(prev => ({...prev,[name]:""}))}>ClearAll</button>
         {showImgs()}
     </ImgsContainer>
 

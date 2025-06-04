@@ -1,3 +1,4 @@
+import '../../../styles/UI.css'
 import React, { useState } from 'react'
 
 export const ToggleHidden = ({children,isOpen = false, onClose}) => {
@@ -5,12 +6,8 @@ export const ToggleHidden = ({children,isOpen = false, onClose}) => {
     !!isOpen ? 
     <>
     <main 
-        style={{
-            width: 'inherit',
-            height: '-webkit-fill-available',
-            position:'absolute'
-        }}
-        onClick={()=>onClose()}>
+      className='back-toggle-hidden'
+      onClick={()=>onClose()}>
     </main>
     {children}
     </> 

@@ -23,8 +23,6 @@ const Porfolio = () => {
 
   const { works, loadWorks, addWork, editWork ,removeWork } = useWork();
   const { user, isAdmin } = getUserSession();
-
-  const formRef = useRef(null);
   const formState = useState(null);
   const [formData ,setFormData] = formState;
   
@@ -76,14 +74,31 @@ const Porfolio = () => {
       }) || [];
   }
   
-  const onWorkSelected = (event,work) => {
+  const onWorkSelected = (e,work) => {
     const { IMAGE_URL } = work;
-  
+    const pos = {
+      x: e.clientX,
+      y: e.clientY
+    }
     const workToShow = {
       ...work,
-      IMAGE_URL: [IMAGE_URL]
+      IMAGE_URL: [IMAGE_URL],
+      pos
     }
     setFormData(workToShow)
+  }
+  const onLoadForm = (e)=>{
+    if(!formData?.pos) return;
+    const {pos:{ x,y } } = formData || {};
+
+    const formWidth = e.currentTarget.offsetWidth
+
+    //changes the side when are close to borders
+    let left = x < (window.innerWidth / 2) ? x  : x - formWidth;
+    //check dont overflow the view
+    left = Math.max(0, Math.min(left, window.innerWidth - formWidth));
+    
+    e.currentTarget.style.left = `${left}px`
   }
 
   const onSubmit = async (e) =>{
@@ -94,9 +109,8 @@ const Porfolio = () => {
           let response = ID_WORK ? await editWork(formData)
                                  : await addWork(formData)
           
-          setFormData({});
           e.target.reset(); 
-          //TODO: CLOSE FORM
+          setFormData(null);
     } catch (error) {
       console.error("SHOW MODAL????")
       //TODO: SHOW MODAL(error.message)
@@ -122,10 +136,10 @@ const Porfolio = () => {
       <ContHorizonalScroll>
         <section className="grid-porfolio">
           {createImgs()}   
-          {/* TODO: create newwork => setformData({})        */}
+          {<article style={{backgroundColor:'gray'}} onClick={(e)=>setFormData({})} className={`img-porfolio ${fadeIn} ${works.length + 1}`}/>}
           {isAdmin && 
             <ToggleHidden isOpen={formData} onClose={()=>{setFormData(null)}}> 
-              <form ref={formRef} className='form-porfolio' onSubmit={async (e) => await onSubmit(e)}>
+              <form onLoad={(e)=>onLoadForm(e)} className='form-porfolio fade-in-animation fast-animation' onSubmit={async (e) => await onSubmit(e)}>
                 <InputImgs
                   form={formState}
                   name={"IMAGE_URL"}
@@ -144,7 +158,7 @@ const Porfolio = () => {
                   <button type='submit' className='button-porfolio submit-porfolio'>Enviar</button>
                  {formData?.ID_WORK && <button type='reset' className='button-porfolio reset-porfolio' onClick={(e) => onReset(e)}>Borrar</button>}                </footer>
               </form> 
-              </ToggleHidden>
+            </ToggleHidden>
             }
         </section>
       </ContHorizonalScroll>

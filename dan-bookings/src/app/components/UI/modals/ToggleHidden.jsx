@@ -6,7 +6,7 @@ export const ToggleHidden = ({children,isOpen = false, onClose}) => {
     !!isOpen ? 
     <>
     <main 
-      className='back-toggle-hidden'
+      className='back-toggle-hidden fade-in-animation fast-animation '
       onClick={()=>onClose()}>
     </main>
     {children}

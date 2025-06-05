@@ -66,6 +66,9 @@
   animation: fadeIn 2s ease forwards;
   animation-delay: var(--order-delay);
 }
+.fast-animation {
+  animation: fadeIn 1s ease forwards;
+}
 
 
 .form-porfolio {

@@ -8,10 +8,10 @@ import Image from 'next/image'
 import { ContHorizonalScroll } from './UI/containers/ContHorizonalScroll';
 import { getUserSession } from '../hooks/useUser';
 import { useWork } from '../hooks/useWork';
-import { getTranslation, useLanguageAPP } from '../hooks/useLanguageAPP';
 import { InputImgs, } from './UI/inputs/InputImgs';
 import { InputText } from './UI/inputs/InputText'
 import { ToggleHidden } from './UI/modals/ToggleHidden'
+import { useApplication,getTranslation, useLanguageAPP  } from '../hooks/useApplication';
 
 
 
@@ -20,9 +20,10 @@ const Porfolio = () => {
     errorMessages,
     labels 
   }} = getTranslation();
-
   const { works, loadWorks, addWork, editWork ,removeWork } = useWork();
   const { user, isAdmin } = getUserSession();
+  
+  const [editMode, seteditMode] = useState(false)
   const formState = useState(null);
   const [formData ,setFormData] = formState;
   
@@ -30,7 +31,6 @@ const Porfolio = () => {
 
   let isLoaded,typeOfCollage = false;
   const fadeIn = !isLoaded ? 'fade-in-animation' : ''
-  const editMode = true;
     
   const createImgs = () => {
     return works?.map((work, index) => {
@@ -112,31 +112,29 @@ const Porfolio = () => {
           e.target.reset(); 
           setFormData(null);
     } catch (error) {
-      console.error("SHOW MODAL????")
-      //TODO: SHOW MODAL(error.message)
+      window.alert(error.message)//TODO CHANGE THIS FOR A MODAL
     }
   }
 
-  const onReset = async (e) => {
+  const onDelete = async (e) => {
     try {
       const isDelete = await removeWork(formData);
       setFormData(null)
     } catch (error) {
-      console.error("PUT ERROR MODAL HERE")
-      //TODO: SHOW MODAL(error.message)
-
+      window.alert(error.message)//TODO CHANGE THIS FOR A MODAL
     }
   }
 
  
 
   return (
-    works.length ?
+    works.length || isAdmin ?
     <main className='porfolio-container '>
+     {isAdmin && <button style={{backgroundColor: editMode ? 'green' : "transparent",position: 'fixed',right: '0px',zIndex:3}} onClick={(e)=>seteditMode(!editMode)}>✏️</button>}
       <ContHorizonalScroll>
         <section className="grid-porfolio">
           {createImgs()}   
-          {<article style={{backgroundColor:'gray'}} onClick={(e)=>setFormData({})} className={`img-porfolio ${fadeIn} ${works.length + 1}`}/>}
+          {editMode && <article style={{backgroundColor:'gray'}} onClick={(e)=>setFormData({})} className={`img-porfolio ${fadeIn} ${works.length + 1}`}/>}
           {isAdmin && 
             <ToggleHidden isOpen={formData} onClose={()=>{setFormData(null)}}> 
               <form onLoad={(e)=>onLoadForm(e)} className='form-porfolio fade-in-animation fast-animation' onSubmit={async (e) => await onSubmit(e)}>
@@ -144,7 +142,6 @@ const Porfolio = () => {
                   form={formState}
                   name={"IMAGE_URL"}
                   required={true}
-                  multiple={true}
                 />
 
                 <InputText
@@ -154,9 +151,10 @@ const Porfolio = () => {
                   title={errorMessages["WO_NAME"]}
                   required={true} />
 
-                <footer >
+                <footer>
                   <button type='submit' className='button-porfolio submit-porfolio'>Enviar</button>
-                 {formData?.ID_WORK && <button type='reset' className='button-porfolio reset-porfolio' onClick={(e) => onReset(e)}>Borrar</button>}                </footer>
+                  {formData?.ID_WORK && <button type='reset' className='button-porfolio reset-porfolio' onClick={(e) => onDelete(e)}>Borrar</button>} 
+                </footer>
               </form> 
             </ToggleHidden>
             }

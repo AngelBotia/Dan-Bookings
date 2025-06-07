@@ -3,12 +3,13 @@ import React, { createContext, useState } from "react"
 
 export const ApplicationContext = createContext();
 
-export function useApplication(){
+export function useApplicationContext(){
   return React.useContext(ApplicationContext)
 }
 
 const APPLICATION_DEFAULT={
-    languageAPP: "ES"
+    languageAPP: "ES",
+    editMode: false,
 }
 export const ApplicationContextProvider = ({ children }) => { 
 

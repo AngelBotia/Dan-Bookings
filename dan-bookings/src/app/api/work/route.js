@@ -8,7 +8,8 @@ export async function GET(request) {
         const { searchParams } = request.nextUrl;
         const limit = Number(searchParams.get('limit'));
         const page = Number(searchParams.get('page'));
-        let params ={ limit , page };
+        const ID_WORK = searchParams.get('id');
+        let params ={ limit , page,ID_WORK };
         const allWorks = await workController.getAllWorks(params);
         return NextResponse.json(allWorks,{ status:200 });
     } catch (error) {
@@ -30,7 +31,7 @@ export async function POST(request, { params }) {
         
         if(!files?.length || !WO_NAME)  return NextResponse.json({ error: "Bad request" }, { status: 400 });
 
-        const urlsImg = await saveImgsInCloud(files,'MAIN',URL);
+        const urlsImg = await saveImgsInCloud(files,'MAIN',URL,true);
 
         const workToSave = {
             WO_NAME,
@@ -54,16 +55,23 @@ export async function PUT(request,{ params }) {
         
         const body = await request.formData();
         const newWork = JSON.parse(body.get('newWork')) || {};
-        const { detail } = newWork || {};
+        const { detail,ID_WORK } = newWork || {};
         const files = newWork.IMAGE_URL || [];
 
-        if(!newWork.ID_WORK)  return NextResponse.json({ error: "Bad request" }, { status: 400 });
+        if(!newWork.ID_WORK || !newWork.WO_NAME)  return NextResponse.json({ error: "Bad request" }, { status: 400 });
 
         const { WO_NAME } = newWork;
-        
         const URL = WO_NAME?.trim().replaceAll(" ","-") || null
 
-        const urlsImg = await saveImgsInCloud(files,'MAIN',URL);
+        const oldWork = await workController.getAllWorks({ID_WORK});
+        if(oldWork[0].WO_NAME != WO_NAME){
+            const oldKey = `MAIN-${oldWork[0].URL}`
+            const newKey = `MAIN-${URL}`
+            await fileController.updateImg(oldKey,newKey)
+        }
+
+        
+        const urlsImg = await saveImgsInCloud(files,'MAIN',URL,true);
         const IMAGE_URL = urlsImg[0] || null;
 
         const workToSave = {
@@ -85,7 +93,7 @@ export async function PUT(request,{ params }) {
 
         return NextResponse.json(updateWork,{status:200})
     } catch (error) {
-        console.error(error.message);
+        console.error(error);
         const errorMessage = "something went wrong"
         return NextResponse.json({ error: errorMessage }, { status: 500 });
     }

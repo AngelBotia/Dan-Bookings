@@ -1,50 +1,16 @@
 import { useSession } from "next-auth/react";
-import { API_KEY, US_DB_PROPS } from "../constants/usersDB";
+import { userService } from "../services/userService"
+import { US_DB_PROPS } from "../constants/usersDB";
 
 export const useUser = () => {
-    const URL_ENDPOINT_USER = `${process.env.NEXTAUTH_URL}/api/user`;
-    const createUser = async(user) =>{
-        try {
-            if(!user) return null;
-            const newUser = await fetch(URL_ENDPOINT_USER,
-                {
-                    method: "POST",
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': API_KEY
-                    },
-                    body: JSON.stringify(user)
-                }) || null;
 
-            const newUserJson = await newUser.json();
-            return newUserJson;
-          } catch (error) {
-            return null;
-          }
+    const createUser = async(user) =>{
+        return await userService.createUser(user);
     }
     const getUser = async(user)=>{
-        try {
-            if(!user) return null;
-            const userParams = user ? new URLSearchParams(user) : "";
-            const userDB = await fetch(`${URL_ENDPOINT_USER}?${userParams}`,
-                {
-                    method: "GET",
-                    credentials: 'include',
-                    headers: {
-                        'x-api-key': API_KEY,
-                    }
-                }) || null;
-
-            const  userDBJson = await userDB.json();   
-            return userDBJson;
-          } catch (error) {
-            return null;
-          }
+        return await userService.getUser(user)
     }
  
- 
-
     return {createUser,getUser}
 }
 export const getUserSession = () =>{

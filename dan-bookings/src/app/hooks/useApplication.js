@@ -1,11 +1,25 @@
-import { useApplication } from '../context/AplicationProvider';
+
 import ES from '../translations/ES.json'
 import EN from '../translations/EN.json'
 import { LANG_LS } from '../constants/localStorage';
 import { useEffect, useState } from 'react';
+import { useApplicationContext } from '../context/AplicationProvider'
+export const useApplication = () =>{
+  const { applicationContext, setApplicationContext }  = useApplicationContext();
+  const { editMode } = applicationContext || {};
+  const setEditModeApp = (isActive=false) =>{
+        setApplicationContext(prev => ({ ...prev, editMode:isActive}))
+  }
+
+  return {
+    setEditModeApp,
+    editMode
+  }
+    
+}
 
 export function useLanguageAPP(){
-  const { setApplicationContext,applicationContext:{ languageAPP }} = useApplication();
+  const { setApplicationContext,applicationContext:{ languageAPP }} = useApplicationContext();
 
   useEffect(() => {
     const lastLanguage = localStorage.getItem(LANG_LS);
@@ -23,7 +37,11 @@ export function useLanguageAPP(){
 }
 
 export const getTranslation =()=>{
-  const { applicationContext:{ languageAPP }} = useApplication();
+  const { applicationContext:{ languageAPP }} = useApplicationContext();
   const allAppTexts = { ES, EN };
   return allAppTexts[languageAPP] || EN;
 }
+
+
+
+

@@ -2,19 +2,23 @@ import { conn ,createDynamicQuery} from "../../libs/mysql/mysql";
 import { DETAILS_PROPS,WDM_PROPS,WO_DB_PROPS } from "../../constants/worksDB"
 
 export class workModelMYSQL{
-    getAllWorks = async ({ limit, page }) => {
+    getAllWorks = async ({ limit, page, ID_WORK }) => {
     
         let SELECT = [], FROM = [], WHERE = [], ORDER = [], PARAMS_VALUES = [];
         try {
             const {work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,LIMIT_WORKS,WORKS} = WO_DB_PROPS;
-
             //SELECT
              SELECT = [work_SELECT];
             //FROM
             const work_FROM = `${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS}`
              FROM = [work_FROM];
             //WHERE
-             WHERE = [];
+            WHERE = [];
+            if(ID_WORK){
+                const idWork_WHERE = `${WO_DB_TABLE_ALIAS}.${WORKS.ID_WORK} = ?`
+                WHERE.push(idWork_WHERE)
+                PARAMS_VALUES.push(ID_WORK)
+            }
             //ORDER
             const orderByIndex = `${WO_DB_TABLE_ALIAS}.${WORKS.ORDER_INDEX}`
              ORDER = [orderByIndex];
@@ -24,7 +28,10 @@ export class workModelMYSQL{
             //LIMIT PAGE
             const limitWorks = Number(limit) || LIMIT_WORKS;
             const pageWorks =  Number(page) || 0;
-            limitWorks && (allQuery = allQuery.concat(` LIMIT ? OFFSET ? `), PARAMS_VALUES.push(limitWorks,pageWorks));
+            if(limitWorks)  {
+              allQuery = allQuery.concat(` LIMIT ? OFFSET ? `)
+              PARAMS_VALUES.push(limitWorks,pageWorks)
+            }
             
             const [rows] = await conn.query(allQuery,PARAMS_VALUES);
             if (rows?.affectedRows == 0) throw new Error("works dont found");

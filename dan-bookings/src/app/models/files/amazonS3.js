@@ -1,5 +1,5 @@
 import { amazonS3, getPublicUrlImg, s3BucketName } from "../../libs/amazon/amazonS3";
-import { PutObjectCommand,DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand,DeleteObjectCommand,CopyObjectCommand } from "@aws-sdk/client-s3";
 
 
 export class s3Model{
@@ -43,6 +43,30 @@ export class s3Model{
         });
     };
 
+    
+    updateImg = (oldKey,newKey) => {
+          return new Promise(async (resolve, reject) => {
+            try {
+                const copyRes = await amazonS3.send(new CopyObjectCommand({
+                    Bucket: s3BucketName,
+                    CopySource: `${s3BucketName}/${oldKey}`,
+                    Key: newKey,
+                }));
+
+                const delRes = await amazonS3.send(new DeleteObjectCommand({
+                    Bucket: s3BucketName,
+                    Key: oldKey,
+                }));
+
+                if (delRes.$metadata.httpStatusCode !== 204 && copyRes.$metadata.httpStatusCode !== 200 ) return reject(null);
+
+                resolve(true);
+            } catch (error) {
+                console.error(error)
+                reject(null);
+            }
+        });
+    };
     getKey = (url) =>{
         return decodeURIComponent(url.split('.amazonaws.com/')[1]);
     }

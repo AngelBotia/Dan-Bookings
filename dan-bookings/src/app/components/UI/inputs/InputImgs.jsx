@@ -53,11 +53,7 @@ export const InputImgs = ({form,name,required,multiple=false}) => {
             alt={name}   
             className='img-InputImgs'
             src={img}
-            />
-          <button 
-            type='button' 
             onClick={(e)=> removeImg(img)} 
-            className='remove-img-button cross-icon'
             />
         </label>
         

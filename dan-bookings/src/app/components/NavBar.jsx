@@ -3,8 +3,8 @@ import React from 'react'
 import Link from "next/link";
 import '../styles/NavBar.css'
 import { signIn,signOut } from 'next-auth/react'
-import {  getTranslation, useLanguageAPP } from '../hooks/useLanguageAPP';
 import { getUserSession } from '../hooks/useUser';
+import { useApplication, getTranslation, useLanguageAPP  } from '../hooks/useApplication'
 
 const NavBar = () => {
   const { user, isAdmin } = getUserSession();

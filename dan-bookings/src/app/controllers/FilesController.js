@@ -21,6 +21,14 @@ class FilesController {
           throw error.message;
         }
     }
+    updateImg = (oldKey,newKey) => {
+      try {
+        return this.filesController.updateImg(oldKey,newKey);
+      } catch (error) {
+        console.error("[FILE-CONTROLLER] -", error.message);
+        throw error.message;
+      }
+    }
     getKey = (url) =>{
       try {
            return this.filesController.getKey(url);

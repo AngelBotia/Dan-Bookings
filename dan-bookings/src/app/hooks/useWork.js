@@ -14,9 +14,10 @@ export const useWork = () => {
      * @param {number} params.page - Page number to retrieve.
      * @return {Object[]} Array of works.
     */
-    const loadWorks = (params={}) => {
+    const loadWorks  = async (params={}) => {
       try {
-         return workService.getWorks(params) || [];
+        //Put here the logic when i need load or not works check the params and the data
+         return await workService.getWorks(params) || [];
       } catch (error) {
         return null;
       }
@@ -36,7 +37,7 @@ export const useWork = () => {
     const addWork = async (workToSend = {}) =>{
         const { IMAGE_URL } = workToSend;
         const newWork = await workService.createWork(workToSend);
-        if(!newWork) throw new Error('TODO: put error with translate');
+        if(!newWork || newWork.error) throw new Error("TODO: put error with translate");
 
         const imgInCache =  IMAGE_URL[0].imgSrc;
         newWork.IMAGE_URL = imgInCache || newWork.IMAGE_URL; 
@@ -53,7 +54,7 @@ export const useWork = () => {
       workToSend.IMAGE_URL = lastWork.IMAGE_URL != IMAGE_URL ? IMAGE_URL : [];
 
       const newWork = await workService.updateWork(workToSend)
-      if(!newWork) throw new Error("TODO: put error with translate");
+      if(!newWork || newWork.error) throw new Error("TODO: put error with translate");
 
       const updatePorfolio = works?.map(work =>{ 
         const result = work.ID_WORK == newWork.ID_WORK ? newWork : work;
@@ -99,7 +100,6 @@ return {
       }
 };
 
-//TODO EXPORT THIS TO SERVICE
 export const useWorkDetails = (params = {}) => {
   const { workContext, setWorkContext } = useWorkContext();
   const { works } = workContext;
@@ -109,41 +109,20 @@ export const useWorkDetails = (params = {}) => {
      * @param {Object} params - Parameters for get details
      * @param {string} params.workID - WorkURL.
   */
-  const getWorkDetail = async (params) => {
-        try {
-            const { URL } = params || {};
-            if(!URL) return null; 
-            const searchParams = params ? new URLSearchParams(params) : "";
-            const detailData = await fetch(`/api/work/${URL}?${searchParams}`, { method: "GET" });
-            const detail = await detailData.json();
-            return detail;
-        } catch (error) {
-          return null;
-        }
+  const loadWorkDetail = async (params) => {
+     return await  workService.getWorkDetail(params);
   };
-  const updateWorkDetail = async (newWorkDetail = {}) =>{
-        try {
-          const { WO_URL } = newWorkDetail || {};
-          if ( !WO_URL ) return null;
-          const body = new FormData();      
-          body.append("newDetail",JSON.stringify(newWorkDetail));
-  
-          const detailToUpdate = await fetch(`/api/work/${WO_URL}`, { method: "PUT", body });
-          const updatedDetail = await detailToUpdate.json();
-          
-          return updatedDetail;
-        } catch (error) {
-          return null;
-        }
+  const editWorkDetail = async (newWorkDetail = {}) =>{
+   return await workService.updateWorkDetail(newWorkDetail);
   };
 
   useEffect(() => {
-      const loadWorkDetail = async () => {
+      const loadDetail = async () => {
 
         const hasDetailInCache = works?.find(work => work.URL == URL)?.detail || null;
         if (!URL || hasDetailInCache) return;
 
-        const newDetail = await getWorkDetail(params);
+        const newDetail = await loadWorkDetail(params);
         setWorkContext(prev => {
                  const { works } = prev;
                  const hasWorkInCache = works?.find(work =>work.URL == URL)
@@ -156,13 +135,13 @@ export const useWorkDetails = (params = {}) => {
                 return {...prev,works: updatedWorks};
           }) 
         }
-        loadWorkDetail();
+        loadDetail();
   }, []);
 
   return {
     detail,
-    getWorkDetail,
-    updateWorkDetail
+    loadWorkDetail,
+    editWorkDetail
   }
 }
 

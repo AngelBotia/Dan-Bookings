@@ -1,12 +1,3 @@
-export const useStyle = () =>{
-    
-}
-
-
-
-
-
-
 export  const hexToRgb = (hex) => {
     hex = hex.replace(/^#/, '');
     

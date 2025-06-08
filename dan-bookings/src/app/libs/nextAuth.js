@@ -37,6 +37,6 @@ export const authOptions = {
 export const hasPermission = async (request) =>{
     const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
     const session = await getServerSession(authOptions);
-    const isAdmin = token.role === US_DB_PROPS.USER_ROLS.admin;
+    const isAdmin = token?.role && token.role === US_DB_PROPS.USER_ROLS.admin;
     return !!(session && isAdmin)
 }

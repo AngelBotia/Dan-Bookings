@@ -9,7 +9,8 @@ export async function GET(request) {
         const limit = Number(searchParams.get('limit'));
         const page = Number(searchParams.get('page'));
         const ID_WORK = searchParams.get('id');
-        let params ={ limit , page,ID_WORK };
+        const isAdmin = await hasPermission(request);
+        let params ={ isAdmin,ID_WORK ,limit, page,  };
         const allWorks = await workController.getAllWorks(params);
         return NextResponse.json(allWorks,{ status:200 });
     } catch (error) {

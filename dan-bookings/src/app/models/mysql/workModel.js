@@ -2,7 +2,7 @@ import { conn ,createDynamicQuery} from "../../libs/mysql/mysql";
 import { DETAILS_PROPS,WDM_PROPS,WO_DB_PROPS } from "../../constants/worksDB"
 
 export class workModelMYSQL{
-    getAllWorks = async ({ limit, page, ID_WORK }) => {
+    getAllWorks = async ({ isAdmin,ID_WORK,limit, page }) => {
     
         let SELECT = [], FROM = [], WHERE = [], ORDER = [], PARAMS_VALUES = [];
         try {
@@ -14,6 +14,10 @@ export class workModelMYSQL{
              FROM = [work_FROM];
             //WHERE
             WHERE = [];
+            if(!isAdmin){
+                WHERE.push(`${WO_DB_TABLE_ALIAS}.${WORKS.IS_VISIBLE} = ?`)
+                PARAMS_VALUES.push(1)//1 -> VISIBLE 
+            }
             if(ID_WORK){
                 const idWork_WHERE = `${WO_DB_TABLE_ALIAS}.${WORKS.ID_WORK} = ?`
                 WHERE.push(idWork_WHERE)
@@ -115,14 +119,19 @@ export class workModelMYSQL{
             if (!URL) throw new Error("work URL is required");
             const { details_SELECT, DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET,WO_DETAILS} = DETAILS_PROPS; 
 
+            const mainImg_SELECT = `(select WO_IMAGE_URL from works where WO_URL = ? ) AS MAIN_IMG_URL`
+            PARAMS_VALUES.push(URL)
             //SELECT
-            SELECT = [details_SELECT]
+            SELECT = [details_SELECT,mainImg_SELECT]
             //FROM
             const details_FROM = `${DETAIL_DB_TABLE} ${DET_TABLE_ALIAS}`;
             FROM = [details_FROM];
             //WHERE
             const details_WHERE = `LOWER(${DET_TABLE_ALIAS}.${WO_DETAILS.WO_URL}) LIKE LOWER(?)`
-            URL && (WHERE.push(details_WHERE), PARAMS_VALUES.push(URL));
+            if(URL){
+                WHERE.push(details_WHERE);
+                PARAMS_VALUES.push(URL);
+            }
 
             const allQuery = createDynamicQuery(SELECT,FROM,WHERE);
 
@@ -148,7 +157,7 @@ export class workModelMYSQL{
             const workToSave ={
                [WO_URL]: URL,
                [TITLE]: WO_NAME,
-               [MAIN_IMG_URL]: IMAGE_URL
+            //    [MAIN_IMG_URL]: IMAGE_URL
             }
         
             

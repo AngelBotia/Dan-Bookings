@@ -29,14 +29,12 @@ const Porfolio = () => {
   
   
 
-  let isLoaded,typeOfCollage = false;
-  const fadeIn = !isLoaded ? 'fade-in-animation' : ''
-    
   const createImgs = () => {
     return works?.map((work, index) => {
       const { ID_WORK, URL, ORDER_INDEX, IMAGE_URL, IS_VISIBLE,isSelected } = work || {};
       if ( !ID_WORK ) return null;
-      
+      let isLoaded,typeOfCollage = false;
+      const fadeIn = !isLoaded && IS_VISIBLE ? 'fade-in-animation' : 'no-visible'
       const order = Number(ORDER_INDEX) || index + 1;
       const collage = typeOfCollage ? `${typeOfCollage}${order}` :`collage-default${order}`
       const className=`img-porfolio ${fadeIn} ${collage}`
@@ -134,7 +132,7 @@ const Porfolio = () => {
       <ContHorizonalScroll>
         <section className="grid-porfolio">
           {createImgs()}   
-          {editMode && <article style={{backgroundColor:'gray'}} onClick={(e)=>setFormData({})} className={`img-porfolio ${fadeIn} ${works.length + 1}`}/>}
+          {editMode && <article style={{backgroundColor:'gray'}} onClick={(e)=>setFormData({})} className={`img-porfolio fade-in-animation ${works.length + 1}`}/>}
           {isAdmin && 
             <ToggleHidden isOpen={formData} onClose={()=>{setFormData(null)}}> 
               <form onLoad={(e)=>onLoadForm(e)} className='form-porfolio fade-in-animation fast-animation' onSubmit={async (e) => await onSubmit(e)}>

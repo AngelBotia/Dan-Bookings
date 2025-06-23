@@ -1,5 +1,5 @@
 import { conn ,createDynamicQuery} from "../../libs/mysql/mysql";
-import { DETAILS_PROPS,WDM_PROPS,WO_DB_PROPS } from "../../constants/worksDB"
+import { DETAILS_PROPS,WO_DB_PROPS } from "../../constants/worksDB"
 
 export class workModelMYSQL{
     getAllWorks = async ({ isAdmin,ID_WORK,limit, page }) => {
@@ -55,7 +55,6 @@ export class workModelMYSQL{
             const workToSave = {
                 [WORKS.URL]: URL,
                 [WORKS.WO_NAME]:WO_NAME,
-                [WORKS.IMAGE_URL]: IMAGE_URL,
                 [WORKS.ORDER_INDEX]:Number(allWorks[0].TOTAL) + 1 || null
             }
 
@@ -119,10 +118,8 @@ export class workModelMYSQL{
             if (!URL) throw new Error("work URL is required");
             const { details_SELECT, DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET,WO_DETAILS} = DETAILS_PROPS; 
 
-            const mainImg_SELECT = `(select WO_IMAGE_URL from works where WO_URL = ? ) AS MAIN_IMG_URL`
-            PARAMS_VALUES.push(URL)
-            //SELECT
-            SELECT = [details_SELECT,mainImg_SELECT]
+
+            SELECT = [details_SELECT]
             //FROM
             const details_FROM = `${DETAIL_DB_TABLE} ${DET_TABLE_ALIAS}`;
             FROM = [details_FROM];
@@ -211,95 +208,4 @@ export class workModelMYSQL{
     }
 
     
-
-    getWorkMedias = async({ URL }) =>{
-        try {
-            if(!URL) return [];
-            const { media_SELECT, WDM_MEDIA_TABLE, WDM_TABLE_ALIAS,WDM_DETAILS} = WDM_PROPS;
-            const query = `SELECT ${media_SELECT}
-                            FROM ${WDM_MEDIA_TABLE} ${WDM_TABLE_ALIAS}
-                            WHERE ${WDM_TABLE_ALIAS}.${WDM_DETAILS.WO_URL} like ?`
-            let PARAMS_VALUES = [URL]
-
-            const [rows] = await conn.query(query, PARAMS_VALUES);
-            if (rows?.affectedRows == 0) return [];
-            return rows;
-        } catch (error) {
-            console.error(error.message)
-            return []
-        }
-    };
-    createWorkMedias = async (detail) =>{
-        try {
-            const { media_SELECT, WDM_MEDIA_TABLE,WDM_TABLE_ALIAS,WDM_DETAILS } = WDM_PROPS;
-            const { ID, WO_URL, URL_MEDIA,TYPE_MEDIA} = detail;
-
-            const mediaToSave = {
-                [WDM_DETAILS.ID]: ID,
-                [WDM_DETAILS.WO_URL]: WO_URL,
-                [WDM_DETAILS.URL_MEDIA]: URL_MEDIA,
-                [WDM_DETAILS.TYPE_MEDIA]: TYPE_MEDIA,
-            }
-
-
-            const [result] = await conn.query(`INSERT into ${WDM_MEDIA_TABLE} SET ?`,[mediaToSave]);
-            if(result.affectedRows == 0) return null;
-            
-            const [rows] =  await conn.query(`SELECT ${media_SELECT} FROM ${WDM_MEDIA_TABLE} ${WDM_TABLE_ALIAS}  WHERE ${WDM_TABLE_ALIAS}.${WO_URL} = ?`,[WO_URL]);
-            if (rows?.affectedRows == 0) return null;
-
-            const newMedias = rows?.find(work => work) || null;
-            return newMedias;
-        } catch (error) {
-            console.error(error.message);
-            return null;
-        }
-    };
-    updateWorkMedias = async (detail) => {
-        try {
-            //TODO: CHECK THIS
-            const { media_SELECT, WDM_MEDIA_TABLE,WDM_TABLE_ALIAS,WDM_DETAILS } = WDM_PROPS;
-
-            
-            const { media , WO_URL} = detail || {};
-            if(!media?.length) return [];
-            const allPromiseMedia = media.map( workMedia => {
-                const {ID, URL_MEDIA, TYPE_MEDIA } = workMedia || {};
-                const mediaToSave = {
-                    [WDM_DETAILS.ID]: ID,
-                    [WDM_DETAILS.WO_URL]: WO_URL,
-                    [WDM_DETAILS.TYPE_MEDIA]: TYPE_MEDIA,
-                }
-               if(URL_MEDIA) mediaToSave[WDM_DETAILS.URL_MEDIA] = URL_MEDIA;
-
-               return conn.query(`UPDATE ${WDM_MEDIA_TABLE} ${WDM_TABLE_ALIAS} SET ? WHERE ${WDM_TABLE_ALIAS}.${WDM_DETAILS.ID} = ?`,[mediaToSave,ID]);
-            })
-            const allResults = await Promise.all(allPromiseMedia);
-            if(!allResults?.length) return [];
-
-            const [rows] =  await conn.query(`SELECT ${media_SELECT} FROM ${WDM_MEDIA_TABLE} ${WDM_TABLE_ALIAS}  WHERE ${WDM_TABLE_ALIAS}.${WDM_DETAILS.WO_URL} = ?`,[WO_URL]);
-            if (rows?.affectedRows == 0) return [];
-
-            return rows;
-        } catch (error) {
-            console.error(error.message);
-            return [];
-        }
-    };
-    deleteWorkMedias = async ({ID , URL}) => {
-        try {
-            if (!ID && !URL) return null;
-            const { media_SELECT, WDM_MEDIA_TABLE,WDM_TABLE_ALIAS,WDM_DETAILS } = WDM_PROPS;
-            
-            const deleteBy =  ID ? "ID" : "WO_URL"
-            const value = ID || URL
-
-
-            const [deleteResult] = await conn.query(`DELETE FROM ${WDM_MEDIA_TABLE} ${WDM_TABLE_ALIAS} WHERE ${WDM_TABLE_ALIAS}.${WDM_DETAILS[deleteBy]} = ?`, [value]);
-            return !deleteResult.affectedRows == 0;
-        } catch (error) {
-            console.error(error.message);
-            return null; 
-        }
-    }
 }

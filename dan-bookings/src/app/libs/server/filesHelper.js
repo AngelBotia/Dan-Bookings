@@ -2,10 +2,10 @@ const sharp = require('sharp');
 
 import { fileController } from "../../controllers/FilesController";
 
-export const saveImgsInCloud = (files = [],title="GENERIC",ID="NoID",isUnique=false) => {
+export const saveImgsInCloud = (files = [],title="GENERIC",ID="NoID") => {
     return Promise.all(files?.map(async (file, i) => {
         let { type, img } = file || {};
-        const randomID = !isUnique ? `-${i}-${generateShortID()}` : "";
+        
         try {
             const imgBase64 =Buffer.from(img, 'base64')
 
@@ -14,7 +14,7 @@ export const saveImgsInCloud = (files = [],title="GENERIC",ID="NoID",isUnique=fa
             .webp({ quality: 90 })  
             .toBuffer();
             const imgToSave = {
-                name: `${title}-${ID}${randomID}`,
+                name: `${title}-${ID}-${i}-${generateShortID()}`,
                 file: imgOptimized,
                 ContentType: type
             }

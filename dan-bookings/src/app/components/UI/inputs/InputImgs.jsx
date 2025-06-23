@@ -16,7 +16,7 @@ export const InputImgs = ({form,name,required,multiple=false}) => {
         const imgs = await prepareImgsBase64(files) || [];
         setformData(prev => ({...prev,[inputName]:imgs}))
 
-        const allUrl = imgs?.map(img => img.imgSrc)
+        const allUrl = imgs?.map(img => img.URL_MEDIA)
         setImgs(allUrl);
     }
     const prepareImgsBase64 = (files) =>{
@@ -26,33 +26,31 @@ export const InputImgs = ({form,name,required,multiple=false}) => {
               reader.onloadend = () => {
                 const result = reader.result;
                 const img = result.split(',')[1];
-                resolve({img,imgSrc:result});
+                resolve({img,URL_MEDIA:result});
               };
               reader.onerror = reject;
               reader.readAsDataURL(file);
             });
-            let { img,imgSrc } = base64;
+            let { img,URL_MEDIA } = base64;
             let { type } = file;
-            return { img, imgSrc, type };
+            return { img, URL_MEDIA, type };
         }));
     }
     const removeImg = (img) => {
-      const updateImg = formData[name].filter(formImg =>{
-        if(formImg.imgSrc){ return formImg.imgSrc != img }
-        else { return formImg != img }
-      });
+      const updateImg = formData[name].filter(formImg =>formImg.URL_MEDIA != img);
       setformData(prev => ({...prev,[name]:updateImg}))
     }
     
 
     const showImgs = () =>{
-      return imgs?.map((img,i) =>{ return (
+      return imgs?.map((img,i) =>{ 
+        return (
         <label key={name+i} className='img-InputImgs'>
           <Image 
             fill
             alt={name}   
             className='img-InputImgs'
-            src={img}
+            src={img.URL_MEDIA || img}
             onClick={(e)=> removeImg(img)} 
             />
         </label>
@@ -62,9 +60,7 @@ export const InputImgs = ({form,name,required,multiple=false}) => {
     }
     useEffect(() => {
       if (formData[name]) {
-        const allUrl = formData[name].map(img => 
-          typeof img === 'string' ? img : img.imgSrc
-        );
+        const allUrl = formData[name].map(img => img.URL_MEDIA);
         setImgs(allUrl);
       }
     }, [formData[name]]);

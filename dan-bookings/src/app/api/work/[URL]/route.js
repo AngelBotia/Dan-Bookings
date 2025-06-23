@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { workController } from "../../../controllers/WorkController";
 import { hasPermission } from "../../../libs/nextAuth";
+import { mediaController } from "../../../controllers/MediaController";
 
 export async function GET(request, { params }) {
     try {
@@ -10,9 +11,11 @@ export async function GET(request, { params }) {
         let paramsQuery = { URL };
         
         let workDetail = await workController.getWorkDetail(paramsQuery) || {};
+        
+        workDetail.medias = await mediaController.getMedias(workDetail?.ID,'DETAIL') || [];
         if(!workDetail) return NextResponse.json({error:"dont found"},{status:404})
 
-        workDetail.media = await workController.getWorkMedias(paramsQuery);
+        // workDetail.media = await workController.getWorkMedias(paramsQuery);
         return NextResponse.json(workDetail, { status: 200 });
     } catch (error) {
         console.error(error.message);
@@ -31,7 +34,7 @@ export async function PUT(request, { params }) {
         if(!URL)  return NextResponse.json({ error: "Bad request" }, { status: 400 });
 
         let newDetail = await workController.updateWorkDetail(detailToUpdate);
-        newDetail.media = await workController.updateWorkMedias(detailToUpdate) || []
+        // newDetail.media = await workController.updateMedia(detailToUpdate) || []
         
         return NextResponse.json(newDetail, { status: 200 });
     } catch (error) {

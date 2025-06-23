@@ -36,22 +36,16 @@ export const useWork = () => {
     */
     const addWork = async (workToSend = {}) =>{
         const { IMAGE_URL } = workToSend;
-        const newWork = await workService.createWork(workToSend);
+        let newWork = await workService.createWork(workToSend);
         if(!newWork || newWork.error) throw new Error("TODO: put error with translate");
-
-        const imgInCache =  IMAGE_URL[0].imgSrc;
-        newWork.IMAGE_URL = imgInCache || newWork.IMAGE_URL; 
-        if(newWork?.detail) newWork.detail.MAIN_IMG_URL = imgInCache || newWork.IMAGE_URL
-
+        
+        newWork.IMAGE_URL = IMAGE_URL;
         const updateWorks = [...works, newWork];
         setWorkContext(prev =>({ ...prev ,works:updateWorks}));
     };
  
     const editWork = async (workToSend = {}) =>{
       const { IMAGE_URL ,ID_WORK} = workToSend; 
-
-      const lastWork = works.find(work => work.ID_WORK == ID_WORK);
-      workToSend.IMAGE_URL = lastWork.IMAGE_URL != IMAGE_URL ? IMAGE_URL : [];
 
       const newWork = await workService.updateWork(workToSend)
       if(!newWork || newWork.error) throw new Error("TODO: put error with translate");

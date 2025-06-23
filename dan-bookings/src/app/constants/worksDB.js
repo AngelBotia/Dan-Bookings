@@ -5,7 +5,7 @@ const WORKS = {
         WO_NAME:"WO_NAME",
         URL: "WO_URL",
         ORDER_INDEX: "WO_ORDER",
-        IMAGE_URL: "WO_IMAGE_URL",
+        // IMAGE_URL: "WO_IMAGE_URL",
         IS_VISIBLE: "WO_VISIBLE"
     }
     const WO_DB_TABLE = "WORKS"
@@ -19,7 +19,8 @@ export const WO_DB_PROPS = {work_SELECT,WO_DB_TABLE,WO_DB_TABLE_ALIAS,LIMIT_WORK
 //---------------------------------------------------------------------------------------------------------------
 //DETAILS ///////////////////////////////////////////////////////////////////////////////////////////////////////
 const WO_DETAILS = {
-//PROPS ITEM ⇣ | ⇣ DB TABLE NAME 
+//PROPS ITEM ⇣ | ⇣ DB TABLE NAME
+    ID:'WO_ID',
     WO_URL: "WO_URL",
     DESCRIPTION: "DE_DESCRIPTION",
     TITLE: "DE_TITLE"
@@ -31,20 +32,3 @@ const details_SELECT = Object.entries(WO_DETAILS).map(([alias, column]) => `${DE
 
 export const DETAILS_PROPS = {details_SELECT, DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET,WO_DETAILS}  
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//---------------------------------------------------------------------------------------------------------------
-//WORK DETAILS MEDIA /////////////////////////////////////////////////////////////////////////////////////////
-
-const WDM_DETAILS = {
-//PROPS ITEM ⇣ | ⇣ DB TABLE NAME 
-    ID: "DETAILS_MEDIA_ID",
-    WO_URL: "WO_URL",
-    URL_MEDIA: "URL_MEDIA",
-    TYPE_MEDIA: "TYPE_MEDIA",
-}
-const WDM_MEDIA_TABLE="WORK_DETAILS_MEDIA"
-const WDM_TABLE_ALIAS ="WDM"
-const media_SELECT = Object.entries(WDM_DETAILS).map(([alias, column]) => `${WDM_TABLE_ALIAS}.${column} AS ${alias}`).join();
-
-
-export const WDM_PROPS = {media_SELECT, WDM_MEDIA_TABLE,WDM_TABLE_ALIAS,WDM_DETAILS}  

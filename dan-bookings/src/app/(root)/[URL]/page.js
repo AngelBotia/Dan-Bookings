@@ -11,12 +11,12 @@ export default function Work() {
   const { detail, updateWorkDetail } = useWorkDetails({URL});
   const mousePos = 'rigth'
   const createMediaExampleTest = () => {
-    return detail?.media?.map(media => {
-      const { URL_MEDIA: backgroundImage, ID } = media;
+    return detail?.medias?.map(media => {
+      const { URL_MEDIA, ID } = media;
       return (
         <div
           key={ID}
-          style={{width: "2rem",height: "3rem",margin: "1rem",backgroundColor: "red",backgroundImage}}
+          style={{width: "2rem",height: "3rem",margin: "1rem",backgroundColor: "red",backgroundImage:URL_MEDIA}}
         />
       )
     }) || null

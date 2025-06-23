@@ -30,6 +30,7 @@ const Porfolio = () => {
   
 
   const createImgs = () => {
+    if(!works?.length) return null;
     return works?.map((work, index) => {
       const { ID_WORK, URL, ORDER_INDEX, IMAGE_URL, IS_VISIBLE,isSelected } = work || {};
       if ( !ID_WORK ) return null;
@@ -44,7 +45,7 @@ const Porfolio = () => {
                <Image
                    alt={URL}
                    fill
-                   src={IMAGE_URL}
+                   src={IMAGE_URL[0]?.URL_MEDIA}
                    className={className}
                    style={{
                        viewTransitionName: `${URL}`,
@@ -58,7 +59,7 @@ const Porfolio = () => {
                 <Image
                     alt={URL}
                     fill
-                    src={IMAGE_URL}
+                    src={IMAGE_URL[0]?.URL_MEDIA}
                     className={className}
                     objectFit="cover"
                     style={{
@@ -73,17 +74,11 @@ const Porfolio = () => {
   }
   
   const onWorkSelected = (e,work) => {
-    const { IMAGE_URL } = work;
     const pos = {
       x: e.clientX,
       y: e.clientY
     }
-    const workToShow = {
-      ...work,
-      IMAGE_URL: [IMAGE_URL],
-      pos
-    }
-    setFormData(workToShow)
+    setFormData({...work,pos})
   }
   const onLoadForm = (e)=>{
     if(!formData?.pos) return;

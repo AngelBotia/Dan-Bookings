@@ -74,33 +74,6 @@ class WorkController {
         }
     }
 
-
-    getWorkMedias = (params) =>{
-        try {
-            return this.workModel.getWorkMedias(params);
-        } catch (error) {
-            console.error("[WORK-CONTROLLER] -",error)
-            throw error;
-        }
-        
-    }
-    updateWorkMedias = (detail) =>{
-        try {
-            return this.workModel.updateWorkMedias(detail);
-        } catch (error) {
-            console.error("[WORK-CONTROLLER] -",error)
-            throw error;
-        }
-    }
-    deleteWorkMedias = (ID) => {
-        try {
-            return this.workModel.deleteWorkMedias(ID);
-        } catch (error) {
-            console.error("[WORK-CONTROLLER] -",error)
-            throw error;
-        }
-    }
-
 }
 
 //You can change this instance and change the database of all products

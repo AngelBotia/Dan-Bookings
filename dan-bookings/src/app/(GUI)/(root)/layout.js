@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import NavBar from "../components/NavBar";
-import ProviderSession from "../context/SessionProvider";
 import { ApplicationContextProvider } from "../context/AplicationProvider";
 import { WorkContextProvider } from "../context/WorkProvider"
 const geistSans = Geist({
@@ -22,14 +21,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ProviderSession>
           <ApplicationContextProvider>
              <WorkContextProvider>
                <NavBar/>
                {children}
              </WorkContextProvider>
           </ApplicationContextProvider>
-        </ProviderSession>
       </body>
     </html>
   );

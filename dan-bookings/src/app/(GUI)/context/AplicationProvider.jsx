@@ -1,4 +1,5 @@
 "use client"
+import { SessionProvider } from "next-auth/react";
 import React, { createContext, useState } from "react"
 
 export const ApplicationContext = createContext();
@@ -11,13 +12,17 @@ const APPLICATION_DEFAULT={
     languageAPP: "ES",
     editMode: false,
 }
-export const ApplicationContextProvider = ({ children }) => { 
 
-    const [applicationContext, setApplicationContext] = useState(APPLICATION_DEFAULT);
-   
+
+export const ApplicationContextProvider = ({ children }) => { 
+  
+  const [applicationContext, setApplicationContext] = useState(APPLICATION_DEFAULT);
+  
     return (
+      <SessionProvider>
         <ApplicationContext.Provider value={{ applicationContext, setApplicationContext}}>
           {children}
         </ApplicationContext.Provider>
+      </SessionProvider>
       );
 }

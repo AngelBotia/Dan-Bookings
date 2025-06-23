@@ -1,8 +1,9 @@
 import GoogleProvider from "next-auth/providers/google";
-import { useUser } from "../../(GUI)/hooks/useUser";
 import { US_DB_PROPS } from "../../constants/usersDB";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth";
+import { getUser,createUser } from '../server/userActions.js'
+
 
 export const authOptions = {
   providers: [
@@ -11,15 +12,17 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+  jwt: {
+    maxAge: 24 * 60 * 60
+  },
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      const { createUser, getUser } = useUser()
-      await getUser(user) || await createUser(user);
-      return true;
+      const hasUser = await getUser(user) || await createUser(user);
+      return !!hasUser;
     },
     async session({ session, token, user }) {
       session.user.role = token.role;
@@ -27,7 +30,6 @@ export const authOptions = {
     },
     async jwt({ token, user, account, profile }) {
       const  { USER_ROLS } = US_DB_PROPS; 
-      const {  getUser } = useUser()
       const userDB = await getUser(user) || {};
       if(userDB?.rol) token.role = userDB.rol || USER_ROLS;      
       return token;

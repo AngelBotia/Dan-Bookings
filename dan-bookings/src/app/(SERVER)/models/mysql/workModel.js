@@ -1,5 +1,5 @@
 import { conn ,createDynamicQuery} from "../../libs/mysql/mysql";
-import { DETAILS_PROPS,WO_DB_PROPS } from "../../constants/worksDB"
+import { DETAILS_PROPS,WO_DB_PROPS } from "../../../constants/worksDB"
 
 export class workModelMYSQL{
     getAllWorks = async ({ isAdmin,ID_WORK,limit, page }) => {

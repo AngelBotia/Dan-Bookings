@@ -1,7 +1,7 @@
 import { workController } from "../../controllers/WorkController";
 import { NextResponse } from "next/server";
 import { hasPermission } from "../../libs/nextAuth"; 
-import { saveImgsInCloud } from '../../libs/server/filesHelper'
+import { saveImgsInCloud } from '../../utils/filesHelper'
 import { fileController } from "../../controllers/FilesController";
 import { mediaController } from "../../controllers/MediaController";
 export async function GET(request) {

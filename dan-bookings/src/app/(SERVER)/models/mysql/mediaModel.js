@@ -1,5 +1,5 @@
 import { conn ,createDynamicQuery} from "../../libs/mysql/mysql";
-import { WDM_PROPS } from "../../constants/mediaDB"
+import { WDM_PROPS } from "../../../constants/mediaDB"
 
 export class MediaModelMYSQL{
 

@@ -1,6 +1,6 @@
 const sharp = require('sharp');
 
-import { fileController } from "../../controllers/FilesController";
+import { fileController } from "../controllers/FilesController";
 
 export const saveImgsInCloud = (files = [],title="GENERIC",ID="NoID") => {
     return Promise.all(files?.map(async (file, i) => {

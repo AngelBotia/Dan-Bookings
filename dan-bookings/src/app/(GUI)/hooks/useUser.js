@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import { userService } from "../services/userService"
-import { US_DB_PROPS } from "../constants/usersDB";
+import { US_DB_PROPS } from "../../constants/usersDB";
 
 export const useUser = () => {
 

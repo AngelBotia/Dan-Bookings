@@ -1,6 +1,6 @@
 import GoogleProvider from "next-auth/providers/google";
-import { useUser } from "../hooks/useUser";
-import { US_DB_PROPS } from "../constants/usersDB";
+import { useUser } from "../../(GUI)/hooks/useUser";
+import { US_DB_PROPS } from "../../constants/usersDB";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth";
 

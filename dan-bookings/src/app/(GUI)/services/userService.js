@@ -1,4 +1,4 @@
-import { API_KEY } from "../constants/usersDB";
+import { API_KEY } from "../../constants/usersDB";
 
 export class UserService {
 

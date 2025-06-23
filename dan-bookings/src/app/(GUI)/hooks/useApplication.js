@@ -1,7 +1,7 @@
 
 import ES from '../translations/ES.json'
 import EN from '../translations/EN.json'
-import { LANG_LS } from '../constants/localStorage';
+import { LANG_LS } from '../../constants/localStorage';
 import { useEffect, useState } from 'react';
 import { useApplicationContext } from '../context/AplicationProvider'
 export const useApplication = () =>{

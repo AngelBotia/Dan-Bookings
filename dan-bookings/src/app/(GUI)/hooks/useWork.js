@@ -1,12 +1,16 @@
+import { useApplicationContext } from "../context/AplicationProvider";
 import { useState, useEffect } from "react";
 import { useWorkContext } from "../context/WorkProvider";
 import { workService } from '../services/workService'
+import equal from 'fast-deep-equal';
 
 
 
 export const useWork = () => {
+    const { setApplicationContext,applicationContext:{ languageAPP }} = useApplicationContext();
     const { workContext, setWorkContext } = useWorkContext();
-    const { works , params} = workContext;
+    
+    const { works , params, lastParams} = workContext;
   
     /**
      * @param {Object} params - Parameters for get all works.
@@ -15,12 +19,7 @@ export const useWork = () => {
      * @return {Object[]} Array of works.
     */
     const loadWorks  = async (params={}) => {
-      try {
-        //Put here the logic when i need load or not works check the params and the data
-         return await workService.getWorks(params) || [];
-      } catch (error) {
-        return null;
-      }
+        setWorkContext(prev =>({ ...prev ,params}));
     };
     /**
        * @typeOf {Object} work - Work Object
@@ -72,17 +71,24 @@ export const useWork = () => {
     };
 
     useEffect(() => {
-
+      
       const loadData = async () => {
-        const hasWorksInCache = works?.find(work => work.ID_WORK) || null;
-        const detailInCache = works?.find(work => work.detail && !work.ID_WORK)?.detail || null;
-        if (hasWorksInCache) return;
-          let newWorks = await loadWorks(params);
-          if(detailInCache) newWorks = newWorks.map(newWork => {return newWork.URL==detailInCache.WO_URL ? {...newWork,detail: detailInCache} : newWork })
-          setWorkContext(prev =>({ ...prev ,works:newWorks}));   
+        const hasWorksLoaded = works?.find(work => work.ID_WORK) || null;
+        const hasDetailLoaded = works?.find(work => work.detail && !work.ID_WORK)?.detail || null;
+        
+        if (hasWorksLoaded && equal(params,lastParams)) return;
+
+        let newWorks = await workService.getWorks({...params,languageAPP}) || [];
+        
+        if(hasDetailLoaded) newWorks = newWorks.map(newWork => {return newWork.URL==hasDetailLoaded.WO_URL ? {...newWork,detail: hasDetailLoaded} : newWork })
+        
+        setWorkContext(prev =>({ ...prev ,
+                                works:newWorks,
+                                lastParams: {...params,languageAPP}
+                              }));   
       }
           loadData();
-    }, []);
+    }, [params,languageAPP]);
   
 return {
         works,

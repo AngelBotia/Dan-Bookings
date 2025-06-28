@@ -1,5 +1,4 @@
 import GoogleProvider from "next-auth/providers/google";
-import { US_DB_PROPS } from "../../constants/usersDB";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth";
 import { getUser,createUser } from '../server/userActions.js'
@@ -29,9 +28,8 @@ export const authOptions = {
       return session;
     },
     async jwt({ token, user, account, profile }) {
-      const  { USER_ROLS } = US_DB_PROPS; 
       const userDB = await getUser(user) || {};
-      if(userDB?.rol) token.role = userDB.rol || USER_ROLS;      
+      if(userDB?.rol) token.role = userDB.rol;      
       return token;
     },
   }
@@ -39,6 +37,6 @@ export const authOptions = {
 export const hasPermission = async (request) =>{
     const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
     const session = await getServerSession(authOptions);
-    const isAdmin = token?.role && token.role === US_DB_PROPS.USER_ROLS.admin;
+    const isAdmin = token?.role && token.role == process.env.NEXT_PUBLIC_MAIN_ROL;
     return !!(session && isAdmin)
 }

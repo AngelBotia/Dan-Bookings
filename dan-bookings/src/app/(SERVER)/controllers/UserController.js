@@ -21,17 +21,7 @@ class UserController {
             console.error("[USER-CONTROLLER] -",error.message);
             throw error.message;
           }
-    }
-    checkApikey = (key) =>{
-      try {
-          return this.userController.checkApikey(key);
-        } catch (error) {
-          console.error("[USER-CONTROLLER] -",error.message);
-          throw error.message;
-        }
-  }
-
-  
+    }  
 }
 
 const model = new UserModelMYSQL();

@@ -4,26 +4,30 @@ import { hasPermission } from "../../libs/nextAuth";
 import { saveImgsInCloud } from '../../utils/filesHelper'
 import { fileController } from "../../controllers/FilesController";
 import { mediaController } from "../../controllers/MediaController";
+import { translationController } from "../../controllers/TranslationController"
 export async function GET(request) {
     try {
         const { searchParams } = request.nextUrl;
         const limit = Number(searchParams.get('limit'));
         const page = Number(searchParams.get('page'));
         const ID_WORK = searchParams.get('id');
+        const languageApp = searchParams.get('languageAPP');
         const isAdmin = await hasPermission(request);
         let params = { isAdmin, ID_WORK, limit, page, };
         let allWorks = await workController.getAllWorks(params);
-        //GET IMG
+
+        //MAKE WORKS
         allWorks = await Promise.all(
             allWorks.map(async (work) => {
+                const translations = await translationController.getTranslations(work.ID_WORK,languageApp.toUpperCase()) || {};
                 const IMAGE_URL = await mediaController.getMedias(work.ID_WORK) || [];
                 return {
                     ...work,
+                    ...translations,
                     IMAGE_URL
                 };
             })
         );
-
         return NextResponse.json(allWorks,{ status:200 });
     } catch (error) {
         console.error(error.message);
@@ -38,7 +42,7 @@ export async function POST(request, { params }) {
  
         const body = await request.formData();
         const work = JSON.parse(body.get('work'));
-        const { WO_NAME, IMAGE_URL } = work || {};
+        const { WO_NAME, IMAGE_URL,languageAPP} = work || {};
         const files = IMAGE_URL || [];
         const URL = WO_NAME?.trim().replaceAll(" ","-") || null;
         
@@ -51,8 +55,17 @@ export async function POST(request, { params }) {
             URL
         }
         let newWork = await workController.createWork(workToSave);
+        let translations = await translationController.createTranslation({WO_NAME},newWork.ID_WORK,languageAPP.toUpperCase());
+
+        newWork = {
+            WO_NAME,
+            ...newWork,
+            ...translations,
+        }
         newWork.detail = await workController.createDetailWork(newWork) || {};
-        newWork.IMAGE_URL = await mediaController.createMedias(newWork?.ID_WORK,urlsImg,"WORK") 
+        newWork.IMAGE_URL = await mediaController.createMedias(newWork?.ID_WORK,urlsImg,"WORK"); 
+        
+    
     
         return NextResponse.json(newWork,{status:200})
     } catch (error) {
@@ -68,7 +81,7 @@ export async function PUT(request,{ params }) {
         
         const body = await request.formData();
         const newWork = JSON.parse(body.get('newWork')) || {};
-        const { detail,ID_WORK,IMAGE_URL ,WO_NAME} = newWork || {};
+        const { detail,ID_WORK,IMAGE_URL ,WO_NAME,languageAPP} = newWork || {};
         const categoryImgs = "WORKS"
 
         if(!ID_WORK || !WO_NAME)  return NextResponse.json({ error: "Bad request" }, { status: 400 });
@@ -93,18 +106,22 @@ export async function PUT(request,{ params }) {
         const urlsImg = await saveImgsInCloud(newMediasToSave,categoryImgs,URL);
         const newMedias = await mediaController.createMedias(ID_WORK,urlsImg,categoryImgs) || [];
         
-        const restOfMedias = allMedias.filter(media => IMAGE_URL.find(newMedia => newMedia.URL_MEDIA == media.URL_MEDIA)) || []
-       
-
+        
+        
         const workToSave = {
             ...newWork,
             URL
         }
-        const detailToSave = {
-            WO_URL:URL
+
+        let updateWork = await workController.updateWork(workToSave) || {};
+        const restOfMedias = allMedias.filter(media => IMAGE_URL.find(newMedia => newMedia.URL_MEDIA == media.URL_MEDIA)) || [];
+        let newTranslation = await translationController.updateTranslation({WO_NAME},ID_WORK,languageAPP)
+        
+        updateWork = {
+            ...updateWork,
+            ...newTranslation,
+            IMAGE_URL: [...newMedias,...restOfMedias]
         }
-        let updateWork = await workController.updateWork(workToSave);
-        updateWork.IMAGE_URL = [...newMedias,...restOfMedias]
 
         if(!updateWork) return NextResponse.json({error:"Dont found this work"},{status:404})
 
@@ -131,12 +148,13 @@ export async function DELETE(request,{ params }) {
             return fileController.deleteImg(key); 
         }))
 
-        const deleteMedias = await mediaController.deleteMedia(ID_WORK)
+        const deleteMedias = await mediaController.deleteMedia(ID_WORK);
         const deleteWork = await workController.deleteWork({ID_WORK});
+        const deleteTranslations = await translationController.deleteTranslation(ID_WORK);
 
         const statusResponse = {
             ID_WORK,
-            work: !!deleteWork ,
+            work: !!deleteWork  && !!deleteTranslations,
             media:!!deleteMedias,
             cloudMedia: !!mediasDelete.every(item => item)
         }

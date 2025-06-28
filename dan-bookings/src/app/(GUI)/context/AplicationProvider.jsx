@@ -1,6 +1,7 @@
 "use client"
 import { SessionProvider } from "next-auth/react";
 import React, { createContext, useState } from "react"
+import { DEFAULT_LNG_APP } from "../constants/languagues"
 
 export const ApplicationContext = createContext();
 
@@ -9,7 +10,7 @@ export function useApplicationContext(){
 }
 
 const APPLICATION_DEFAULT={
-    languageAPP: "ES",
+    languageAPP: DEFAULT_LNG_APP,
     editMode: false,
 }
 

@@ -1,5 +1,6 @@
 "use client"
 import React, { createContext, useState } from "react"
+import { DEFAULT_LNG_APP } from "../constants/languagues"
 
 export const WorkContext = createContext();
 
@@ -10,9 +11,10 @@ export function useWorkContext(){
 const WORK_DEFAULT = {
   works: [],
   params: {
-    // page: 0,
+    page: 0
     // limit: CONST_DB_WORK.LIMIT...
-  }
+  },
+  lastParams:{}
   
 }
 export const WorkContextProvider = ({ children }) => { 

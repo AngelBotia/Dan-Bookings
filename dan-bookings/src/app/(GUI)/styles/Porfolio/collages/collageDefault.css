@@ -9,9 +9,8 @@
 }
 
 .collage-default3 {
-    grid-area: 3 / 2 / 5 / 3;
+    grid-area: 3 / 2 / 5 / 4;
 }
-
 .collage-default4 {
     grid-area: 2 / 2 / 3 / 4;
 }

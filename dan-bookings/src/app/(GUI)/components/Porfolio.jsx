@@ -11,11 +11,13 @@ import { useWork } from '../hooks/useWork';
 import { InputImgs, } from './UI/inputs/InputImgs';
 import { InputText } from './UI/inputs/InputText'
 import { ToggleHidden } from './UI/modals/ToggleHidden'
-import { useApplication,getTranslation, useLanguageAPP  } from '../hooks/useApplication';
+import { getTranslation  } from '../hooks/useApplication';
+import { useApplicationContext } from '../context/AplicationProvider';
 
 
 
 const Porfolio = () => {  
+  const { applicationContext:{ languageAPP }} = useApplicationContext();
   const { porfolio:{
     errorMessages,
     labels 
@@ -99,8 +101,8 @@ const Porfolio = () => {
           e.preventDefault();    
           const { ID_WORK } = formData || {};        
  
-          let response = ID_WORK ? await editWork(formData)
-                                 : await addWork(formData)
+          let response = ID_WORK ? await editWork({...formData,languageAPP})
+                                 : await addWork({...formData,languageAPP})
           
           e.target.reset(); 
           setFormData(null);

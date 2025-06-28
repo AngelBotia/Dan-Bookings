@@ -1,15 +1,15 @@
 import { userAuthSchema } from "../../../schema/userSchema";
-import { US_DB_PROPS } from "../../../constants/usersDB";
+import { US_DB_PROPS } from "../../constants/usersDB";
 import { conn,createDynamicQuery } from "../../libs/mysql/mysql";
 const crypto = require('crypto');
 
+const  {user_SELECT,USERS_DB_TABLE,US_DB_TABLE_ALIAS,LIMIT_USERS,USER} = US_DB_PROPS; 
 
 export class UserModelMYSQL{
   
     createNewUser = async ({id,email,name}) =>{
       try {
         userAuthSchema.parse({id,email,name});
-        const  {user_SELECT,USERS_DB_TABLE,US_DB_TABLE_ALIAS,LIMIT_USERS,USER,USER_ROLS} = US_DB_PROPS; 
         
         const userToSave = {
           [USER.id]:id,
@@ -36,7 +36,6 @@ export class UserModelMYSQL{
 
       try {
         userAuthSchema.parse({id,email,name});
-        const  {user_SELECT,USERS_DB_TABLE,US_DB_TABLE_ALIAS,LIMIT_USERS,USER,USER_ROLS} = US_DB_PROPS; 
 
         //SELECT
         SELECT = [user_SELECT];
@@ -64,20 +63,5 @@ export class UserModelMYSQL{
         console.error(error)
         return null;
       }
-    }
-    checkApikey = (key)=>{
-      try {
-        if(!key) return false;
-        const buf1 = Buffer.from(key, 'hex');
-        const buf2 = Buffer.from(process.env.NEXT_PUBLIC_MY_API_KEY, 'hex');
-      
-        if (buf1.length !== buf2.length) return false;
-  
-        return !!crypto.timingSafeEqual(buf1, buf2);
-        
-      } catch (error) {
-        return false;
-      }
- 
     }
 }

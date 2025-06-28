@@ -2,10 +2,8 @@
 const WORKS = { 
  //PROPS ITEM ⇣ | ⇣ DB TABLE NAME 
         ID_WORK: "WO_ID",
-        WO_NAME:"WO_NAME",
         URL: "WO_URL",
         ORDER_INDEX: "WO_ORDER",
-        // IMAGE_URL: "WO_IMAGE_URL",
         IS_VISIBLE: "WO_VISIBLE"
     }
     const WO_DB_TABLE = "WORKS"

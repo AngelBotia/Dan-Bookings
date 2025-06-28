@@ -1,12 +1,14 @@
 import { conn ,createDynamicQuery} from "../../libs/mysql/mysql";
-import { DETAILS_PROPS,WO_DB_PROPS } from "../../../constants/worksDB"
+import { DETAILS_PROPS,WO_DB_PROPS } from "../../constants/worksDB"
+
+const {work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,LIMIT_WORKS,WORKS} = WO_DB_PROPS;
+const {details_SELECT, DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET,WO_DETAILS} = DETAILS_PROPS; 
 
 export class workModelMYSQL{
     getAllWorks = async ({ isAdmin,ID_WORK,limit, page }) => {
     
         let SELECT = [], FROM = [], WHERE = [], ORDER = [], PARAMS_VALUES = [];
         try {
-            const {work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,LIMIT_WORKS,WORKS} = WO_DB_PROPS;
             //SELECT
              SELECT = [work_SELECT];
             //FROM
@@ -48,13 +50,11 @@ export class workModelMYSQL{
     };
     createWork = async (work) => {
         try {
-            const { work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,WORKS } = WO_DB_PROPS;
             const { URL ,IMAGE_URL, WO_NAME } = work  || {};
            
             const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${WO_DB_TABLE}`);
             const workToSave = {
                 [WORKS.URL]: URL,
-                [WORKS.WO_NAME]:WO_NAME,
                 [WORKS.ORDER_INDEX]:Number(allWorks[0].TOTAL) + 1 || null
             }
 
@@ -73,7 +73,6 @@ export class workModelMYSQL{
     };
     deleteWork = async ({ ID_WORK }) => {
         if (!ID_WORK) return null;
-        const { work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS, WORKS } = WO_DB_PROPS;
         const [deleteResult] = await conn.query(`DELETE FROM ${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS} WHERE ${WO_DB_TABLE_ALIAS}.${WORKS.ID_WORK} = ?`, [ID_WORK]);
         
         const reOrderQuery = `WITH ordered_work AS ( SELECT WO_ID, ROW_NUMBER() OVER (ORDER BY WO_ORDER) AS indexToSave FROM ${WO_DB_TABLE} )
@@ -86,14 +85,12 @@ export class workModelMYSQL{
     };
     updateWork = async(work) => {
         //TODO VALID SCHEMA
-        const { work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,WORKS } = WO_DB_PROPS;
-        const { ID_WORK, ORDER_INDEX, IS_VISIBLE, URL, IMAGE_URL, WO_NAME } = work  || {};
+        const { ID_WORK, ORDER_INDEX, IS_VISIBLE, URL, IMAGE_URL } = work  || {};
         
         const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${WO_DB_TABLE}`);
         const workToUpdate = {
             [WORKS.ID_WORK]:ID_WORK,
             [WORKS.URL]: URL,
-            [WORKS.WO_NAME]:WO_NAME,
             [WORKS.ORDER_INDEX]: Number(ORDER_INDEX) ||Number(allWorks[0].TOTAL) + 1 ,
             [WORKS.IS_VISIBLE]: Number(IS_VISIBLE) || 0
         }
@@ -116,7 +113,6 @@ export class workModelMYSQL{
         let SELECT = [], FROM = [], WHERE = [], ORDER = [], PARAMS_VALUES = [];
         try {
             if (!URL) throw new Error("work URL is required");
-            const { details_SELECT, DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET,WO_DETAILS} = DETAILS_PROPS; 
 
 
             SELECT = [details_SELECT]
@@ -154,7 +150,6 @@ export class workModelMYSQL{
             const workToSave ={
                [WO_URL]: URL,
                [TITLE]: WO_NAME,
-            //    [MAIN_IMG_URL]: IMAGE_URL
             }
         
             
@@ -174,7 +169,6 @@ export class workModelMYSQL{
     };
     updateWorkDetail = async(detail) =>{
         try {
-            const { details_SELECT, DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET,WO_DETAILS} = DETAILS_PROPS;
             const { WO_URL, DESCRIPTION, TITLE, MAIN_IMG_URL } = detail || {};
             const detailToUpdate = {
                 [WO_DETAILS.WO_URL]: WO_URL,
@@ -200,8 +194,6 @@ export class workModelMYSQL{
     };
     deleteWorkDetail = async (URL) =>{
         if (!URL) return null;
-        const { details_SELECT, DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET,WO_DETAILS} = DETAILS_PROPS; 
-
         const [deleteResult] = await conn.query(`DELETE FROM ${DETAIL_DB_TABLE} ${DET_TABLE_ALIAS} WHERE ${DET_TABLE_ALIAS}.${WO_DETAILS.WO_URL} = ?`, [URL]);
 
         return !deleteResult.affectedRows == 0;

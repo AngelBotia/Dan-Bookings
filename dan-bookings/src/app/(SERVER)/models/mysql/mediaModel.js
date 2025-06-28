@@ -1,11 +1,12 @@
 import { conn ,createDynamicQuery} from "../../libs/mysql/mysql";
-import { WDM_PROPS } from "../../../constants/mediaDB"
+import { WDM_PROPS } from "../../constants/mediaDB"
+
+const { media_SELECT, MEDIA_TABLE,MEDIA_TABLE_ALIAS,MEDIAS } = WDM_PROPS;
 
 export class MediaModelMYSQL{
 
     getMedias = async(ID,category,typeMedia) =>{
         try {
-            const {media_SELECT, MEDIA_TABLE,MEDIA_TABLE_ALIAS,MEDIAS} = WDM_PROPS; 
 
             let SELECT = [media_SELECT],
                 FROM = [`${MEDIA_TABLE} ${MEDIA_TABLE_ALIAS}`],
@@ -23,8 +24,8 @@ export class MediaModelMYSQL{
             }
 
             if(typeMedia){
-                WHERE.push(`${MEDIA_TABLE_ALIAS}.${MEDIAS.TYPE_MEDIA} like :category`)
-                PARAMS_VALUES.category = category;
+                WHERE.push(`${MEDIA_TABLE_ALIAS}.${MEDIAS.TYPE_MEDIA} like :typeMedia`)
+                PARAMS_VALUES.typeMedia = typeMedia;
             }
             const query = createDynamicQuery(SELECT,FROM,WHERE);
             const [rows] = await conn.query(query, PARAMS_VALUES);
@@ -38,7 +39,6 @@ export class MediaModelMYSQL{
     createMedias = async (ID,urls=[],category="GENERIC",typeMedia="IMG") =>{
         try {
             if(!ID || !urls?.length) return;
-            const { media_SELECT, MEDIA_TABLE,MEDIA_TABLE_ALIAS,MEDIAS } = WDM_PROPS;
             
             await Promise.all(urls.map(async url => {
                 const mediaToSave = {
@@ -63,7 +63,6 @@ export class MediaModelMYSQL{
     updateMedia = async (detail) => {
         try {
             //TODO: CHANGES TO NEW VERSION OF MEDIAS
-            const { media_SELECT, MEDIA_TABLE,MEDIA_TABLE_ALIAS,MEDIAS } = WDM_PROPS;
 
             
             const { media , WO_URL} = detail || {};
@@ -94,7 +93,6 @@ export class MediaModelMYSQL{
     deleteMedia = async (ID) => {
         try {
             if (!ID ) return null;
-            const { MEDIA_TABLE,MEDIA_TABLE_ALIAS,MEDIAS } = WDM_PROPS;
             const [deleteResult] = await conn.query(`DELETE FROM ${MEDIA_TABLE} ${MEDIA_TABLE_ALIAS} WHERE ${MEDIA_TABLE_ALIAS}.${MEDIAS.ID_REF} = :ID OR ${MEDIA_TABLE_ALIAS}.${MEDIAS.URL_MEDIA} = :ID`,  {ID});
             return !deleteResult.affectedRows == 0;
         } catch (error) {

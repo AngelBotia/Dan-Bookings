@@ -1,0 +1,1 @@
+export const DEFAULT_LNG_APP = "ES";

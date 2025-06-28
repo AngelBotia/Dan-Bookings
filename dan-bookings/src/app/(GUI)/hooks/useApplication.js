@@ -1,8 +1,9 @@
 
 import ES from '../translations/ES.json'
 import EN from '../translations/EN.json'
-import { LANG_LS } from '../../constants/localStorage';
+import { LANG_LS } from '../constants/localStorage';
 import { useEffect, useState } from 'react';
+import { DEFAULT_LNG_APP } from '../constants/languagues'
 import { useApplicationContext } from '../context/AplicationProvider'
 export const useApplication = () =>{
   const { applicationContext, setApplicationContext }  = useApplicationContext();
@@ -28,12 +29,12 @@ export function useLanguageAPP(){
     }
   }, []);
   
-  const setAppLanguage =(languageAPP = "ES")=>{
+  const setAppLanguage =(languageAPP = DEFAULT_LNG_APP)=>{
     setApplicationContext(prev => ({ ...prev, languageAPP:languageAPP.toLocaleUpperCase()}))
     localStorage.setItem(LANG_LS,languageAPP.toLocaleUpperCase())
   }
   
-  return { setAppLanguage }
+  return { languageAPP,setAppLanguage }
 }
 
 export const getTranslation =()=>{

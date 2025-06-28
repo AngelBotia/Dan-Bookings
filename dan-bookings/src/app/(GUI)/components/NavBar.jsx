@@ -9,6 +9,12 @@ import { useApplication, getTranslation, useLanguageAPP  } from '../hooks/useApp
 const NavBar = () => {
   const { user, isAdmin } = getUserSession();
   const { actions:{ booking }} = getTranslation();
+  const {languageAPP,setAppLanguage }=useLanguageAPP();
+
+  const onChangeLanguague = () =>{
+    const lang = !(languageAPP != "ES") ? "EN" : "ES"
+    setAppLanguage(lang)
+  }
 
   return (
     <nav className='navbar'>
@@ -17,6 +23,7 @@ const NavBar = () => {
       {user ? <button onClick={async () => await signOut()}> SINGOUT</button> 
                      :<button onClick={() => signIn()}> LOGIN</button>}
       {user && <h1>{user.name}</h1>}
+      <button onClick={(e)=>onChangeLanguague()}>{languageAPP}</button>
       <Link href="booking">{booking}</Link>
       </div>
     </nav>

@@ -15,7 +15,7 @@ export class WorkService {
           }
     };
     async createWork(work){
-        const { WO_NAME, IMAGE_URL } = work;
+        const { WO_NAME, IMAGE_URL,languageAPP } = work;
         if (!WO_NAME || !IMAGE_URL?.length) return null;
   
         try {
@@ -24,7 +24,7 @@ export class WorkService {
             return { img, type }
           })
           const body = new FormData();
-          body.append('work',JSON.stringify({WO_NAME,IMAGE_URL:imgsToSend}));
+          body.append('work',JSON.stringify({...work,IMAGE_URL:imgsToSend}));
   
           const dataWork = await fetch(this.endPoint, { method: "POST", body });
           const newWork = await dataWork.json();

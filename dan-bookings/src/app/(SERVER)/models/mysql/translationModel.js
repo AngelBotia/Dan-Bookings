@@ -1,6 +1,7 @@
 import { conn ,createDynamicQuery} from "../../libs/mysql/mysql";
 import { DEFAULT_LNG_APP } from "../../../(GUI)/constants/languagues"
 import { TR_DB_PROPS , LNG_DB_PROPS} from "../../constants/translationDB";
+import { iaController } from "../../controllers/IAController"
 
 const {TR_SELECT,TRANSLATION_DB_TABLE,TR_DB_TABLE_ALIAS,TRANSLATION} = TR_DB_PROPS; 
 const {LNG_SELECT,LNG_DB_TABLE_ALIAS,LANGUAGUE_DB_TABLE,LANGUAGUE}  = LNG_DB_PROPS; 
@@ -47,16 +48,15 @@ export class TranslationModelMYSQL{
            const allLanguaguesConfig = await this.getLanguages();
            const allTranslateToSave =  await Promise.all(Object.entries(propToSave).map(([prop, value]) => {
                 try {    
-                    return allLanguaguesConfig.map( lng =>{
-                            const translateText = lng.language == languageApp ? value : "TODO: implement translate service -.-";
-                            const trToSave = {
+                   return Promise.all( allLanguaguesConfig.map( async lng =>{
+                            const translateText = lng.language == languageApp ? value : await iaController.getTranslate(value,languageApp,lng.language) ;                            const trToSave = {
                                 [text]: translateText,
                                 [id_ref]:ID_REF,
                                 [obj_prop]: prop,
                                 [language]: lng.language == languageApp ? languageApp : lng.language
                             }
-                            return conn.query(`INSERT into ${TRANSLATION_DB_TABLE} SET ?`, [trToSave]);
-                    })
+                            await conn.query(`INSERT into ${TRANSLATION_DB_TABLE} SET ?`, [trToSave]);
+                    }))
 
                 } catch (error) {
                     return null;        

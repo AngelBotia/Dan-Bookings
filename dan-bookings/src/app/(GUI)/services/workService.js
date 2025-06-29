@@ -8,6 +8,7 @@ export class WorkService {
         try {
             const searchParams = params ? new URLSearchParams(params) : "";
             const worksData = await fetch(`${this.endPoint}?${searchParams}`, { method: "GET" });
+            if(!worksData.ok) return null;
             const worksJson = await worksData.json() || [];
             return worksJson;
           } catch (error) {
@@ -25,9 +26,10 @@ export class WorkService {
           })
           const body = new FormData();
           body.append('work',JSON.stringify({...work,IMAGE_URL:imgsToSend}));
-  
           const dataWork = await fetch(this.endPoint, { method: "POST", body });
+          if(!dataWork.ok) return null;
           const newWork = await dataWork.json();
+
           return newWork;
         } catch (error) {
           return null;
@@ -41,6 +43,7 @@ export class WorkService {
           body.append("newWork",JSON.stringify(newWork));
   
           const workToUpdate = await fetch(this.endPoint, { method: "PUT", body });
+          if(!workToUpdate.ok) return null;
           const updatedWork = await workToUpdate.json();
   
           return updatedWork;
@@ -57,6 +60,7 @@ export class WorkService {
           body.append("URL",JSON.stringify(URL));
           body.append("IMAGE_URL",JSON.stringify(IMAGE_URL))
           const workToDelete = await fetch(this.endPoint, { method: "DELETE",body });
+          if(!workToDelete.ok) return null;
           const deletedWork = await workToDelete.json();
           return deletedWork || null;
         } catch (error) {
@@ -72,6 +76,7 @@ export class WorkService {
             if(!URL) return null; 
             const searchParams = params ? new URLSearchParams(params) : "";
             const detailData = await fetch(`/api/work/${URL}?${searchParams}`, { method: "GET" });
+            if(!detailData.ok) return null;
             const detail = await detailData.json();
             return detail;
         } catch (error) {
@@ -86,6 +91,7 @@ export class WorkService {
           body.append("newDetail",JSON.stringify(newWorkDetail));
   
           const detailToUpdate = await fetch(`/api/work/${WO_URL}`, { method: "PUT", body });
+          if(!detailToUpdate.ok) return null;
           const updatedDetail = await detailToUpdate.json();
           
           return updatedDetail;

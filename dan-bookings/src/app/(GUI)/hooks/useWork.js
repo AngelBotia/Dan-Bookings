@@ -38,7 +38,7 @@ export const useWork = () => {
         let newWork = await workService.createWork(workToSend);
         if(!newWork || newWork.error) throw new Error("TODO: put error with translate");
         
-        newWork.IMAGE_URL = IMAGE_URL;
+        if(IMAGE_URL) newWork.IMAGE_URL = IMAGE_URL;
         const updateWorks = [...works, newWork];
         setWorkContext(prev =>({ ...prev ,works:updateWorks}));
     };

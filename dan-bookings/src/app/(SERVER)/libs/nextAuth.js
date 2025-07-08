@@ -1,7 +1,7 @@
 import GoogleProvider from "next-auth/providers/google";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth";
-import { getUser,createUser } from '../server/userActions.js'
+import { getUser,createUser } from '../User/user.actions'
 
 
 export const authOptions = {

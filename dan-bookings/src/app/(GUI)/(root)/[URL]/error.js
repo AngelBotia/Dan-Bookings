@@ -1,5 +1,5 @@
 'use client'
-import '../../styles/globals.css'
+import '../../Shared/styles/globals.css'
 
 export default  function ErrorWork() {
     return (

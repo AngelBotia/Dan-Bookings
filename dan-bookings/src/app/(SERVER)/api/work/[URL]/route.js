@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { workController } from "../../../controllers/WorkController";
+import { workController } from "../../../Work/work.controller";
 import { hasPermission } from "../../../libs/nextAuth";
-import { mediaController } from "../../../controllers/MediaController";
+import { mediaController } from "../../../Media/media.controller";
 
 export async function GET(request, { params }) {
     try {

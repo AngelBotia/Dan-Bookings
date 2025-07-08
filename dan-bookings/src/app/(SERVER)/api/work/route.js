@@ -1,10 +1,9 @@
-import { workController } from "../../controllers/WorkController";
+import { workController } from "../../Work/work.controller";
 import { NextResponse } from "next/server";
 import { hasPermission } from "../../libs/nextAuth"; 
-import { saveImgsInCloud } from '../../utils/filesHelper'
-import { fileController } from "../../controllers/FilesController";
-import { mediaController } from "../../controllers/MediaController";
-import { translationController } from "../../controllers/TranslationController"
+import { fileController } from "../../File/file.controller";
+import { mediaController } from "../../Media/media.controller";
+import { translationController } from "../../Translation/translation.controller"
 export async function GET(request) {
     try {
         const { searchParams } = request.nextUrl;
@@ -50,7 +49,7 @@ export async function POST(request, { params }) {
         
         if(!files?.length || !WO_NAME)  return NextResponse.json({ error: "Bad request" }, { status: 400 });
 
-        const urlsImg = await saveImgsInCloud(files,'WORKS',URL);
+        const urlsImg = await fileController.saveImgsInCloud(files,CATEGORY.replaceAll(" ","-") || 'WORKS',URL);
 
         const workToSave = {
             WO_NAME,
@@ -106,7 +105,7 @@ export async function PUT(request,{ params }) {
                                                 }));
         
         const newMediasToSave = IMAGE_URL.filter(newMedia => newMedia.img) || [];
-        const urlsImg = await saveImgsInCloud(newMediasToSave,categoryImgs,URL);
+        const urlsImg = await fileController.saveImgsInCloud(newMediasToSave,categoryImgs,URL);
         const newMedias = await mediaController.createMedias(ID_WORK,urlsImg,categoryImgs) || [];
         
         

@@ -1,10 +1,10 @@
 'use client'
 import React from 'react';
 import Link from 'next/link';
-import '../../styles/globals.css'
-import'../../styles/Porfolio/Porfolio.css'
+import '../../Shared/styles/globals.css'
+import'../../Work/styles/Porfolio/Porfolio.css'
 import { useParams } from 'next/navigation';
-import { useWorkDetails } from '../../hooks/useWork';
+import { useWorkDetails } from '../../Work/work.hook';
 
 export default function Work() {
   const { URL } = useParams();

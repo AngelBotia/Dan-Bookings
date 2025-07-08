@@ -1,7 +1,6 @@
 import { userAuthSchema } from "../../../schema/userSchema";
 import { US_DB_PROPS } from "../../constants/usersDB";
 import { conn,createDynamicQuery } from "../../libs/mysql/mysql";
-const crypto = require('crypto');
 
 const  {user_SELECT,USERS_DB_TABLE,US_DB_TABLE_ALIAS,LIMIT_USERS,USER} = US_DB_PROPS; 
 

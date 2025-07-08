@@ -12,10 +12,12 @@ export async function GET(request) {
         const page = Number(searchParams.get('page'));
         const ID_WORK = searchParams.get('id');
         const languageApp = searchParams.get('languageAPP');
+        const CATEGORY = searchParams.get('category');
         const isAdmin = await hasPermission(request);
-        let params = { isAdmin, ID_WORK, limit, page, };
-        let allWorks = await workController.getAllWorks(params);
+        
+        let params = { isAdmin, ID_WORK, CATEGORY, limit, page };
 
+        let allWorks = await workController.getAllWorks(params);
         //MAKE WORKS
         allWorks = await Promise.all(
             allWorks.map(async (work) => {
@@ -42,7 +44,7 @@ export async function POST(request, { params }) {
  
         const body = await request.formData();
         const work = JSON.parse(body.get('work'));
-        const { WO_NAME, IMAGE_URL,languageAPP} = work || {};
+        const { WO_NAME, IMAGE_URL,languageAPP,CATEGORY} = work || {};
         const files = IMAGE_URL || [];
         const URL = WO_NAME?.trim().replaceAll(" ","-") || null;
         
@@ -52,6 +54,7 @@ export async function POST(request, { params }) {
 
         const workToSave = {
             WO_NAME,
+            CATEGORY,
             URL
         }
         let newWork = await workController.createWork(workToSave);
@@ -63,7 +66,7 @@ export async function POST(request, { params }) {
             ...translations,
         }
         newWork.detail = await workController.createDetailWork(newWork) || {};
-        newWork.IMAGE_URL = await mediaController.createMedias(newWork?.ID_WORK,urlsImg,"WORK"); 
+        newWork.IMAGE_URL = await mediaController.createMedias(newWork?.ID_WORK,urlsImg,CATEGORY); 
         
     
     

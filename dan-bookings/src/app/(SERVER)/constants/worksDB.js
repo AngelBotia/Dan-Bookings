@@ -3,6 +3,8 @@ const WORKS = {
  //PROPS ITEM ⇣ | ⇣ DB TABLE NAME 
         ID_WORK: "WO_ID",
         URL: "WO_URL",
+        CATEGORY: "CATEGORY",
+        SUBCATEGORY:"SUBCATEGORY",
         ORDER_INDEX: "WO_ORDER",
         IS_VISIBLE: "WO_VISIBLE"
     }

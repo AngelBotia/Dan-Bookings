@@ -5,7 +5,7 @@ const {work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,LIMIT_WORKS,WORKS} = WO_DB_PR
 const {details_SELECT, DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET,WO_DETAILS} = DETAILS_PROPS; 
 
 export class workModelMYSQL{
-    getAllWorks = async ({ isAdmin,ID_WORK,limit, page }) => {
+    getAllWorks = async ({ isAdmin,ID_WORK,CATEGORY,limit, page }) => {
     
         let SELECT = [], FROM = [], WHERE = [], ORDER = [], PARAMS_VALUES = [];
         try {
@@ -25,9 +25,14 @@ export class workModelMYSQL{
                 WHERE.push(idWork_WHERE)
                 PARAMS_VALUES.push(ID_WORK)
             }
+            if(CATEGORY){
+                const type_Where = `${WO_DB_TABLE_ALIAS}.${WORKS.CATEGORY} = ?`
+                WHERE.push(type_Where);
+                PARAMS_VALUES.push(CATEGORY);
+            }
             //ORDER
             const orderByIndex = `${WO_DB_TABLE_ALIAS}.${WORKS.ORDER_INDEX}`
-             ORDER = [orderByIndex];
+            ORDER = [orderByIndex];
 
             let allQuery = createDynamicQuery(SELECT,FROM,WHERE,ORDER);
             
@@ -50,10 +55,11 @@ export class workModelMYSQL{
     };
     createWork = async (work) => {
         try {
-            const { URL ,IMAGE_URL, WO_NAME } = work  || {};
+            const { URL ,IMAGE_URL, CATEGORY } = work  || {};
            
             const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${WO_DB_TABLE}`);
             const workToSave = {
+                [WORKS.CATEGORY]: CATEGORY,
                 [WORKS.URL]: URL,
                 [WORKS.ORDER_INDEX]:Number(allWorks[0].TOTAL) + 1 || null
             }

@@ -11,8 +11,8 @@ const NavBar = () => {
   const { actions:{ booking }} = getTranslation();
   const {languageAPP,setAppLanguage }=useLanguageAPP();
 
-  const onChangeLanguague = () =>{
-    const lang = !(languageAPP != "ES") ? "EN" : "ES"
+  const onChangeLanguague = (e) =>{
+    const lang = e.currentTarget.value;
     setAppLanguage(lang)
   }
 
@@ -23,8 +23,6 @@ const NavBar = () => {
       {user ? <button onClick={async () => await signOut()}> SINGOUT</button> 
                      :<button onClick={() => signIn()}> LOGIN</button>}
       {user && <h1>{user.name}</h1>}
-      <button onClick={(e)=>onChangeLanguague()}>{languageAPP}</button>
-      <Link href="booking">{booking}</Link>
       </div>
     </nav>
   )

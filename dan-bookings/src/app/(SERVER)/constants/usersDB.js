@@ -1,4 +1,3 @@
-export const API_KEY = process.env.NEXT_PUBLIC_MY_API_KEY;
 const USER = { 
     //PROPS ITEM ⇣ | ⇣ DB TABLE NAME 
            id:"ID_AUTH",

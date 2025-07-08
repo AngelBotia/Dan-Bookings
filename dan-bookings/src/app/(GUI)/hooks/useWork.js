@@ -2,6 +2,7 @@ import { useApplicationContext } from "../context/AplicationProvider";
 import { useState, useEffect } from "react";
 import { useWorkContext } from "../context/WorkProvider";
 import { workService } from '../services/workService'
+import { categoryService } from "../category/category.service"
 import equal from 'fast-deep-equal';
 
 
@@ -10,7 +11,7 @@ export const useWork = () => {
     const { setApplicationContext,applicationContext:{ languageAPP }} = useApplicationContext();
     const { workContext, setWorkContext } = useWorkContext();
     
-    const { works , params, lastParams} = workContext;
+    const { works , params, lastParams, categories} = workContext;
   
     /**
      * @param {Object} params - Parameters for get all works.
@@ -18,9 +19,25 @@ export const useWork = () => {
      * @param {number} params.page - Page number to retrieve.
      * @return {Object[]} Array of works.
     */
-    const loadWorks  = async (params={}) => {
-        setWorkContext(prev =>({ ...prev ,params}));
-    };
+  const loadWorks = async (params={}) => {
+        params.languageAPP ??= languageAPP
+        
+        const hasWorksLoaded = works?.find(work => work.ID_WORK) || null;
+        const hasDetailLoaded = works?.find(work => work.detail && !work.ID_WORK)?.detail || null;
+        
+        if (lastParams?.find(lastParam => equal(lastParam,params))) return;
+
+        let newWorks = await workService.getWorks(params) || [];
+        
+        if(hasDetailLoaded) newWorks = newWorks.map(newWork => {return newWork.URL==hasDetailLoaded.WO_URL ? {...newWork,detail: hasDetailLoaded} : newWork })
+        
+        const restOfWorks = newWorks.filter(workToSearch => !works.find(work => equal(work,workToSearch)))
+        setWorkContext(prev =>({ ...prev ,
+                                works:[...works,...restOfWorks],
+                                lastParams: [...lastParams,params]
+                              }));   
+        return newWorks
+  };   
     /**
        * @typeOf {Object} work - Work Object
        * @property {string} work.WO_NAME - Name of the work (required).
@@ -70,29 +87,19 @@ export const useWork = () => {
       setWorkContext(prev =>({ ...prev ,works:updatePorfolio}));
     };
 
-    useEffect(() => {
-      
-      const loadData = async () => {
-        const hasWorksLoaded = works?.find(work => work.ID_WORK) || null;
-        const hasDetailLoaded = works?.find(work => work.detail && !work.ID_WORK)?.detail || null;
-        
-        if (hasWorksLoaded && equal(params,lastParams)) return;
 
-        let newWorks = await workService.getWorks({...params,languageAPP}) || [];
-        
-        if(hasDetailLoaded) newWorks = newWorks.map(newWork => {return newWork.URL==hasDetailLoaded.WO_URL ? {...newWork,detail: hasDetailLoaded} : newWork })
-        
-        setWorkContext(prev =>({ ...prev ,
-                                works:newWorks,
-                                lastParams: {...params,languageAPP}
-                              }));   
-      }
-          loadData();
-    }, [params,languageAPP]);
+    const loadCategories = async () =>{
+      const newCategories = await categoryService.getCategories() || [];
+      setWorkContext(prev => ({...prev,categories: newCategories }))
+      return newCategories;
+    }
   
 return {
         works,
+        categories,
         setWorkContext,
+        params,
+        loadCategories,
         loadWorks,
         addWork,
         editWork,

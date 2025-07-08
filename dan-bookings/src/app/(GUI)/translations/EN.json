@@ -2,7 +2,10 @@
     "settings": {},
     "application": {},
     "actions": {
-      "booking": "Booking"
+      "booking": "Booking",
+      "send":"Send",
+      "delete":"Delete"
+
     },
     "errors": {},
     "porfolio": {

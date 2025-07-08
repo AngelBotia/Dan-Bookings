@@ -49,7 +49,8 @@ export class TranslationModelMYSQL{
            const allTranslateToSave =  await Promise.all(Object.entries(propToSave).map(([prop, value]) => {
                 try {    
                    return Promise.all( allLanguaguesConfig.map( async lng =>{
-                            const translateText = lng.language == languageApp ? value : await iaController.getTranslate(value,languageApp,lng.language) ;                            const trToSave = {
+                            const translateText = lng.language == languageApp ? value : await iaController.getTranslate(value,languageApp,lng.language) || value;                            
+                            const trToSave = {
                                 [text]: translateText,
                                 [id_ref]:ID_REF,
                                 [obj_prop]: prop,

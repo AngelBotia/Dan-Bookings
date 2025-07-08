@@ -1,0 +1,57 @@
+.navigation-bar {
+    display: inline;
+    background-color: lightcyan;
+    border-radius: 2rem;
+    width: max-content;
+    padding: 1rem;
+    position: fixed;
+    bottom: 10vh;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.navigation-item {
+    display: inline-flex;
+    margin: 0 0.5rem;
+    list-style: none;
+}
+
+/* Mobile */ 
+@media (max-width: 30em) {
+    .category-swipe-container{
+        background-color: aqua;
+
+    }
+}
+
+/* Tablet */
+@media (min-width: 30.1em) and (max-width: 48em) {
+    .category-swipe-container{
+        background-color: orange;
+    }
+}
+
+/* Laptop */
+@media (min-width: 48.1em) and (max-width: 64em) {
+    .category-swipe-container{
+        background-color: yellowgreen;
+    }
+}
+
+/* Desktop */
+@media (min-width: 64.1em) {
+    .category-swipe-container{
+        background-color: purple;
+    }
+}
+
+/* Touch Device */
+@media (orientation: portrait) {
+
+
+}
+
+/* All computers */
+@media (pointer: fine) {
+
+
+}

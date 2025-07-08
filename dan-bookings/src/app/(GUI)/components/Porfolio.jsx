@@ -2,7 +2,7 @@ import '../styles/globals.css'
 import '../styles/Porfolio/Porfolio.css'
 import '../styles/porfolio/collages/collage1.css'
 import '../styles/porfolio/collages/collageDefault.css'
-import React,{ useRef, useState } from 'react';
+import React,{ useEffect, useRef, useState } from 'react';
 import Link from 'next/link'
 import Image from 'next/image'
 import { ContHorizonalScroll } from './UI/containers/ContHorizonalScroll';
@@ -18,9 +18,11 @@ import { useApplicationContext } from '../context/AplicationProvider';
 
 const Porfolio = () => {  
   const { applicationContext:{ languageAPP }} = useApplicationContext();
-  const { porfolio:{
-    errorMessages,
-    labels 
+  const { 
+          actions,
+          porfolio:{
+          errorMessages,
+          labels 
   }} = getTranslation();
   const { works, loadWorks, addWork, editWork ,removeWork } = useWork();
   const { user, isAdmin } = getUserSession();
@@ -100,7 +102,7 @@ const Porfolio = () => {
     try {
           e.preventDefault();    
           const { ID_WORK } = formData || {};        
- 
+          e.currentTarget.style.filter='blur(2px)';
           let response = ID_WORK ? await editWork({...formData,languageAPP})
                                  : await addWork({...formData,languageAPP})
           
@@ -120,6 +122,12 @@ const Porfolio = () => {
     }
   }
 
+  useEffect(() => {
+    (async () =>{
+      await loadWorks()
+    })();
+  }, [])
+  
  
 
   return (
@@ -137,6 +145,7 @@ const Porfolio = () => {
                   form={formState}
                   name={"IMAGE_URL"}
                   required={true}
+                  multiple={true}
                 />
 
                 <InputText
@@ -145,10 +154,17 @@ const Porfolio = () => {
                   label={labels["WO_NAME"]}
                   title={errorMessages["WO_NAME"]}
                   required={true} />
+                
+                <InputText
+                  form={formState}
+                  name={"CATEGORY"}
+                  label={"CATEGORY"}
+                  title={errorMessages["WO_NAME"]}
+                  required={true} />
 
                 <footer>
-                  <button type='submit' className='button-porfolio submit-porfolio'>Enviar</button>
-                  {formData?.ID_WORK && <button type='reset' className='button-porfolio reset-porfolio' onClick={(e) => onDelete(e)}>Borrar</button>} 
+                  <button type='submit' className='button-porfolio submit-porfolio'>{actions.send}</button>
+                  {formData?.ID_WORK && <button type='reset' className='button-porfolio reset-porfolio' onClick={(e) => onDelete(e)}>{actions.delete}</button>} 
                 </footer>
               </form> 
             </ToggleHidden>

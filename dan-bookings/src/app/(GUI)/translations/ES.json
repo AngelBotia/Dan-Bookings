@@ -2,7 +2,9 @@
     "settings":{},
     "application":{},
     "actions":{
-        "booking":"Reserva"
+        "booking":"Reservar",
+        "send":"Enviar",
+        "delete":"Borrar"
     },
     "errors":{},
 

@@ -10,13 +10,14 @@ export function useWorkContext(){
 }
 const WORK_DEFAULT = {
   works: [],
+  categories:[],
   params: {
-    page: 0
-    // limit: CONST_DB_WORK.LIMIT...
+    page: 0,
+    // limit: 2
   },
-  lastParams:{}
-  
+  lastParams:[]
 }
+
 export const WorkContextProvider = ({ children }) => { 
     const [workContext, setWorkContext] = useState(WORK_DEFAULT);
     return (

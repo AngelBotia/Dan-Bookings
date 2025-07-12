@@ -1,4 +1,6 @@
 import { s3Model } from "./file.S3.model";
+
+const sharp = require('sharp');
 class FilesController {
     filesController;
     

@@ -1,5 +1,5 @@
 'use client'
-import '../../Shared/styles/globals.css'
+import '../../shared/styles/globals.css'
 import React from 'react'
 
 const Booking = () => {

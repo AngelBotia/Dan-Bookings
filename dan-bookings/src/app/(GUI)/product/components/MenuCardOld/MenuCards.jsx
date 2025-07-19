@@ -2,16 +2,14 @@ import '../../Shared/styles/globals.css'
 import React,{ useEffect, useRef, useState } from 'react';
 import Link from 'next/link'
 import Image from 'next/image'
-import { getUserSession } from '../../User/user.hook';
 import { useWork } from '../work.hook';
-import { getTranslation  } from '../../Application/application.hook';
 import { SwipeConainer } from '../../Shared/components/containers/SwipeConainer';
-import { CategoriesSelector } from '../../Category/components/CategoriesSelector';
-import { useApplicationContext } from '../../Application/Application.context';
+import { CategoriesSelector } from '../../category/components/CategoriesSelector/CategoriesSelector';
+import { useApplication } from '../../Application/application.hook';
 
 
 export const MenuCards = () => {
-    const { applicationContext:{ languageAPP }} = useApplicationContext();
+    const { languageAPP,getTranslation ,getUserSession} = useApplication();
     const { porfolio:{
       errorMessages,
       labels 

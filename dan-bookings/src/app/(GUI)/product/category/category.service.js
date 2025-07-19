@@ -6,16 +6,11 @@ export class CategoryService {
     };
 
     async getCategories(params={}){
-        try {
             const searchParams = params ? new URLSearchParams(params) : "";
             const categoryData = await fetch(`${this.endPoint}?${searchParams}`, { method: "GET" });
-            if(!categoryData.ok) return null;
-            
             const categories = await categoryData.json() || [];
+            if(!categoryData.ok) throw new Error(categories?.message);
             return categories;
-          } catch (error) {
-            return null;
-          }
     }
 }
 

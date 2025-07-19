@@ -1,61 +1,56 @@
-
-import { useEffect, useState } from 'react';
 import ES from './translations/ES.json'
 import EN from './translations/EN.json'
-import { LANG_LS, DEFAULT_LNG_APP } from './application.constant';
-import { useApplicationContext } from '../Application/Application.context';
+import { create } from 'zustand'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { DEFAULT_LNG_APP, LANG_LS } from './application.constant';
+import { applicationService } from './application.service';
+import { persist } from 'zustand/middleware';
+import { useSession } from "next-auth/react";
 
-export const useApplication = () =>{
-  const { applicationContext, setApplicationContext }  = useApplicationContext();
-  const { editMode } = applicationContext || {};
-  const setEditModeApp = (isActive=false) =>{
-        setApplicationContext(prev => ({ ...prev, editMode:isActive}))
-  }
+export const useApplicationStore = create(
+    persist(
+        (set) => ({
+            languageAPP: DEFAULT_LNG_APP,
+            setLanguageAPP: (languageAPP) => set({ languageAPP }),
+        }),
+        {
+            name: LANG_LS, //LOCAL STORAGE
+        }
+    )
+);
 
-  const hexToRgb = (hex) => {
-    hex = hex.replace(/^#/, '');
-    
-    if (hex.length === 3) {
-      hex = hex.split('').map(c => c + c).join('');
+
+
+export const useApplication = () => {
+    const { languageAPP, setLanguageAPP } = useApplicationStore();
+    const queryClient = useQueryClient()
+
+    const loadLanguages = () => {
+        return useQuery({
+            queryKey: [LANG_LS],
+            queryFn: () => applicationService.getLanguages(),
+        });
     }
-    
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-  
-    return `rgb(${r}, ${g}, ${b})`;
-  }
 
-  return {
-    setEditModeApp,
-    editMode,
-    hexToRgb
-  }
-    
-}
-
-export function useLanguageAPP(){
-  const { setApplicationContext,applicationContext:{ languageAPP }} = useApplicationContext();
-
-  useEffect(() => {
-    const lastLanguage = localStorage.getItem(LANG_LS);
-    if (lastLanguage) {
-      setApplicationContext(prev => ({ ...prev, languageAPP:lastLanguage.toLocaleUpperCase()}))
+    const getTranslation = (newLanguage) => {
+        const allAppTexts = { ES, EN };
+        return allAppTexts[newLanguage || languageAPP] || allAppTexts[DEFAULT_LNG_APP];
     }
-  }, []);
-  
-  const setAppLanguage =(languageAPP = DEFAULT_LNG_APP)=>{
-    setApplicationContext(prev => ({ ...prev, languageAPP:languageAPP.toLocaleUpperCase()}))
-    localStorage.setItem(LANG_LS,languageAPP.toLocaleUpperCase())
-  }
-  
-  return { languageAPP,setAppLanguage }
-}
+    const getUserSession = () => {
+        const { data: session } = useSession() || {};
+        const { user } = session || {};
+        if (!session || !user) return {};
+        let isAdmin = user?.role === process.env.NEXT_PUBLIC_MAIN_ROL;
+        return { user, isAdmin }
+    }
 
-export const getTranslation =()=>{
-  const { applicationContext:{ languageAPP }} = useApplicationContext();
-  const allAppTexts = { ES, EN };
-  return allAppTexts[languageAPP] || EN;
+
+    return {
+        loadLanguages,
+        languageAPP,
+        getTranslation,
+        getUserSession,
+    }
 }
 
 

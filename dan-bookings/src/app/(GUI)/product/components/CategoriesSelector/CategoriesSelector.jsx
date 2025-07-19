@@ -1,4 +1,4 @@
-import '../category.style.css'
+import './categoriesSelector.css'
 
 export const CategoriesSelector = ({categories = [],indexSelect = 0,onClick=()=>{}}) => {
   return (

@@ -6,18 +6,17 @@ import React,{ useEffect, useRef, useState } from 'react';
 import Link from 'next/link'
 import Image from 'next/image'
 import { ContHorizonalScroll } from '../../Shared/components/containers/ContHorizonalScroll';
-import { getUserSession } from '../../User/user.hook';
 import { useWork } from '../work.hook';
 import { InputImgs, } from '../../Shared/components/inputs/InputImgs';
 import { InputText } from '../../Shared/components/inputs/InputText'
 import { ToggleHidden } from '../../Shared/components/modals/ToggleHidden'
-import { getTranslation  } from '../../Application/application.hook';
-import { useApplicationContext } from '../../Application/Application.context';
+import { getTranslation, getUserSession  } from '../../Application/application.hook';
+import { useApplication } from '../../Application/application.hook';
 
 
 
 const Porfolio = () => {  
-  const { applicationContext:{ languageAPP }} = useApplicationContext();
+  const { languageAPP } = useApplication();
   const { 
           actions,
           porfolio:{

@@ -3,13 +3,13 @@ import React from 'react'
 import Link from "next/link";
 import '../styles/NavBar.css'
 import { signIn,signOut } from 'next-auth/react'
-import { getUserSession } from '../../User/user.hook';
-import { getTranslation, useLanguageAPP  } from '../application.hook'
+import { useApplication  } from '../application.hook'
 
 const NavBar = () => {
+  const { getTranslation, useLanguageAPP,getUserSession } = useApplication()
   const { user, isAdmin } = getUserSession();
   const { actions:{ booking }} = getTranslation();
-  const {languageAPP,setAppLanguage }=useLanguageAPP();
+ 
 
   const onChangeLanguague = (e) =>{
     const lang = e.currentTarget.value;
@@ -22,7 +22,7 @@ const NavBar = () => {
       <div>
       {user ? <button onClick={async () => await signOut()}> SINGOUT</button> 
                      :<button onClick={() => signIn()}> LOGIN</button>}
-      {user && <h1>{user.name}</h1>}
+      {user && <h1 style={{color: isAdmin ? 'darkgoldenrod':'gray'}}>{user.name}</h1>}
       </div>
     </nav>
   )

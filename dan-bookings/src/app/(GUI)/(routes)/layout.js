@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import NavBar from "../Application/components/NavBar";
-import { ApplicationContextProvider } from "../Application/Application.context";
-import { WorkContextProvider } from "../Work/work.context"
+import NavBar from "../application/components/NavBar";
+import { ApplicationContextProvider } from "../application/Application.context";
+import { ReactQueryProvider } from "../shared/libs/reactQuery"
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -21,12 +21,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <ReactQueryProvider>
           <ApplicationContextProvider>
-             <WorkContextProvider>
                <NavBar/>
                {children}
-             </WorkContextProvider>
           </ApplicationContextProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

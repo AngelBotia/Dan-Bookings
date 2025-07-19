@@ -1,5 +1,5 @@
 import { conn ,createDynamicQuery} from "../libs/mysql";
-import { DEFAULT_LNG_APP } from "../../(GUI)/Application/application.constant"
+import { DEFAULT_LNG_APP } from "../../(GUI)/application/application.constant"
 import { TR_DB_PROPS , LNG_DB_PROPS} from "./translation.constant";
 import { iaController } from "../IA/IA.controller"
 

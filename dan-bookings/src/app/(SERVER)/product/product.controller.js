@@ -1,67 +1,94 @@
+import { mediaController } from "../Media/media.controller";
+import { translationController } from "../Translation/translation.controller";
 import { workModelMYSQL } from "./product.mysql.model"
-class WorkController {
+class ProductController {
     workModel;
-    
-    constructor(workModel){
+
+    constructor(workModel) {
         this.workModel = workModel;
     }
-    getAllWorks = (params) =>{
+    getAllProducts = async (params) => {
         try {
-             return this.workModel.getAllWorks(params);
+            let allWorks = await this.workModel.getAllProducts(params) || [];
+            let data = await Promise.all(
+                allWorks?.map(async (work) => {
+                    const translations = await translationController.getTranslations(work.ID_WORK, params.languageApp.toUpperCase()) || {};
+                    const IMAGE_URL = await mediaController.getMedias(work.ID_WORK) || [];
+                    return {
+                        ...work,
+                        ...translations,
+                        IMAGE_URL
+                    };
+                })
+            );
+            let total = await this.workModel.getTotalCount(params) 
+            return { 
+                data,
+                total
+             }
         } catch (error) {
-          console.error("[WORK-CONTROLLER] -",error);
-          throw error;
-        }
-    }
-    createWork = (work) =>{
-        try {
-            return this.workModel.createWork(work);
-        } catch (error) {
-            console.error("[WORK-CONTROLLER] -",error)
+            console.error("[WORK-CONTROLLER] -", error);
             throw error;
         }
     }
-    deleteWork = (work) =>{
+    getTotalCount = (params) => {
         try {
-            return this.workModel.deleteWork(work);
+            return this.workModel.getTotalCount(params);
         } catch (error) {
-            console.error("[WORK-CONTROLLER] -",error)
+            console.error("[WORK-CONTROLLER] -", error);
             throw error;
         }
     }
-    updateWork = (work) => {
+
+    createProduct = (work) => {
         try {
-            return this.workModel.updateWork(work);
+            return this.workModel.createProduct(work);
         } catch (error) {
-            console.error("[WORK-CONTROLLER] -",error)
+            console.error("[WORK-CONTROLLER] -", error)
+            throw error;
+        }
+    }
+    deleteProduct = (work) => {
+        try {
+            return this.workModel.deleteProduct(work);
+        } catch (error) {
+            console.error("[WORK-CONTROLLER] -", error)
+            throw error;
+        }
+    }
+    updateProduct = (work) => {
+        try {
+            return this.updateProduct(work);
+        } catch (error) {
+            console.error("[WORK-CONTROLLER] -", error)
             throw error;
         }
     }
 
 
-    
-    getWorkDetail = (params) =>{
+
+    getWorkDetail = (params) => {
         try {
             return this.workModel.getWorkDetail(params);
         } catch (error) {
-            console.error("[WORK-CONTROLLER] -",error)
+            console.error("[WORK-CONTROLLER] -", error)
             throw error;
         }
-        
+
     }
     createDetailWork = (work) => {
         try {
             return this.workModel.createDetailWork(work);
         } catch (error) {
-            console.error("[WORK-CONTROLLER] -",error)
+            console.error("[WORK-CONTROLLER] -", error)
             throw error;
         }
     }
-    updateWorkDetail = (work) =>{
+    updateWorkDetail = (work) => {
         try {
             return this.workModel.updateWorkDetail(work);
         } catch (error) {
-            console.error("[WORK-CONTROLLER] -",error)
+            console.error("[WORK-CONTROLLER] -", error)
             throw error;
         }
     }
@@ -69,7 +96,7 @@ class WorkController {
         try {
             return this.workModel.deleteWorkDetail(ID);
         } catch (error) {
-            console.error("[WORK-CONTROLLER] -",error)
+            console.error("[WORK-CONTROLLER] -", error)
             throw error;
         }
     }
@@ -80,4 +107,4 @@ class WorkController {
 // const model = new ProductModelFS(); <-- Local file  
 const model = new workModelMYSQL();
 
-export const workController = new WorkController(model)
+export const productController = new ProductController(model)

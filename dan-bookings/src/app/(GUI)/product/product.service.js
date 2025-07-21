@@ -1,7 +1,7 @@
 class ProductService {
 
   constructor(endPoint) {
-    this.endPoint = endPoint || '/api/work';
+    this.endPoint = endPoint || '/api/product';
   };
 
   async getProducts(params = {}) {

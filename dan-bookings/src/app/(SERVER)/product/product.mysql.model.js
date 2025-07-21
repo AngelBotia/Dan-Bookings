@@ -5,7 +5,7 @@ const {work_SELECT, WO_DB_TABLE, WO_DB_TABLE_ALIAS,LIMIT_WORKS,WORKS} = WO_DB_PR
 const {details_SELECT, DETAIL_DB_TABLE,DET_TABLE_ALIAS,LIMIT_DET,WO_DETAILS} = DETAILS_PROPS; 
 
 export class workModelMYSQL{
-    getAllWorks = async ({ isAdmin,ID_WORK,CATEGORY,limit, page }) => {
+    getAllProducts = async ({ isAdmin,ID_WORK,CATEGORY,limit, page }) => {
     
         let SELECT = [], FROM = [], WHERE = [], ORDER = [], PARAMS_VALUES = [];
         try {
@@ -38,36 +38,66 @@ export class workModelMYSQL{
             
             //LIMIT PAGE
             const limitWorks = Number(limit) || LIMIT_WORKS;
-            const pageWorks =  Number(page) || 0;
+            const pageWorks =  Number(page) * Number(limitWorks) || 0;
             if(limitWorks)  {
               allQuery = allQuery.concat(` LIMIT ? OFFSET ? `)
               PARAMS_VALUES.push(limitWorks,pageWorks)
             }
             
             const [rows] = await conn.query(allQuery,PARAMS_VALUES);
-            if (rows?.affectedRows == 0) throw new Error("works dont found");
+            // if (rows?.affectedRows == 0) throw new Error("works dont found");
             return rows
 
         } catch (error) {
             console.error(error.message);
-            throw new Error("works dont found")
+            // throw new Error("works dont found")
         }
     };
-    createWork = async (work) => {
+    getTotalCount = async({CATEGORY,isAdmin}) =>{
+        let SELECT = [], FROM = [], WHERE = [], PARAMS_VALUES = {};
+        try {
+            //SELECT
+             SELECT = [`COUNT(*) AS total`];
+            //FROM
+            const work_FROM = `${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS}`
+             FROM = [work_FROM];
+            //WHERE
+            WHERE = [];
+            if(!isAdmin){
+                WHERE.push(`${WO_DB_TABLE_ALIAS}.${WORKS.IS_VISIBLE} = :IS_VISIBLE`)
+                PARAMS_VALUES.IS_VISIBLE = 1
+            }
+            if(CATEGORY){
+                const type_Where = `${WO_DB_TABLE_ALIAS}.${WORKS.CATEGORY} = :CATEGORY`
+                WHERE.push(type_Where);
+                PARAMS_VALUES.CATEGORY=CATEGORY;
+            }
+   
+
+            let allQuery = createDynamicQuery(SELECT,FROM,WHERE);
+            const [rows] = await conn.query(allQuery,PARAMS_VALUES);
+            return rows?.find(res => res)?.total
+
+        } catch (error) {
+            console.error(error.message);
+            // throw new Error("works dont found")
+        }   
+    };
+    createProduct = async (work) => {
         try {
             const { URL ,IMAGE_URL, CATEGORY } = work  || {};
            
-            const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${WO_DB_TABLE}`);
+            const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${PR_DB_TABLE}`);
             const workToSave = {
-                [WORKS.CATEGORY]: CATEGORY,
-                [WORKS.URL]: URL,
-                [WORKS.ORDER_INDEX]:Number(allWorks[0].TOTAL) + 1 || null
+                [PRODUCT.CATEGORY]: CATEGORY,
+                [PRODUCT.URL]: URL,
+                [PRODUCT.ORDER_INDEX]:Number(allWorks[0].TOTAL) + 1 || null
             }
 
-            const [result] = await conn.query(`INSERT into ${WO_DB_TABLE} SET ?`,[workToSave]);
+            const [result] = await conn.query(`INSERT into ${PR_DB_TABLE} SET ?`,[workToSave]);
             if(result.affectedRows === 0) return null;
 
-            const [rows] =  await conn.query(`SELECT ${work_SELECT} FROM ${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS}  WHERE ${WO_DB_TABLE_ALIAS}.${WORKS.URL} = ?`,[URL]);
+            const [rows] =  await conn.query(`SELECT ${product_SELECT} FROM ${PR_DB_TABLE} ${PR_DB_TABLE_ALIAS}  WHERE ${PR_DB_TABLE_ALIAS}.${PRODUCT.URL} = ?`,[URL]);
             if (rows?.affectedRows == 0) return null;
 
             const newWork = rows?.find(work => work) || null;
@@ -77,36 +107,36 @@ export class workModelMYSQL{
             return null;
         }
     };
-    deleteWork = async ({ ID_WORK }) => {
+    deleteProduct = async ({ ID_WORK }) => {
         if (!ID_WORK) return null;
-        const [deleteResult] = await conn.query(`DELETE FROM ${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS} WHERE ${WO_DB_TABLE_ALIAS}.${WORKS.ID_WORK} = ?`, [ID_WORK]);
+        const [deleteResult] = await conn.query(`DELETE FROM ${PR_DB_TABLE} ${PR_DB_TABLE_ALIAS} WHERE ${PR_DB_TABLE_ALIAS}.${PRODUCT.ID_WORK} = ?`, [ID_WORK]);
         
-        const reOrderQuery = `WITH ordered_work AS ( SELECT WO_ID, ROW_NUMBER() OVER (ORDER BY WO_ORDER) AS indexToSave FROM ${WO_DB_TABLE} )
-                                    UPDATE ${WO_DB_TABLE}
-                                    JOIN ordered_work ON ${WO_DB_TABLE}.${WORKS.ID_WORK} = ordered_work.${WORKS.ID_WORK}
-                                    SET works.${WORKS.ORDER_INDEX} = ordered_work.indexToSave`;
+        const reOrderQuery = `WITH ordered_work AS ( SELECT WO_ID, ROW_NUMBER() OVER (ORDER BY WO_ORDER) AS indexToSave FROM ${PR_DB_TABLE} )
+                                    UPDATE ${PR_DB_TABLE}
+                                    JOIN ordered_work ON ${PR_DB_TABLE}.${PRODUCT.ID_WORK} = ordered_work.${PRODUCT.ID_WORK}
+                                    SET works.${PRODUCT.ORDER_INDEX} = ordered_work.indexToSave`;
         const [reOrderResult] = await conn.query(reOrderQuery);
 
         return !deleteResult.affectedRows == 0
     };
-    updateWork = async(work) => {
+    updateProduct = async(work) => {
         //TODO VALID SCHEMA
         const { ID_WORK, ORDER_INDEX, IS_VISIBLE, URL, IMAGE_URL } = work  || {};
         
-        const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${WO_DB_TABLE}`);
+        const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${PR_DB_TABLE}`);
         const workToUpdate = {
-            [WORKS.ID_WORK]:ID_WORK,
-            [WORKS.URL]: URL,
-            [WORKS.ORDER_INDEX]: Number(ORDER_INDEX) ||Number(allWorks[0].TOTAL) + 1 ,
-            [WORKS.IS_VISIBLE]: Number(IS_VISIBLE) || 0
+            [PRODUCT.ID_WORK]:ID_WORK,
+            [PRODUCT.URL]: URL,
+            [PRODUCT.ORDER_INDEX]: Number(ORDER_INDEX) ||Number(allWorks[0].TOTAL) + 1 ,
+            [PRODUCT.IS_VISIBLE]: Number(IS_VISIBLE) || 0
         }
         //NEW IMG
-        if(IMAGE_URL && typeof IMAGE_URL === 'string' ) workToUpdate[WORKS.IMAGE_URL] = IMAGE_URL;
+        if(IMAGE_URL && typeof IMAGE_URL === 'string' ) workToUpdate[PRODUCT.IMAGE_URL] = IMAGE_URL;
 
-        const [result] = await conn.query(`UPDATE ${WO_DB_TABLE} SET ? WHERE ${WORKS.ID_WORK} = ?`,[workToUpdate,ID_WORK]);
+        const [result] = await conn.query(`UPDATE ${PR_DB_TABLE} SET ? WHERE ${PRODUCT.ID_WORK} = ?`,[workToUpdate,ID_WORK]);
         if(result.affectedRows === 0) return null;
 
-        const [rows] =  await conn.query(`SELECT ${work_SELECT} FROM ${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS}  WHERE ${WO_DB_TABLE_ALIAS}.${WORKS.URL} = ?`,[URL]);
+        const [rows] =  await conn.query(`SELECT ${product_SELECT} FROM ${PR_DB_TABLE} ${PR_DB_TABLE_ALIAS}  WHERE ${PR_DB_TABLE_ALIAS}.${PRODUCT.URL} = ?`,[URL]);
         if (rows?.affectedRows == 0) return null;
 
         const updatedWork = rows?.find(work => work) || null;

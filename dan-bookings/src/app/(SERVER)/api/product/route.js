@@ -1,4 +1,4 @@
-import { workController } from "../../Work/work.controller";
+import { productController } from "../../product/product.controller";
 import { NextResponse } from "next/server";
 import { hasPermission } from "../../libs/nextAuth"; 
 import { fileController } from "../../File/file.controller";
@@ -14,22 +14,10 @@ export async function GET(request) {
         const CATEGORY = searchParams.get('category');
         const isAdmin = await hasPermission(request);
         
-        let params = { isAdmin, ID_WORK, CATEGORY, limit, page };
+        let params = { isAdmin, ID_WORK, CATEGORY, limit, page,languageApp };
 
-        let allWorks = await workController.getAllWorks(params);
-        //MAKE WORKS
-        allWorks = await Promise.all(
-            allWorks.map(async (work) => {
-                const translations = await translationController.getTranslations(work.ID_WORK,languageApp.toUpperCase()) || {};
-                const IMAGE_URL = await mediaController.getMedias(work.ID_WORK) || [];
-                return {
-                    ...work,
-                    ...translations,
-                    IMAGE_URL
-                };
-            })
-        );
-        return NextResponse.json(allWorks,{ status:200 });
+        let { data,total } = await productController.getAllProducts(params);
+        return NextResponse.json({data,total},{ status:200 });
     } catch (error) {
         console.error(error.message);
         const errorMessage = "something went wrong";

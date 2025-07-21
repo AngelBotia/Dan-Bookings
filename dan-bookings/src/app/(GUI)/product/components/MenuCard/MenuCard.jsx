@@ -1,33 +1,106 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useProduct } from '../../product.hook'
 import { useCategories } from '../../category/category.hook'
 import { CategoriesSelector } from '../CategoriesSelector/CategoriesSelector'
+import { SwipeConainer } from '../../../Shared/components/containers/SwipeConainer'
 
 export const MenuCard = () => {
-    const [params, setparams] = useState({CATEGORY:null})
-    const { data:categories } = useCategories()
-    const { data:products } = useProduct(params);
+  const [params, setparams] = useState({ page: 1, limit: 5 })
+  const {
+    isLoading,
+    data: products,
+    fetchNextPage, 
+    hasNextPage,
+    isFetchingNextPage,
+    categories,
+    indexSelectedCategory,
+    setIndexCategory
+  } = useProduct(params);
 
-    const onClickCategory = (category,index) =>{
-        let value = ["PRINCIPAL","fsdfafasdfasdf"]
-        setparams(prev => ({...prev,CATEGORY:value[index].code}));
-    }
+  if (isLoading) return <h2>Loading...</h2>
 
-    const createProducts = () =>{
-      return products.map(product=>{
-        
-        return (<div key={product.ID_WORK}>{product.ID_WORK}</div>)
-      })
-    }
- 
+  const onClickCategory = (category, index) => {
+    setIndexCategory(index)
+  }
+  const nextCategory = (e) => {
+    setIndexCategory(indexSelectedCategory >= (categories.length - 1) ? indexSelectedCategory : indexSelectedCategory + 1);
+  }
+  const prevCategory = (e) => {
+    setIndexCategory(indexSelectedCategory == 0 ? indexSelectedCategory : indexSelectedCategory - 1);
+  }
+
   return (
     <>
-    {products?.length && createProducts()}
-    <CategoriesSelector 
-      categories={categories}
-      indexSelect={params.index}
-      onClick={onClickCategory}
-    />
+      <ProductList
+        products={products}
+        categories={categories}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        nextCategory={nextCategory}
+        prevCategory={prevCategory}
+      />
+      <CategoriesSelector
+        categories={categories}
+        indexSelect={indexSelectedCategory}
+        onClick={onClickCategory}
+      />
     </>
   )
+}
+
+function ProductList({ categories, products, fetchNextPage, hasNextPage, isFetchingNextPage, nextCategory, prevCategory }) {
+  const loaderRef = useRef(null);
+
+
+  useEffect(() => {
+    if (!hasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+           fetchNextPage();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    const currentRef = loaderRef.current;
+    if (currentRef) observer.observe(currentRef);
+
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const createProducts = () => {
+    const allProducts = products?.pages?.flatMap((page) => page.data) || [];
+    return allProducts?.map((product,index) => (
+      <article key={product.ID_WORK}>
+        <SwipeConainer
+          onSwipeLeft={nextCategory}
+          onSwipeRigth={prevCategory}
+          react={categories}>
+          <img
+            // onClick={(e)=>seteditMode(product.WO_NAME)}
+            loading="lazy"
+            src={product.IMAGE_URL[0]?.URL_MEDIA}
+            style={{
+              width: "100%",
+              height: "500px",
+              objectFit: "cover"
+            }}
+            ref={index == allProducts?.length - 2 ? loaderRef : undefined}
+          />
+        </SwipeConainer>
+      </article>
+    ));
+  };
+
+  return (
+    <div>
+      {createProducts()}
+      {isFetchingNextPage && <p>Cargando más...</p>}
+    </div>
+  );
 }

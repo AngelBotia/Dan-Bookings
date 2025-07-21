@@ -48,6 +48,7 @@ export const useApplication = () => {
     return {
         loadLanguages,
         languageAPP,
+        setLanguageAPP,
         getTranslation,
         getUserSession,
     }

@@ -2,13 +2,15 @@ import React, { useState } from 'react'
 import { useApplication } from '../application.hook';
 
 export const LanguageSelector = () => {
- const { languageAPP,loadLanguages }  = useApplication();
- const {data:allLanguages} = loadLanguages();
+ const { languageAPP,loadLanguages,setLanguageAPP }  = useApplication();
+ const {data:allLanguages,isLoading} = loadLanguages();
+
+ const onChangeLanguage = (e) => {
+    setLanguageAPP(e.currentTarget.value)
+ }
+ if(isLoading)return <p>Loading...</p>
   return (
-    !allLanguages.length ?
-     <p>Loading...</p>
-    :
-    <select defaultValue={languageAPP} onChange={changeLanguage}>
+    <select defaultValue={languageAPP} onChange={onChangeLanguage}>
         {allLanguages?.map(lng => {
             const {language,name,flag,icon} = lng || {};
         return (

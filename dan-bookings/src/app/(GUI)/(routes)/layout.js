@@ -1,5 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import NavBar from "../application/components/NavBar";
+import NavBar from "../application/components/NavBar/NavBar";
 import { ApplicationContextProvider } from "../application/Application.context";
 import { ReactQueryProvider } from "../shared/libs/reactQuery"
 const geistSans = Geist({

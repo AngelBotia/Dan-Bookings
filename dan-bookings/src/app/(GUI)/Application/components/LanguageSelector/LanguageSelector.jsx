@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useApplication } from '../application.hook';
+import { useApplication } from '../../application.hook';
 
 export const LanguageSelector = () => {
  const { languageAPP,loadLanguages,setLanguageAPP }  = useApplication();

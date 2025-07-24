@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useProduct } from '../../product.hook'
-import { useCategories } from '../../category/category.hook'
 import { CategoriesSelector } from '../CategoriesSelector/CategoriesSelector'
 import { SwipeConainer } from '../../../Shared/components/containers/SwipeConainer'
 
@@ -23,10 +22,12 @@ export const MenuCard = () => {
     setIndexCategory(index)
   }
   const nextCategory = (e) => {
-    setIndexCategory(indexSelectedCategory >= (categories.length - 1) ? indexSelectedCategory : indexSelectedCategory + 1);
+    const isLast = (categories.length - 1);
+    setIndexCategory(indexSelectedCategory >= isLast ? indexSelectedCategory : indexSelectedCategory + 1);
   }
   const prevCategory = (e) => {
-    setIndexCategory(indexSelectedCategory == 0 ? indexSelectedCategory : indexSelectedCategory - 1);
+    const isFirst = indexSelectedCategory == 0
+    setIndexCategory(isFirst ? indexSelectedCategory : indexSelectedCategory - 1);
   }
 
   return (

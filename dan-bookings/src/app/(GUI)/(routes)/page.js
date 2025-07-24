@@ -1,8 +1,6 @@
 "use client"
 import '../shared/styles/globals.css'
-// import { MenuCards } from "../Work/components/MenuCards";
-import { MenuCard } from '../product/components/MenuCard/MenuCard'
-import { useApplication } from '../application/application.hook';
+import { MenuCard } from '../product/_components/MenuCard/MenuCard'
 
 
 export default function Home() {

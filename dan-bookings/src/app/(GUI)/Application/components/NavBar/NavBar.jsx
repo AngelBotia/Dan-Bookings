@@ -1,10 +1,10 @@
 'use client'
 import React from 'react'
 import Link from "next/link";
-import '../styles/NavBar.css'
+import './NavBar.css'
 import { signIn,signOut } from 'next-auth/react'
-import { useApplication  } from '../application.hook'
-import { LanguageSelector } from './LanguageSelector';
+import { useApplication  } from '../../application.hook'
+import { LanguageSelector } from '../LanguageSelector/LanguageSelector';
 
 const NavBar = () => {
   const { getTranslation, useLanguageAPP,getUserSession } = useApplication()

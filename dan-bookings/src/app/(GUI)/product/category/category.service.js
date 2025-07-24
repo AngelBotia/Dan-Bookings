@@ -2,7 +2,7 @@
 export class CategoryService {
 
     constructor(endPoint) {
-        this.endPoint = endPoint || '/api/settings/categories';
+        this.endPoint = endPoint || '/api/product/categories';
     };
 
     async getCategories(params={}){

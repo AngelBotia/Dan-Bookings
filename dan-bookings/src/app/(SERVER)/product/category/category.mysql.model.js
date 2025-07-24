@@ -1,5 +1,5 @@
 
-import { conn, createDynamicQuery } from "../libs/mysql";
+import { conn, createDynamicQuery } from "../../libs/mysql";
 import { CAT_DB_PROPS } from "./category.constant"
 import { CategorySchema } from "./category.schema";
 const { category_SELECT, CATEGORY_DB_TABLE, CAT_DB_TABLE_ALIAS, LIMIT_CAT, CATEGORY } = CAT_DB_PROPS;

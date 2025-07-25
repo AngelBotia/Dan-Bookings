@@ -87,17 +87,17 @@ export class workModelMYSQL{
         try {
             const { URL ,IMAGE_URL, CATEGORY } = work  || {};
            
-            const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${PR_DB_TABLE}`);
+            const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${WO_DB_TABLE}`);
             const workToSave = {
-                [PRODUCT.CATEGORY]: CATEGORY,
-                [PRODUCT.URL]: URL,
-                [PRODUCT.ORDER_INDEX]:Number(allWorks[0].TOTAL) + 1 || null
+                [WORKS.CATEGORY]: CATEGORY,
+                [WORKS.URL]: URL,
+                [WORKS.ORDER_INDEX]:Number(allWorks[0].TOTAL) + 1 || null
             }
 
-            const [result] = await conn.query(`INSERT into ${PR_DB_TABLE} SET ?`,[workToSave]);
+            const [result] = await conn.query(`INSERT into ${WO_DB_TABLE} SET ?`,[workToSave]);
             if(result.affectedRows === 0) return null;
 
-            const [rows] =  await conn.query(`SELECT ${product_SELECT} FROM ${PR_DB_TABLE} ${PR_DB_TABLE_ALIAS}  WHERE ${PR_DB_TABLE_ALIAS}.${PRODUCT.URL} = ?`,[URL]);
+            const [rows] =  await conn.query(`SELECT ${work_SELECT} FROM ${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS}  WHERE ${WO_DB_TABLE_ALIAS}.${WORKS.URL} = ?`,[URL]);
             if (rows?.affectedRows == 0) return null;
 
             const newWork = rows?.find(work => work) || null;

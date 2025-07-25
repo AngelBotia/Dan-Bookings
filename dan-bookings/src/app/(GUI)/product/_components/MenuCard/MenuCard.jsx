@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useProduct } from '../../product.hook'
 import { CategoriesSelector } from '../CategoriesSelector/CategoriesSelector'
+import { ProductForm } from '../ProductForm/ProductForm'
 import { SwipeConainer } from '../../../Shared/components/containers/SwipeConainer'
 
 export const MenuCard = () => {
   const [params, setparams] = useState({ page: 1, limit: 5 })
+  const [productForm, setproductForm] = useState({})
   const {
     isLoading,
     data: products,
-    fetchNextPage, 
+    addProduct,
+    fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     categories,
@@ -30,6 +33,18 @@ export const MenuCard = () => {
     setIndexCategory(isFirst ? indexSelectedCategory : indexSelectedCategory - 1);
   }
 
+  const onSubmit = (e) => {
+        try {
+          e.preventDefault();    
+          addProduct(productForm)
+          
+          e.target.reset(); 
+          setproductForm(null);
+    } catch (error) {
+      window.alert(error.message)//TODO CHANGE THIS FOR A MODAL
+    }
+  }
+
   return (
     <>
       <ProductList
@@ -45,6 +60,11 @@ export const MenuCard = () => {
         categories={categories}
         indexSelect={indexSelectedCategory}
         onClick={onClickCategory}
+      />
+      <ProductForm
+        formState={[productForm, setproductForm]}
+        onDelete={()=>console.log("hola")}
+        onSubmit={onSubmit}
       />
     </>
   )

@@ -22,15 +22,6 @@ export function useProduct(params = { page: 0 }) {
 
   const queryKey = [`${keyProduct}-${languageAPP}-${indexSelectedCategory}`, params];
 
-  // GET
-  // const loadProducts = useQuery({
-  //   queryKey: queryKey,
-  //   queryFn: () => productService.getProducts({ languageAPP, ...params }),
-  //   enabled: !!categories,
-  //   staleTime: Infinity,
-  //   cacheTime: Infinity,
-  //   refetchOnWindowFocus: false,
-  // });
   const loadProducts = useInfiniteQuery({
     queryKey,
     queryFn: ({ pageParam = 0 }) =>
@@ -52,12 +43,31 @@ export function useProduct(params = { page: 0 }) {
     refetchOnWindowFocus: false,
   });
 
+  const addProduct = useMutation({
+    mutationFn:(newProduct) => productService.createProduct({...newProduct,languageAPP}),
+    onSuccess: (response) => {
+      queryClient.setQueryData(queryKey, (old) => {
+        if (!old) return;
+        return {...old,
+          pages: [
+            { 
+              ...old.pages[0],
+              data: [response, ...old.pages[0].data]
+             },
+            ...old.pages.slice(1),
+          ],
+        };
+      });
+    },
+  }).mutate;
+
 
   
   const queryClient = useQueryClient();
 
   return {
     ...loadProducts,
+    addProduct,
     categories,
     setIndexCategory,
     indexSelectedCategory

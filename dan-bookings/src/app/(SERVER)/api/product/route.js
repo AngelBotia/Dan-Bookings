@@ -30,21 +30,21 @@ export async function POST(request, { params }) {
         if (!hasPermission(request)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
  
         const body = await request.formData();
-        const work = JSON.parse(body.get('work'));
+        const work = JSON.parse(body.get('product'));
         const { WO_NAME, IMAGE_URL,languageAPP,CATEGORY} = work || {};
         const files = IMAGE_URL || [];
         const URL = WO_NAME?.trim().replaceAll(" ","-") || null;
         
         if(!files?.length || !WO_NAME)  return NextResponse.json({ error: "Bad request" }, { status: 400 });
 
-        const urlsImg = await fileController.saveImgsInCloud(files,CATEGORY.replaceAll(" ","-") || 'WORKS',URL);
+        const urlsImg = await fileController.saveImgsInCloud(files,CATEGORY?.replaceAll(" ","-") || 'WORKS',URL);
 
         const workToSave = {
             WO_NAME,
             CATEGORY,
             URL
         }
-        let newWork = await workController.createWork(workToSave);
+        let newWork = await productController.createProduct(workToSave);
         let translations = await translationController.createTranslation({WO_NAME},newWork.ID_WORK,languageAPP.toUpperCase());
 
         newWork = {
@@ -52,7 +52,7 @@ export async function POST(request, { params }) {
             ...newWork,
             ...translations,
         }
-        newWork.detail = await workController.createDetailWork(newWork) || {};
+        // newWork.detail = await productController.createDetailWork(newWork) || {};
         newWork.IMAGE_URL = await mediaController.createMedias(newWork?.ID_WORK,urlsImg,CATEGORY); 
         
     

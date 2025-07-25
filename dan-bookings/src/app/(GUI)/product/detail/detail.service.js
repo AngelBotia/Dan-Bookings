@@ -1,9 +1,7 @@
-const { throws } = require("node:assert");
-
 class ProductDetailService {
 
     constructor(endPoint) {
-        this.endPoint = endPoint || '/api/product';
+        this.endPoint = endPoint || '/api/product/detail';
     };
 
 

@@ -1,23 +1,20 @@
 import ES from './translations/ES.json'
 import EN from './translations/EN.json'
+import Cookies from 'js-cookie';
 import { create } from 'zustand'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DEFAULT_LNG_APP, LANG_LS } from './application.constant';
 import { applicationService } from './application.service';
-import { persist } from 'zustand/middleware';
 import { useSession } from "next-auth/react";
 
-export const useApplicationStore = create(
-    persist(
-        (set) => ({
-            languageAPP: DEFAULT_LNG_APP,
-            setLanguageAPP: (languageAPP) => set({ languageAPP }),
-        }),
-        {
-            name: LANG_LS, //LOCAL STORAGE
-        }
-    )
-);
+export const useApplicationStore = create((set) => ({
+  languageAPP: Cookies.get(LANG_LS) || DEFAULT_LNG_APP,
+
+  setLanguageAPP: (languageAPP) => {
+    Cookies.set(LANG_LS, languageAPP, { expires: 365 });
+    set({ languageAPP });
+  },
+}));
 
 
 

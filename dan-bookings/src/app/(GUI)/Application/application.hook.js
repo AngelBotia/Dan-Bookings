@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DEFAULT_LNG_APP, LANG_LS } from './application.constant';
 import { applicationService } from './application.service';
 import { useSession } from "next-auth/react";
+import { useApplicationContext } from './Application.context';
 
 export const useApplicationStore = create((set) => ({
   languageAPP: Cookies.get(LANG_LS) || DEFAULT_LNG_APP,
@@ -20,6 +21,7 @@ export const useApplicationStore = create((set) => ({
 
 export const useApplication = () => {
     const { languageAPP, setLanguageAPP } = useApplicationStore();
+    const { initialLanguage } = useApplicationContext()
     const queryClient = useQueryClient()
 
     const loadLanguages = () => {
@@ -31,7 +33,7 @@ export const useApplication = () => {
 
     const getTranslation = (newLanguage) => {
         const allAppTexts = { ES, EN };
-        return allAppTexts[newLanguage || languageAPP] || allAppTexts[DEFAULT_LNG_APP];
+        return allAppTexts[newLanguage || languageAPP || initialLanguage] || allAppTexts[DEFAULT_LNG_APP];
     }
     const getUserSession = () => {
         const { data: session } = useSession() || {};

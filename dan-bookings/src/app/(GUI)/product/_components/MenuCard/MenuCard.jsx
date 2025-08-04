@@ -11,6 +11,7 @@ export const MenuCard = () => {
     isLoading,
     data: products,
     addProduct,
+    updateProduct,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,

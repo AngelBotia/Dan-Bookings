@@ -44,20 +44,20 @@ export async function POST(request, { params }) {
             CATEGORY,
             URL
         }
-        let newWork = await productController.createProduct(workToSave);
-        let translations = await translationController.createTranslation({WO_NAME},newWork.ID_WORK,languageAPP.toUpperCase());
+        let newProduct = await productController.createProduct(workToSave);
+        let translations = await translationController.createTranslation({WO_NAME},newProduct.ID_WORK,languageAPP.toUpperCase());
 
-        newWork = {
+        newProduct = {
             WO_NAME,
-            ...newWork,
+            ...newProduct,
             ...translations,
         }
-        // newWork.detail = await productController.createDetailWork(newWork) || {};
-        newWork.IMAGE_URL = await mediaController.createMedias(newWork?.ID_WORK,urlsImg,CATEGORY); 
+        // newProduct.detail = await productController.createDetailWork(newProduct) || {};
+        newProduct.IMAGE_URL = await mediaController.createMedias(newProduct?.ID_WORK,urlsImg,CATEGORY); 
         
     
     
-        return NextResponse.json(newWork,{status:200})
+        return NextResponse.json(newProduct,{status:200})
     } catch (error) {
         console.error(error.message);
         const errorMessage = "something went wrong"
@@ -70,16 +70,15 @@ export async function PUT(request,{ params }) {
         if (!hasPermission(request)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         
         const body = await request.formData();
-        const newWork = JSON.parse(body.get('newWork')) || {};
-        const { detail,ID_WORK,IMAGE_URL ,WO_NAME,languageAPP} = newWork || {};
-        const categoryImgs = "WORKS"
+        const newProduct = JSON.parse(body.get('newProduct')) || {};
+        const { detail,ID_WORK,IMAGE_URL ,WO_NAME,languageAPP,CATEGORY} = newProduct || {};
 
         if(!ID_WORK || !WO_NAME)  return NextResponse.json({ error: "Bad request" }, { status: 400 });
 
         const URL = WO_NAME?.trim().replaceAll(" ","-") || null
 
-        const allMedias = await mediaController.getMedias(ID_WORK,categoryImgs)      
-        const mediasToDelete = allMedias.filter(media => !IMAGE_URL.find(newMedia => newMedia.URL_MEDIA == media.URL_MEDIA)) || [];
+        const allMedias = await mediaController.getMedias(ID_WORK,CATEGORY)      
+        const mediasToDelete = allMedias?.filter(media => !IMAGE_URL?.find(newMedia => newMedia.URL_MEDIA == media.URL_MEDIA)) || [];
         const statusDelete = await Promise.all(mediasToDelete.map( async media => {
                                                 try {
                                                         const { URL_MEDIA } = media || {};
@@ -92,20 +91,20 @@ export async function PUT(request,{ params }) {
                                                     }
                                                 }));
         
-        const newMediasToSave = IMAGE_URL.filter(newMedia => newMedia.img) || [];
-        const urlsImg = await fileController.saveImgsInCloud(newMediasToSave,categoryImgs,URL);
-        const newMedias = await mediaController.createMedias(ID_WORK,urlsImg,categoryImgs) || [];
+        const newMediasToSave = IMAGE_URL?.filter(newMedia => newMedia.img) || [];
+        const urlsImg = await fileController.saveImgsInCloud(newMediasToSave,CATEGORY,URL);
+        const newMedias = await mediaController.createMedias(ID_WORK,urlsImg,CATEGORY) || [];
         
         
         
         const workToSave = {
-            ...newWork,
+            ...newProduct,
             URL
         }
 
-        let updateWork = await workController.updateWork(workToSave) || {};
-        const restOfMedias = allMedias.filter(media => IMAGE_URL.find(newMedia => newMedia.URL_MEDIA == media.URL_MEDIA)) || [];
-        let newTranslation = await translationController.updateTranslation({WO_NAME},ID_WORK,languageAPP)
+        let updateWork = await productController.updateProduct(workToSave) || {};
+        let newTranslation = await translationController.updateTranslation({WO_NAME},ID_WORK,languageAPP);
+        let restOfMedias = allMedias?.filter(media => IMAGE_URL?.find(newMedia => newMedia.URL_MEDIA == media.URL_MEDIA)) || [];
         
         updateWork = {
             ...updateWork,

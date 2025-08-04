@@ -1,6 +1,6 @@
 export { default } from "next-auth/middleware"
 import { NextResponse } from 'next/server';
-import { LANG_LS } from "./app/(GUI)/application/application.constant";
+import { LANG_LS ,DEFAULT_LNG_APP} from "./app/(GUI)/application/application.constant";
 
 export const config = { matcher: ['/((?!api|_next|favicon.ico).*)',"/booking"] }
 

@@ -61,6 +61,28 @@ export function useProduct(params = { page: 0 }) {
     },
   }).mutate;
 
+const updateProduct = useMutation({
+  mutationFn: (updatedProduct) =>
+    productService.updateProduct(updatedProduct, {
+      ...updatedProduct,
+      languageAPP,
+    }),
+  onSuccess: (response) => {
+    queryClient.setQueryData(queryKey, (old) => {
+      if (!old) return;
+      return {
+        ...old,
+        pages: old.pages.map((page) => ({
+          ...page,
+          data: page.data.map((item) =>
+            item.ID_WORK === response.ID_WORK ? response : item
+          ),
+        })),
+      };
+    });
+  },
+}).mutate;
+
 
   
   const queryClient = useQueryClient();
@@ -68,6 +90,7 @@ export function useProduct(params = { page: 0 }) {
   return {
     ...loadProducts,
     addProduct,
+    updateProduct,
     categories,
     setIndexCategory,
     indexSelectedCategory

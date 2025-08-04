@@ -1,3 +1,4 @@
+"use client"
 import '../Porfolio/Porfolio.css'
 import React from 'react'
 import { useApplication } from '../../../application/application.hook';
@@ -33,7 +34,7 @@ export const ProductForm = ({ formState, onDelete, onSubmit }) => {
     return (
         <ToggleHidden isOpen={formData} onClose={() => { setFormData(null) }}>
             <form onLoad={(e) => onLoadForm(e)} className='form-porfolio fade-in-animation fast-animation' onSubmit={async (e) => await onSubmit(e)}>
-                <InputImgs
+                {/* <InputImgs
                     form={formState}
                     name={"IMAGE_URL"}
                     required={true}
@@ -52,7 +53,7 @@ export const ProductForm = ({ formState, onDelete, onSubmit }) => {
                     name={"CATEGORY"}
                     label={"CATEGORY"}
                     title={errorMessages["WO_NAME"]}
-                    required={true} />
+                    required={true} /> */}
 
                 <footer>
                     <button type='submit' className='button-porfolio submit-porfolio'>{actions.send}</button>

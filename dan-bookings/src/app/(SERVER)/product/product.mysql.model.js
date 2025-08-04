@@ -123,20 +123,20 @@ export class workModelMYSQL{
         //TODO VALID SCHEMA
         const { ID_WORK, ORDER_INDEX, IS_VISIBLE, URL, IMAGE_URL } = work  || {};
         
-        const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${PR_DB_TABLE}`);
+        const [allWorks] = await conn.query(`SELECT COUNT(*) AS TOTAL FROM ${WO_DB_TABLE}`);
         const workToUpdate = {
-            [PRODUCT.ID_WORK]:ID_WORK,
-            [PRODUCT.URL]: URL,
-            [PRODUCT.ORDER_INDEX]: Number(ORDER_INDEX) ||Number(allWorks[0].TOTAL) + 1 ,
-            [PRODUCT.IS_VISIBLE]: Number(IS_VISIBLE) || 0
+            [WORKS.ID_WORK]:ID_WORK,
+            [WORKS.URL]: URL,
+            [WORKS.ORDER_INDEX]: Number(ORDER_INDEX) ||Number(allWorks[0].TOTAL) + 1 ,
+            [WORKS.IS_VISIBLE]: Number(IS_VISIBLE) || 0
         }
         //NEW IMG
-        if(IMAGE_URL && typeof IMAGE_URL === 'string' ) workToUpdate[PRODUCT.IMAGE_URL] = IMAGE_URL;
+        if(IMAGE_URL && typeof IMAGE_URL === 'string' ) workToUpdate[WORKS.IMAGE_URL] = IMAGE_URL;
 
-        const [result] = await conn.query(`UPDATE ${PR_DB_TABLE} SET ? WHERE ${PRODUCT.ID_WORK} = ?`,[workToUpdate,ID_WORK]);
+        const [result] = await conn.query(`UPDATE ${WO_DB_TABLE} SET ? WHERE ${WORKS.ID_WORK} = ?`,[workToUpdate,ID_WORK]);
         if(result.affectedRows === 0) return null;
 
-        const [rows] =  await conn.query(`SELECT ${product_SELECT} FROM ${PR_DB_TABLE} ${PR_DB_TABLE_ALIAS}  WHERE ${PR_DB_TABLE_ALIAS}.${PRODUCT.URL} = ?`,[URL]);
+        const [rows] =  await conn.query(`SELECT ${work_SELECT} FROM ${WO_DB_TABLE} ${WO_DB_TABLE_ALIAS}  WHERE ${WO_DB_TABLE_ALIAS}.${WORKS.ID_WORK} = ?`,[ID_WORK]);
         if (rows?.affectedRows == 0) return null;
 
         const updatedWork = rows?.find(work => work) || null;

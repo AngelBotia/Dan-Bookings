@@ -58,7 +58,7 @@ class ProductController {
     }
     updateProduct = (work) => {
         try {
-            return this.updateProduct(work);
+            return this.workModel.updateProduct(work);
         } catch (error) {
             console.error("[WORK-CONTROLLER] -", error)
             throw error;

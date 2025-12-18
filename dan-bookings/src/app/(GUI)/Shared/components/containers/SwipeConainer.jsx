@@ -34,9 +34,9 @@ export const SwipeConainer = ({children,onSwipeLeft=()=>{},onSwipeRigth=()=>{},t
 
 
   return (
-    <section ref={myElementRef} className={clasName}>
+    <div ref={myElementRef} className={clasName}>
       {children}
-    </section>
+    </div>
     
   );
 };
